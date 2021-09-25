@@ -54,7 +54,7 @@ def test_int():
     ax1.set_yscale('log')
     ax1.set_ylim(ax.get_ylim())
     ax1.tick_params(labelright=False)
-    plt.savefig('../Figures/IntegratorPrecision.png', dpi = 200)
+    plt.savefig('../Figures/IntegratorPrecision.png', dpi = 100)
     plt.show()
 
 if __name__=='__main__':
