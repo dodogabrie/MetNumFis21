@@ -1,9 +1,8 @@
 """Set of functions for the integration of dynamical systems described by ODE (compiled with numba)"""
 
-from numba import njit
+from numba import jit_module
 import numpy as np
 
-@njit(fastmath = True)
 def euler(f, x, t, p = ()):
     """
     Simple Euler integrator.
@@ -30,14 +29,23 @@ def euler(f, x, t, p = ()):
         Array x containing the results of the integration at 
         each time steps of t.
     """
-    h = t[1]-t[0]
+    # Saving starting time
+    tj = t[0]
+    # Saving h value
+    h = t[1]-tj
+    # Number of step
     step = len(t)
-    for j in range(step-1):
-        xj = x[j]
-        x[j+1] = xj + h * f(xj, t[j], p)
+    # Saving initial value
+    xj = x[0]
+    for j in range(1, step):
+        # Evaluate next step
+        xj = xj + h * f(xj, tj, p)
+        # Saving next step value
+        x[j] = xj
+        # Go to the next time step
+        tj = tj + h
     return x
 
-@njit(fastmath = True)
 def trapezoid(f, x, t, p = ()):
     """
     Trapezoid integration method.
@@ -64,21 +72,34 @@ def trapezoid(f, x, t, p = ()):
         Array x containing the results of the integration at 
         each time steps of t.
     """
-    h = t[1]-t[0]
+    tj = t[0]
+    tjn = t[1]
+    h = tjn-tj
     step = len(t)
-    for j in range(step-1):
-        xj = x[j]
-        tj = t[j]
-        tjn = t[j+1]
-        f_here = f( xj, tj , p )
-        x_next = xj + h * f_here
-        f_next_euler = f( x_next, tjn , p)
-        x[j+1] = xj + h/2 * ( f_here + f_next_euler )
-        f_next = f( x[j+1], tjn , p )
-        x[j+1] = xj + h/2 * ( f_here + f_next )
+    xj = x[0]
+    for j in range(1, step):
+        # function evaluated in xj
+        fj = f( xj, tj , p )
+        # euler step
+        xjn = xj + h * fj
+        # function evaluated in the euler step
+        fjn = f( xjn, tjn , p)
+
+        # COMMENT HERE IF I HAVE UNDERSTOOD BADLY ###################
+        # Trapezoid evaluation of the next point obtained with the euler step
+        xjn = xj + h/2 * ( fj + fjn )
+        # Evaluation of the force in the next step
+        fjn = f( xjn, tjn , p )
+        # END OF MISUNDERSTOOD! #####################################
+
+        # Final evaluation of the next point with the force evaluated with euler -> trapezoid
+        xj = xj + h/2 * ( fj + fjn )
+        # Saving result and go to next step
+        x[j] = xj
+        tj = tj + h
+        tjn = tjn + h
     return x
 
-@njit(fastmath = True)
 def AB(f, x, t, p = ()):
     """
     AB integration method.
@@ -105,19 +126,37 @@ def AB(f, x, t, p = ()):
         Array x containing the results of the integration at 
         each time steps of t.
     """
-    h = t[1]-t[0]
+    # Starting time
+    tj = t[0]
+    # Integration step
+    h = t[1]-tj
+    # Number of step
     step = len(t)
-    f_here = f(x[0], t[0], p)
-    x[1] = x[0] + h * f_here
+    # Starting Point
+    xj = x[0]
+    # Evaluate the function in the starting point
+    f_here = f(xj, tj, p)
+    # Euler step
+    xj = xj + h * f_here
+    # Go to the next time step
+    tj = tj + h
+    # Next point
+    x[1] = xj
+    # Save the value of f for the next step
     f_back = f_here
-    for j in range(step-1):
-        xj = x[j]
-        f_here = f(xj, t[j], p)
-        x[j+1] = xj + h/2 * (3 * f_here - f_back)
+    for j in range(1, step-1):
+        # Evaluate the function at this step
+        f_here = f(xj, tj, p)
+        # Evaluate new point
+        xj = xj + h/2 * (3 * f_here - f_back)
+        # Write the new point
+        x[j+1] = xj
+        # Save the old function
         f_back = f_here
+        # Increase time step
+        tj = tj + h
     return x
 
-@njit(fastmath = True)
 def midpoint(f, x, t, p = ()):
     """
     Midpoint integration method.
@@ -144,18 +183,34 @@ def midpoint(f, x, t, p = ()):
         Array x containing the results of the integration at 
         each time steps of t.
     """
-    h = t[1]-t[0]
+    # Save initial time
+    tj = t[0]
+    # Save time step
+    h = t[1]-tj
+    # Number of step
     step = len(t)
-    for j in range(step-1):
-        f_here = f(x[j], t[j], p = ())
-        if j == 0:
-            x[j+1] = x[j] + h * f_here
-        else:
-            x[j+1] = x[j-1] + 2 * h * f_here 
+    # Save initial value as xjprevious
+    xjp = x[0]
+    # New point
+    xj = xjp + h * f(xjp, tj, p)
+    # Save new point
+    x[1] = xj
+    # New time
+    tj = tj + h
+    for j in range(2, step):
+        # Next point as combination of last two
+        xn = xjp + 2 * h * f(xj, tj, p)
+        # Save new point
+        x[j] = xn
+        # The actual became the previus
+        xjp = xj
+        # The next became the actual
+        xj = xn
+        # Next time step
+        tj = tj + h
     return x
 
 
-@njit(fastmath = True)
 def RK45(f, x, t, p = ()):
     """
     Runge Kutta (of order 4-5) integration method.
@@ -182,24 +237,30 @@ def RK45(f, x, t, p = ()):
         Array x containing the results of the integration at 
         each time steps of t.
     """
-    h = t[1]-t[0]
+    # Initial time
+    tj = t[0]
+    # Integral step
+    h = t[1]-tj
+    # Number of step
     step = len(t)
-    for j in range(step-1):
-        xj = x[j]
-        tj = t[j]
+    # Save Initial value
+    xj = x[0]
+    for j in range(1, step):
         k1 = h * f( xj , tj , p )
         k2 = h * f( xj + k1 / 2 , tj + h / 2 , p)
         k3 = h * f( xj + k2 / 2 , tj + h / 2 , p)
         k4 = h * f( tj + h , xj + k3 , p)
-        x[j+1] = xj + k1/6 + k2/3 + k3 / 3 + k4 / 6
+        xj = xj + k1/6 + k2/3 + k3 / 3 + k4 / 6
+        x[j] = xj
+        tj = tj + h
     return x
 
 
-@njit(fastmath = True)
 def richardson_error(f, x, t, method = 'RK45', p=()):
     """
     Evaluate the richardson error for the integrator of
     this module.
+    NOTE: not sure that this function do something with any sense...
 
     Parameters
     ----------
@@ -256,3 +317,6 @@ def richardson_error(f, x, t, method = 'RK45', p=()):
     x_t = x_t[::2]
 
     return np.abs(x_t - x_2t)/frac
+
+
+jit_module(fastmath = True, nopython=True, cache = True)

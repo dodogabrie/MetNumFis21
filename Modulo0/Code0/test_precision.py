@@ -5,10 +5,18 @@ import matplotlib.pyplot as plt
 import time
 
 @njit
+def wake_up_numba():
+    return None
+
+@njit(cache=True)
 def f(x, t, p = ()):
     return x * t
 
 def test_int():
+    wake_up_numba()
+
+    real_benchmark = True
+    plot = True
     x0 = 1
     ti = 0
     tf = 5
@@ -19,43 +27,52 @@ def test_int():
     x = np.empty( len(t) )
     x[0] = x0
 
+    to_test = [integrators.euler, 
+               integrators.trapezoid, 
+               integrators.AB, 
+               integrators.midpoint, 
+               integrators.RK45]
 
-    start = time.time()
-    x_eu   = integrators.euler( f , np.copy(x) , t )
-    eu_t = time.time()-start
+    if real_benchmark:
+        for method in to_test:
+            method(f , np.copy(x) , t)
+    
+    tt = []
+    xx = []
+    for method in to_test:
+        y = np.copy(x)
+        start = time.time()
+        xx.append(method( f , y , t ))
+        tt.append(time.time()-start)
 
-    start = time.time()
-    x_trap = integrators.trapezoid( f , np.copy(x) , t )
-    trap_t = time.time()-start
+    x_eu, x_trap, x_AB, x_mid, x_RK = xx
+    t_eu, t_trap, t_AB, t_mid, t_RK = tt
 
-    start = time.time()
-    x_AB   = integrators.AB( f , np.copy(x) , t )
-    AB_t = time.time()-start
+    if real_benchmark:
+        print()
+        print(f'Euler: {t_eu:.3f}s')
+        print(f'Trapezoidal: {t_trap:.3f}s')
+        print(f'AB: {t_AB:.3f}s')
+        print(f'midpoint: {t_mid:.3f}s')
+        print(f'RK45: {t_RK:.3f}s')
 
-    start = time.time()
-    x_mid  = integrators.midpoint( f , np.copy(x) , t )
-    mid_t = time.time()-start
+    if plot:
+        fig, ax = plt.subplots(1,1,figsize=(8, 6))
+        ax.plot( t,  x_eu   , marker='v', label = f'Euler')
+        ax.plot( t,  x_trap , marker='*', label = f'Trapezoidal')
+        ax.plot( t,  x_AB   , marker='P', label = f'AB')
+        ax.plot( t,  x_mid  , marker='x', label = f'midpoint')
+        ax.plot( t,  x_RK  , marker='o' , label = f'RK45')
+        ax.plot(t, np.exp(t**2/2), label = 'True')
 
-    start = time.time()
-    x_RK  = integrators.RK45( f , np.copy(x) , t )
-    RK_t = time.time()-start
-
-    fig, ax = plt.subplots(1,1,figsize=(8, 6))
-    ax.plot( t,  x_eu   , marker='v', label = f'Euler: {eu_t:.3f}s')
-    ax.plot( t,  x_trap , marker='*', label = f'Trapezoidal: {trap_t:.3f}s')
-    ax.plot( t,  x_AB   , marker='P', label = f'AB: {AB_t:.3f}s')
-    ax.plot( t,  x_mid  , marker='x', label = f'midpoint: {mid_t:.3f}s')
-    ax.plot( t,  x_RK  , marker='o', label = f'RK45: {RK_t:.3f}s')
-    ax.plot(t, np.exp(t**2/2), label = 'True')
-
-    ax.set_yscale('log')
-    plt.legend()
-    ax1 = ax.twinx()
-    ax1.set_yscale('log')
-    ax1.set_ylim(ax.get_ylim())
-    ax1.tick_params(labelright=False)
-    plt.savefig('../Figures/IntegratorPrecision.png', dpi = 100)
-    plt.show()
+        ax.set_yscale('log')
+        plt.legend()
+        ax1 = ax.twinx()
+        ax1.set_yscale('log')
+        ax1.set_ylim(ax.get_ylim())
+        ax1.tick_params(labelright=False)
+        plt.savefig('../Figures/IntegratorPrecision.png', dpi = 100)
+        plt.show()
 
 if __name__=='__main__':
     test_int()
