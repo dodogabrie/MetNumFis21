@@ -1,6 +1,6 @@
 """Set of functions for the integration of dynamical systems described by ODE (compiled with numba)"""
 
-from numba import jit_module
+import numba
 import numpy as np
 
 def euler(f, x, t, p = ()):
@@ -319,4 +319,4 @@ def richardson_error(f, x, t, method = 'RK45', p=()):
     return np.abs(x_t - x_2t)/frac
 
 
-jit_module(fastmath = True, nopython=True, cache = True)
+numba.jit_module(fastmath = True, nopython=True, cache = True)

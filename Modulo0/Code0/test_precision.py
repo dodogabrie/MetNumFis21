@@ -4,16 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-@njit
-def wake_up_numba():
-    return None
 
 @njit(cache=True)
 def f(x, t, p = ()):
     return x * t
 
 def test_int():
-    wake_up_numba()
 
     real_benchmark = True
     plot = True
@@ -40,10 +36,17 @@ def test_int():
     tt = []
     xx = []
     for method in to_test:
-        y = np.copy(x)
-        start = time.time()
-        xx.append(method( f , y , t ))
-        tt.append(time.time()-start)
+        if method == integrators.RK45:
+            y = np.copy(x[::2])
+            tRK = t[::2]
+            start = time.time()
+            xx.append(method( f , y , tRK ))
+            tt.append(time.time()-start)
+        else:
+            y = np.copy(x)
+            start = time.time()
+            xx.append(method( f , y , t ))
+            tt.append(time.time()-start)
 
     x_eu, x_trap, x_AB, x_mid, x_RK = xx
     t_eu, t_trap, t_AB, t_mid, t_RK = tt
@@ -62,7 +65,7 @@ def test_int():
         ax.plot( t,  x_trap , marker='*', label = f'Trapezoidal')
         ax.plot( t,  x_AB   , marker='P', label = f'AB')
         ax.plot( t,  x_mid  , marker='x', label = f'midpoint')
-        ax.plot( t,  x_RK  , marker='o' , label = f'RK45')
+        ax.plot( tRK,  x_RK  , marker='o' , label = f'RK45')
         ax.plot(t, np.exp(t**2/2), label = 'True')
 
         ax.set_yscale('log')
