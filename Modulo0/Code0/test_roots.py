@@ -3,11 +3,11 @@ from numba import njit
 import matplotlib.pyplot as plt
 import roots
 
-@njit
+@njit(cache=True)
 def f(x):
     return x**3/5 + x/5 + 0.1
 
-@njit
+@njit(cache=True)
 def df(x):
     return 3/5 * x**2 + 1/5 
 

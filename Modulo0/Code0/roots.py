@@ -1,10 +1,9 @@
 """ Module for finding roots of any expression"""
 
-from numba import njit
+from numba import jit_module
 import numpy as np
 import matplotlib.pyplot as plt
 
-@njit(fastmath = True)
 def bisection(f, i0, i1, max_step):
     """
     Bisection Methods for root.
@@ -40,7 +39,6 @@ def bisection(f, i0, i1, max_step):
         if f_half == 0: break
     return root 
 
-@njit(fastmath = True)
 def newton(f, df, init, max_step):
     """
     Newton Methods for finding roots.
@@ -67,7 +65,6 @@ def newton(f, df, init, max_step):
         init = root
     return root
 
-@njit(fastmath = True)
 def mixture1d(f, df, i0, i1, max_step, num_bisec):
     """
     Mix of the bisection method (first num_bisec iterations) and
@@ -101,7 +98,6 @@ def mixture1d(f, df, i0, i1, max_step, num_bisec):
     return root 
 
 
-@njit(fastmath = True)
 def multi_newton(f, df, init, max_step):
     """
     Multidim. Newton method.
@@ -131,3 +127,5 @@ def multi_newton(f, df, init, max_step):
         root = init + delta
         init = root
     return root
+
+jit_module(fastmath = True, nopython=True, cache = True)
