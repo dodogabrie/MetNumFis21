@@ -6,8 +6,8 @@ import time
 
 
 def test_rand():
-    show = True
-    len_loop = 10000
+    show = False
+    len_loop = 10000000
     seed = 2   
     
     print(f'Number Generated: {len_loop}')

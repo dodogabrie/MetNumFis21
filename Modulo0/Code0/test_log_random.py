@@ -7,13 +7,16 @@ import time
 
 def test_rand():
     show = True
-    len_loop = 10000
+    len_loop = 100000
     seed = 0.9 
     
     print(f'Number Generated: {len_loop}')
     
     x = np.empty(len_loop)
     y = np.empty(len_loop)
+
+
+    myrandom.log_map_gen(np.copy(x), np.copy(y), seed, len_loop)
 
     start = time.time()
     x, y = myrandom.log_map_gen(np.copy(x), np.copy(y), seed, len_loop)
