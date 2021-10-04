@@ -1,0 +1,128 @@
+import time
+import numpy as np
+import math
+import time
+cimport numpy as np # Make numpy work with cython
+cimport cython
+from libc.math cimport exp
+
+def do_calc(int nlat, int iflag, int measures, 
+            int i_decorrel, float extfield, 
+            float beta, int numfile):
+    
+    rng =  np.random.Generator(np.random.PCG64())
+    nvol = nlat*nlat
+    # Geometry array
+    cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)
+    cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
+    # results array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] magn = np.empty(measures).astype(float)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] ene = np.empty(measures).astype(float)
+    # random array
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] rr = np.empty(3*i_decorrel*nlat*nlat).astype(float)
+    # matrix array
+    cdef np.ndarray[np.int_t, ndim=2, mode='c'] field = np.ones((nlat, nlat)).astype(int)
+
+    cdef int i, idec # index for loops
+    
+    geometry(nlat, npp, nmm)
+    inizialize_lattice(iflag, nlat, field)
+
+    for i in range(measures):
+        rr = rng.uniform(size = 3*i_decorrel*nlat*nlat)
+        for idec in range(i_decorrel):
+            update_metropolis(field, nlat, npp, nmm, beta, extfield, rr, idec*i_decorrel)
+        magn[i] = magnetization(field, nlat, nvol)
+        ene[i]  = energy(field, extfield, nlat, nvol, npp, nmm)
+
+    np.savetxt('lattice', field, fmt='%0.f')
+    np.savetxt(f'data/data{numfile}.dat', np.column_stack((magn, ene)))
+    return magn, ene
+
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
+    cdef int i
+    for i in range(nlat):
+        npp[i] = i + 1
+        nmm[i] = i - 1
+    npp[nlat-1] = 0
+    nmm[0] = nlat-1
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
+
+    rng =  np.random.Generator(np.random.PCG64())
+
+    cdef float x
+    cdef int i, j
+
+    if iflag == 0:
+        for i in range(nlat):
+            for j in range(nlat):
+                field[i, j] = 1
+
+    if iflag == 1:
+        for i in range(nlat):
+            for j in range(nlat):
+                x = rng.uniform()
+                if x > 0.5: field[i, j] = 1
+                else: field[i, j] = -1
+
+    if iflag != 0 or iflag != 1:
+        field = np.loadtxt('lattice').astype(int)
+
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+@cython.cdivision(True)   # Deactivate negative indexing.
+cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
+    cdef int i, j
+    cdef double xmagn = 0.
+    for i in range(nlat):
+        for j in range(nlat):
+            xmagn = xmagn + field[i, j]
+    return xmagn/float(nvol)
+
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+@cython.cdivision(True)   # Deactivate negative indexing.
+cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol, 
+                   np.int_t[:] npp, np.int_t[:] nmm):
+    cdef int i, j, force
+    cdef double xene = 0.
+    for i in range(nlat):
+        for j in range(nlat):
+            force = neigh_force(i, j, field, npp, nmm)
+            xene = xene - 0.5 * force * field[i, j]
+            xene = xene - extfield * field[i, j]
+    return xene/float(nvol)
+
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+cdef inline void update_metropolis(np.int_t[:,:] field, # the field
+                                   int nlat, # lateral size
+                                   np.int_t[:] npp, np.int_t[:] nmm, # geometry arrays
+                                   float beta, float extfield, # simulation parameters
+                                   np.double_t[:] rr, int skip): # random numbers parameters
+    cdef int ivol, i, j, phi
+    cdef float force
+    for ivol in range(nlat*nlat):
+        i = int(rr[skip + 3*ivol] * nlat)
+        j = int(rr[skip + 3*ivol + 1] * nlat)
+
+        force = beta * ( neigh_force(i, j, field, npp, nmm) + extfield )
+        phi = field[i, j]
+        
+        p_rat = exp(-2. * phi * force)
+
+        if rr[skip + 3*ivol + 2] < p_rat: field[i, j] = - phi
+
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
+cdef int neigh_force(int i, int j, np.int_t[:,:] field, np.int_t[:] npp, np.int_t[:] nmm):
+    cdef int ip, im, jp, jm
+    ip = npp[i]
+    im = nmm[i]
+    jp = npp[j]
+    jm = nmm[j]
+    return field[i, jp] + field[i, jm] + field[ip, j] + field[im, j]
