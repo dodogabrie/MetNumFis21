@@ -10,10 +10,10 @@ def err(X):
 iflag = 0
 nlat = 10
 beta = 0.3
-measures = int(2e4)
+measures = int(1e4)
 i_decorrel = 100
 extfield = 0.
-njobs = 5
+njobs = 1
 
 if njobs > 1:
     list_args = [[nlat, iflag, measures, i_decorrel, extfield, beta, i] for i in range(njobs)]
