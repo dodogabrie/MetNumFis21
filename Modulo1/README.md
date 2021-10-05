@@ -1,4 +1,4 @@
-# Module 0
+# Module 1
 
 Monte Carlo Methods applied on Ising problem. The implemented algorithms are:
 
