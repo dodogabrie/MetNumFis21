@@ -7,7 +7,7 @@ import time
 
 def test_rand():
     show = True
-    len_loop = 100000
+    len_loop = int(1e6)
     seed = 0.9 
     
     print(f'Number Generated: {len_loop}')

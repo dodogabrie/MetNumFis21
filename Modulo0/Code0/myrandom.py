@@ -47,21 +47,14 @@ def log_map_gen(x_arr, y_arr, seed, len_loop, r = 4.):
     xtemp = xk*a + c
     xkp1 = xtemp % m
     xk1 = xkp1/m
-    nbit = 32
-    to_pack = decimalToBinary(xk, nbit)
-    to_pack1 = decimalToBinary(xk1, nbit)
+    pi = np.pi
     for i in range(1, len_loop):
         xk = r * xk * ( 1 - xk )
-        b = round(xk)
-        to_pack[1:] = to_pack[:-1]
-        to_pack[0] = b
-        x_arr[i] = binaryToDecimal(to_pack)/2**nbit
+        x_arr[i] = np.arccos( 1 - 2 * xk)/pi# binaryToDecimal(to_pack)/2**nbit
 
         xk1 = r * xk1 * ( 1 - xk1 )
-        b = round(xk1)
-        to_pack1[1:] = to_pack1[:-1]
-        to_pack1[0] = b
-        y_arr[i] = binaryToDecimal(to_pack1)/2**nbit
+        y_arr[i] = np.arccos( 1 - 2 * xk1)/pi#binaryToDecimal(to_pack1)/2**nbit
+
     return x_arr, y_arr
 
 jit_module(fastmath = True, nopython=True, cache = True)
