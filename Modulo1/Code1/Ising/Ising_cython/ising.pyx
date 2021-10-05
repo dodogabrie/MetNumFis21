@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import math
-import time
 cimport numpy as np # Make numpy work with cython
 cimport cython
 from libc.math cimport exp
@@ -11,7 +10,7 @@ def do_calc(int nlat, int iflag, int measures,
             float beta, int numfile):
     """
     Main function for the ising model in 2D:
-    Evaluate the eneggy and the magnetization of a "lattice of spin". 
+    Evaluate the energy and the magnetization of a "lattice of spin". 
 
     Parameters
     ----------
@@ -67,7 +66,7 @@ def do_calc(int nlat, int iflag, int measures,
     np.savetxt(f'data/data{numfile}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
     return magn, ene
 
-@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.boundscheck(False)  # Deactivate bounds checking ---> big power = big responsability
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
     """
@@ -109,7 +108,7 @@ cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)   # Deactivate negative indexing.
+@cython.cdivision(True)     # Activate C division 
 cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
     """
     Compute the magnetization of the system as (sum of the spin)/Volume
@@ -123,7 +122,7 @@ cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)   # Deactivate negative indexing.
+@cython.cdivision(True)   
 cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol, 
                    np.int_t[:] npp, np.int_t[:] nmm):
     """
