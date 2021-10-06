@@ -92,19 +92,19 @@ cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
     cdef float x
     cdef int i, j
 
-    if iflag == 0:
+    if iflag == 0: # Cold start --> All spin up
         for i in range(nlat):
             for j in range(nlat):
                 field[i, j] = 1
 
-    if iflag == 1:
+    if iflag == 1: # Warm start --> Random spin
         for i in range(nlat):
             for j in range(nlat):
                 x = rng.uniform()
                 if x > 0.5: field[i, j] = 1
                 else: field[i, j] = -1
 
-    if iflag != 0 or iflag != 1:
+    if iflag != 0 or iflag != 1: # Previous history start
         field = np.loadtxt('lattice').astype(int)
 
 @cython.boundscheck(False)  # Deactivate bounds checking
