@@ -27,7 +27,7 @@ def main():
     nmm[ 0 ] = nlat - 1
     # Choosing a point for tests
     i = 2
-    j = 1
+    j = 4
     print(f'Sum of spin on position ({i}, {j}):' , neigh_force(i, j, field, npp, nmm))
     plot_lattice(field, i, j)
     test_neighboors(nlat, npp, nmm, i, j)
@@ -42,30 +42,26 @@ def neighboors(i, j, npp, nmm):
     jp = npp[j]
     jm = nmm[j]
     # Initialize output array (of coordinates)
-    coordinates = np.empty((6, 2)).astype(int)
+    coordinates = np.empty((3, 2)).astype(int)
     #       -----------------------
-    # i = 0 |    x     x     x    |
+    # i = 0 |          x     x    |
     #       |                     |
-    # i = 1 | x     x     x     x |
+    # i = 1 | x     x           x |
     #       |                     |
-    # i = 2 |    x     x     x    |
+    # i = 2 |          x     x    |
     #       |                     |
-    # i = 3 | x     x     x     x |
+    # i = 3 | x     x           x |
     #       -----------------------
 
-    # First 4 rows are the same of the square lattice
-    coordinates[0] = np.array([i , jp])
-    coordinates[1] = np.array([i , jm])
-    coordinates[2] = np.array([ip, j ])
-    coordinates[3] = np.array([im, j ])
+    if j % 2 == 0: coordinates[0] = np.array([i, jp])
+    else: coordinates[0] = np.array([i, jm])
 
-    # Last two rows change for the lateral shift of the matrix.
     if i % 2 == 0: # See a left shift
-        coordinates[4] = np.array([ip, jp])
-        coordinates[5] = np.array([im, jp])
+        coordinates[1] = np.array([ip, jm])
+        coordinates[2] = np.array([im, jm])
     else: # See a right shift
-        coordinates[4] = np.array([im, jm])
-        coordinates[5] = np.array([ip, jm])
+        coordinates[1] = np.array([im, jp])
+        coordinates[2] = np.array([ip, jp])
     return coordinates
 
 def neigh_force(i, j, field, npp, nmm):
@@ -91,13 +87,18 @@ def transform_lattice(field):
     lat_grid = np.arange(nlat)
     X, Y = np.meshgrid( lat_grid, lat_grid)
     # Transform the X variable (rotation)
-    ratio = np.sqrt(3)/2 # cos(60°)
-    Y = Y * ratio
     X = X.astype(float)
-    # Shifting 1 row every 2 rows
-    ratiox = 1/2
-    X[1::2, :] += ratiox
-
+    Y = Y.astype(float)
+    ratio = np.sqrt(3)/2 # cos(60°)
+    dil = 2
+    j = 0
+    for i in range(nlat):
+        X[ ::2, i] += j
+        X[1::2, i] += j
+        if (i+1) % 2 == 0:
+            j += 1
+    X[1::2, :] += 3/2
+    Y = Y * ratio
     return X, Y
 
 def test_neighboors(nlat, npp, nmm, i, j):
@@ -121,7 +122,7 @@ def plot_lattice(field, i, j):
     Plot the lattice with the spin up and down.
     """
     X, Y = transform_lattice(field)
-    plt.figure(figsize=(7, 7))
+    plt.figure(figsize=(14, 8))
     plt.scatter(X[field==1], Y[field==1], marker='^')
     plt.scatter(X[field==-1], Y[field==-1], marker='v')
     plt.scatter(X[i, j], Y[i, j], marker='s')
