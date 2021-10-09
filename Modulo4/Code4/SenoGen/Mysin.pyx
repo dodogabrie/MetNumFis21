@@ -1,3 +1,7 @@
+"""
+This module implement the sin(x) function using Cython and Numpy.
+"""
+
 import numpy as np
 import math
 cimport cython, numpy as np # Make numpy work with cython

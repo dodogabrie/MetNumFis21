@@ -1,3 +1,10 @@
+"""
+Evaluate the derivative of a function in 3 different way using numpy vectorial
+operations. 
+The efficient one ( o[(dx)^2] ) is simm_der (the last one), the other 2 methods
+are just o[dx].
+"""
+
 import numpy as np
 #from numba import jit_module
 

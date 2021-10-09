@@ -1,3 +1,9 @@
+"""
+Testing the sin(x) function in Cython and with numpy vectorial operation.
+Evaluate also the derivative of sin(x) in 3 different way comparing them 
+with the real analitic solution.
+"""
+
 import numpy as np
 import time
 import matplotlib.pyplot as plt
