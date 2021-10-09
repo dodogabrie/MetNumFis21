@@ -5,7 +5,6 @@ cimport numpy as np # Make numpy work with cython
 cimport cython
 from libc.math cimport exp
 
-
 def do_calc(int nlat, int iflag, int measures, 
             int i_decorrel, float extfield, 
             float beta, int numfile):
