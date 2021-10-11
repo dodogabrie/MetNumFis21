@@ -36,15 +36,15 @@ def solve_tridiag(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b)
 @cython.cdivision(True)     # Make division fast like C
 cdef int gauss_red(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b, int N):
     cdef int i, inv = 1
-    cdef float factor
-    for i in range(N-1):
-        if diag[i] == 0:
+    cdef DTYPE_t factor
+    for i in range(1, N):
+        if diag[i-1] == 0:
             inv = 0
             break
         else:
-            factor = dlo[i]/diag[i]
-            diag[i+1] = diag[i+1] - factor * dup[i]
-            b[i+1] = b[i+1] - factor * b[i]
+            factor = dlo[i-1]/diag[i-1]
+            diag[i] = diag[i] - factor * dup[i-1]
+            b[i] = b[i] - factor * b[i-1]
     return inv
 
 @cython.boundscheck(False)  # Deactivate bounds checking
