@@ -1,49 +1,57 @@
 import m_gauss
+from error import err_corr, err
 import numpy as np
 import matplotlib.pyplot as plt
-import time
+import time 
 
-def tau_int(x):
-    N = len(x)
-    k = int(N/8)
-    mean_camp = np.mean(x)
-    Ck = np.zeros(k)
-    for i in range(1, k):
-        sum = 0
-        for j in range(1, N-k):
-            sum += (x[j] - mean_camp) * (x[j+k] - mean_camp)
-            Ck[i] = 1/(N-k) * sum
-    tau = np.sum(Ck[0:k])
-    return tau, Ck
+# Parameters of the system / Monte Carlo simulation
+nstat = int(1e6) # Num of measures
+start_val = 0.   # Starting x 
+aver = 5.        # Gaussian average
+sigma = 1.       # Gaussian variance
+delta = .9       # Parameter for the acceptance
+kmax = 200      # Number of step for correlation (error)
 
+# Inizialize the simulation
+print( 'MC simulation: ...', end = '\r') # Print time
+start = time.time() # For benchmark
+arr, acc = m_gauss.do_calc(nstat, start_val, aver, sigma, delta)
+print(f'MC simulation: {(time.time()-start):.3f}s') # Print time
 
+# Remove the first nstat/4 values for termalization
+cut = int(nstat/4)
+arr = arr[cut:]
+# Computing the acceptance
+acceptance = np.sum(acc[cut:])/(nstat-cut)
 
-def err(X, tau):
-    N = float(len(X))
-    err_nocorr = np.sqrt( 1/(N-1) * np.sum((X-np.mean(X))**2))
-    err_corr = err_nocorr * np.sqrt((1+2*tau)/N)
-    return err_nocorr, err_corr
-
-nstat = int(1e4)
-start = 0
-aver = 5.
-sigma = 1.
-delta = .1
-
+# Extracting the error considering the correlation
+print( 'Evaluatete error: ...', end='\r') # Time consuming operation...
 start = time.time()
-x, acc = m_gauss.do_calc(nstat, start, aver, sigma, delta)
-print(time.time()-start)
+tau, e_corr, Ck = err_corr(arr, kmax)
+print(f'Evaluatete error: {(time.time()-start):.3f}s\n') # Time consuming operation...
 
-tau, Ck = tau_int(x)
-print(f'Mean (nocorr): {np.mean(x):.6f} +- {err(x, tau)[0]:.6f}')
-print(f'Mean (corr): {np.mean(x):.6f} +- {err(x, tau)[1]:.6f}')
+# Print the results
+print(f'Mean (no corr): {np.mean(arr):.6f} +- {err(arr):.6f}')
+print(f'Mean (  corr ): {np.mean(arr):.6f} +- {e_corr:.6f}\n')
+print(f'Acceptance = {acceptance:.3f}')
 
+# Show some results
+fig, axs = plt.subplots(1, 3, figsize = (15, 5))
 
-fig, axs = plt.subplots(1,2)
-axs[0].hist(x, bins = 100)
+axs[0].hist(arr, bins = 50)
 axs[0].set_xlabel('x')
 axs[0].set_ylabel('count')
-axs[1].plot(x)
-axs[1].set_xlabel('MC_step')
-axs[1].set_ylabel('MC_story')
+axs[0].set_title('Histogram of output')
+
+axs[1].plot(arr, c='r')
+axs[1].set_xlabel('MC step')
+axs[1].set_ylabel('MC output')
+axs[1].set_title('MC history')
+
+axs[2].plot(Ck, c='k')
+axs[2].set_xlabel('k')
+axs[2].set_ylabel('C(k)')
+axs[2].set_title('Correlation Function')
+
+plt.tight_layout()
 plt.show()

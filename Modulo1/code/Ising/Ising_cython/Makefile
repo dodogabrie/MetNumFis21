@@ -22,7 +22,7 @@ test:
 # Phony targets for cleanup and similar uses
 .PHONY: clean
 clean:
-	rm -rf *~ *.so *.c *.o *.html build
+	rm -rf *~ *.so *.c *.o *.html build __pycache__
 
 # Suffix rules
 %.c : %.pyx

@@ -5,13 +5,30 @@ cimport numpy as np # Make numpy work with cython
 cimport cython
 from libc.math cimport exp
 
+################################################################################
+# random generator : ' rng =  np.random.Generator(np.random.PCG64()) '
+# iflag = orientamento iniziale degli spin
+# i_decorrel = numero di volte che aggiorno la matrice (con il metropolis
+#              (nlat*nlat step))  prima di fare un campionamento (calcolo delle
+#              osservabili)
 
-def do_calc(int nlat, int iflag, int measures, 
-            int i_decorrel, float extfield, 
+################################################################################
+#------------------------------------MAIN--------------------------------------#
+# - definisco le condizioni al bordo
+# - inizializzo la matrice
+# - faccio i campionamenti:
+#     - def array con tutti i nrand necessari per il metropolis (3*nlat*nlat*
+#       i_decorrel) (ho bisogno di 3 numeri ogni volta che faccio un metropolis)
+#     - eseguo il metropolis per i_decorrel volte e alla fine salvo E e M
+# - alla fine avrò due array E, M in cui ci sono le measures misure.
+#
+
+def do_calc(int nlat, int iflag, int measures,
+            int i_decorrel, float extfield,
             float beta, int numfile):
     """
     Main function for the ising model in 2D:
-    Evaluate the energy and the magnetization of a "lattice of spin". 
+    Evaluate the energy and the magnetization of a "lattice of spin".
 
     Parameters
     ----------
@@ -26,7 +43,7 @@ def do_calc(int nlat, int iflag, int measures,
         Number of iteration of the metropolis to decorrelate.
     extfield : float
         External magnetic field.
-    beta : float 
+    beta : float
         Physics quantity defined by 1/(Kb*T) with T the standard temperature.
     numfile : integer
         Number of the output file (for multiple parallel simulation)
@@ -52,7 +69,7 @@ def do_calc(int nlat, int iflag, int measures,
     cdef np.ndarray[np.int_t, ndim=2, mode='c'] field = np.ones((nlat, nlat)).astype(int)
 
     cdef int i, idec # index for loops
-    
+
     geometry(nlat, npp, nmm) # Set the boundary conditions
     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
 
@@ -67,11 +84,17 @@ def do_calc(int nlat, int iflag, int measures,
     np.savetxt(f'data/data{numfile}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
     return magn, ene
 
+################################################################################
+#--------------------------GEOMETRIA DEL RETICOLO------------------------------#
+# Definisco le condizioni al bordo (periodiche):
+# - sono al bordo -> l'elemento successivo è il primo
+# - sono all'inizio -> l'elemento precedente è l'ultimo
+
 @cython.boundscheck(False)  # Deactivate bounds checking ---> big power = big responsability
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
     """
-    Set the boundary conditions on the lattice: in this case the conditions 
+    Set the boundary conditions on the lattice: in this case the conditions
     are periodic.
     """
     cdef int i
@@ -80,6 +103,12 @@ cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
         nmm[i] = i - 1
     npp[nlat-1] = 0
     nmm[0] = nlat-1
+
+################################################################################
+#--------------------------INIZIALIZZA IL RETICOLO-----------------------------#
+# Cold start 0 -> spin up  1
+# Warm start 1 -> spin random (1 se xrand>0.5, -1 altrimenti)
+# File precaricato (nè 0 nè 1) -> prende la matrice salvata in 'lattice'
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
@@ -92,24 +121,31 @@ cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
     cdef float x
     cdef int i, j
 
-    if iflag == 0:
+    if iflag == 0: # Cold start --> All spin up
         for i in range(nlat):
             for j in range(nlat):
                 field[i, j] = 1
 
-    if iflag == 1:
+    if iflag == 1: # Warm start --> Random spin
         for i in range(nlat):
             for j in range(nlat):
                 x = rng.uniform()
                 if x > 0.5: field[i, j] = 1
                 else: field[i, j] = -1
 
-    if iflag != 0 or iflag != 1:
+    if iflag != 0 or iflag != 1: # Previous history start
         field = np.loadtxt('lattice').astype(int)
+
+################################################################################
+#-----------------------------MAGNETIZZAZIONE----------------------------------#
+# passo alla func la matrice del reticolo con la corrente configurazione di spin
+# e scorro tutti i siti sommando tutti gli spin e divido per il volume.
+# Questa func viene usata per ogni misura, così per ogni misura ho un M.
+
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)     # Activate C division 
+@cython.cdivision(True)     # Activate C division
 cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
     """
     Compute the magnetization of the system as (sum of the spin)/Volume
@@ -121,13 +157,18 @@ cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
             xmagn = xmagn + field[i, j]
     return xmagn/float(nvol)
 
+################################################################################
+#----------------------------------ENERGIA-------------------------------------#
+# Passo alla func il reticolo di spin (singolo campionamento), per ogni sito
+# calcolo l'interazione con i primi vicini e calcolo E usando la formula.
+
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)   
-cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol, 
+@cython.cdivision(True)
+cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol,
                    np.int_t[:] npp, np.int_t[:] nmm):
     """
-    Compute the energy of the system as 
+    Compute the energy of the system as
         E = [0.5 * sum(neighboor * spin) - sum(extfield * spin)]/Volume
     """
     cdef int i, j, force
@@ -139,9 +180,12 @@ cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol,
             xene = xene - extfield * field[i, j]
     return xene/float(nvol)
 
+################################################################################
+#----------------------------------METROPOLIS----------------------------------#
+
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-cdef inline void update_metropolis(np.int_t[:,:] field, # the field
+cdef inline void update_metropolis(np.int_t[:,:] field,  # the field
                                    int nlat, # lateral size
                                    np.int_t[:] npp, np.int_t[:] nmm, # geometry arrays
                                    float beta, float extfield, # simulation parameters
@@ -150,18 +194,20 @@ cdef inline void update_metropolis(np.int_t[:,:] field, # the field
     Update the lattice with a metropolis.
     """
     cdef int ivol, i, j, phi
-    cdef float force
+    cdef double force
     for ivol in range(nlat*nlat):
-        i = int(rr[skip + 3*ivol] * nlat)
-        j = int(rr[skip + 3*ivol + 1] * nlat)
+        i = int(rr[skip + 3*ivol] * nlat) # primo nrand
+        j = int(rr[skip + 3*ivol + 1] * nlat) # secondo nrand
 
         force = beta * ( neigh_force(i, j, field, npp, nmm) + extfield )
-        phi = field[i, j]
-        
+        phi = field[i, j]  # spin in quella posizione del reticolo che voglio inverire
+
         p_rat = exp(-2. * phi * force)
 
         if rr[skip + 3*ivol + 2] < p_rat: field[i, j] = - phi
 
+################################################################################
+#------------------------------FORZA TRA PRIMI VICINI---------------------------#
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef int neigh_force(int i, int j, np.int_t[:,:] field, np.int_t[:] npp, np.int_t[:] nmm):
