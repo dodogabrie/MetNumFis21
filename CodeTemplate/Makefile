@@ -16,8 +16,9 @@ all: compile annotate soft-clean
 dbg: compile annotate
 
 compile:
-	python setup.py build_ext --build-lib core/
+	mkdir -p core
 	mkdir -p data
+	python setup.py build_ext --build-lib core/
 annotate:
 	cython -3 -a *.pyx
 	@echo "Annotated HTML of the code"
