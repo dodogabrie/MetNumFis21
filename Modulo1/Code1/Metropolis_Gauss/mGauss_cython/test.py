@@ -1,3 +1,10 @@
+### Add to PYTHONPATH the utils folder  ############################
+import os, sys
+path = os.path.realpath(__file__)
+main_folder = 'MetNumFis21/'
+sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
+####################################################################
+
 import m_gauss
 from error import err_corr, err
 import numpy as np
@@ -5,12 +12,12 @@ import matplotlib.pyplot as plt
 import time 
 
 # Parameters of the system / Monte Carlo simulation
-nstat = int(1e6) # Num of measures
+nstat = int(1e7+2000) # Num of measures
 start_val = 0.   # Starting x 
-aver = 5.        # Gaussian average
+aver = 0.        # Gaussian average
 sigma = 1.       # Gaussian variance
-delta = .9       # Parameter for the acceptance
-kmax = 200      # Number of step for correlation (error)
+delta = .1       # Parameter for the acceptance
+kmax = 200       # Number of step for correlation (error)
 
 # Inizialize the simulation
 print( 'MC simulation: ...', end = '\r') # Print time
