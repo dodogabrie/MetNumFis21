@@ -23,7 +23,7 @@ def test():
 
         # Starting routines
         start = time.time()
-        x_cy, inv_cy = td.solve_tridiag(np.copy(diag), np.copy(dlo), np.copy(dup), np.copy(b))
+        x_cy, inv_cy = td.solve(np.copy(diag), np.copy(dlo), np.copy(dup), np.copy(b))
         mean_t_cy += time.time()-start
 
         start = time.time()

@@ -1,8 +1,15 @@
+### Add to PYTHONPATH the utils folder  ############################
+import os, sys
+path = os.path.realpath(__file__)
+main_folder = 'MetNumFis21/'
+sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
+####################################################################
+
 import numpy as np
 import time
 from numba import njit
 import LAX as lax
-import animated_plot as aniplt
+import m4.animated_plot as aniplt
 
 def test_func(u):
     return np.exp( - u**2/2 ) * np.cos(2 * np.pi * u)
@@ -13,7 +20,7 @@ def test():
     dt = 0.002
     dx = 0.03
     Nt = 100
-    n = 50
+    n = 100
     ninner = 2
 
     alpha = v * dt /dx

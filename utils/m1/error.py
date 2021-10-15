@@ -1,10 +1,11 @@
 import numpy as np
 from numba import jit_module
 
-def err_corr(x, kmax):
+def err_mean_corr(x, kmax):
     """
-    Error on a Montecarlo simulation considering the correlation 
-    between the point i and the point i + k for k in [1, kmax].
+    Error on the mean of sampling by a Montecarlo simulation 
+    considering the correlation between the point i and 
+    the point i + k for k in [1, kmax].
 
     Parameters
     ----------
@@ -21,8 +22,21 @@ def err_corr(x, kmax):
     Ck = _C(x, kmax)
     tau = np.sum(Ck)
     return tau, err(x) * np.sqrt(1 + 2*tau), Ck
-    
-def err(X):
+
+## AUX function for err_mean_corr ####################################################
+def _PairCorr(x, y, mean_x):
+    return (x - mean_x) * (y - mean_x)
+
+def _C(x, kmax):
+    N = len(x)
+    Ck = np.empty(kmax-1)
+    mean_x = np.mean(x)
+    for k in range(kmax-1):
+        Ck[k] = 1/(N-(k+1)) * np.sum(_PairCorr(x[0 : N-(k+1) ], x[ k+1 : N ], mean_x))
+    return Ck 
+######################################################################################
+
+def err_naive(X):
     """
     Montecarlo error considering just the variance estimation (so 
     no correlation).
@@ -40,17 +54,20 @@ def err(X):
     N = float(len(X))
     return np.sqrt( 1/N * 1/(N-1) * np.sum((X-np.mean(X))**2))
 
-def _PairCorr(x, y, mean_x):
-    return (x - mean_x) * (y - mean_x)
+def bootstrap_corr(arr, M, estimator):
+    N = len(arr)
+    rest = N%M
+    arr_new = np.empty(N-rest)
+    fake_estimator = np.empty(M)
+    xx = np.arange(M)
+    k = int(N/M)
+    for j in range(M):
+        for i in range(k):
+            N_rnd = int(np.random.rand()*k)
+            arr_new[i*M : (i+1)*M] = arr[ N_rnd*M : (N_rnd + 1) * M ]
+        fake_estimator[j] = estimator(arr_new)
+    error = np.std(fake_estimator)
+    return error
 
-def _C(x, kmax):
-    N = len(x)
-    Ck = np.empty(kmax-1)
-    mean_x = np.mean(x)
-    for k in range(kmax-1):
-        Ck[k] = 1/(N-(k+1)) * np.sum(_PairCorr(x[0 : N-(k+1) ], x[ k+1 : N ], mean_x))
-    return Ck 
 
-
-
-#jit_module(nopython = True, fastmath = True, cache = True)
+jit_module(nopython = True, fastmath = True, cache = True)

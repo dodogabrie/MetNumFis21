@@ -1,6 +1,5 @@
 import numpy as np
 from numba import jit_module
-#from numpy.random import default_rng
 
 def bootstrap(arr, M, estimator):
     N = len(arr)
