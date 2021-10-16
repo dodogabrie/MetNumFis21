@@ -4,7 +4,7 @@ import matplotlib.animation as animation
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-def animated_basic(x, uinit, func, Nt, *param):
+def animated_basic(x, uinit, func, Nt, *param, plot_dim = None):
     """
     Return a matplotlib 2D animation of the PDE evolution.
 
@@ -25,13 +25,19 @@ def animated_basic(x, uinit, func, Nt, *param):
     *param : *params argument
         This values will be passed to func, for example you can put here
         alpha, ninner in the case of the LAX method.
+    plot_dim : int or None
+        The dimension to plot in case of multidimensional problem. If None
+        the problem is assumed 1D.
     
     Returns
     -------
     """
-    def animate(i):
+    def animate(i, plot_dim):
         # LAX goes directly here
-        line.set_ydata( func(u, *param) )  # update the data
+        if plot_dim == None:
+            line.set_ydata( func(u, *param) )  # update the data
+        else:
+            line.set_ydata( func(u, *param)[plot_dim] )  # update the data
         return line,
     
     def init():
@@ -39,14 +45,19 @@ def animated_basic(x, uinit, func, Nt, *param):
         return line,
 
     u = np.copy(uinit)
+    u1 = np.copy(uinit)
     fig, ax1 = plt.subplots()
-    line, = ax1.plot(x, uinit)
-    ani = animation.FuncAnimation(fig, animate, np.arange(0, Nt), init_func=init,
+    if plot_dim == None:
+        line, = ax1.plot(x, uinit)
+    else:
+        line, = ax1.plot(x, uinit[plot_dim])
+
+    ani = animation.FuncAnimation(fig, animate, np.arange(0, Nt), init_func=init, fargs = (plot_dim,),
                                   interval=25, blit=True)
     plt.show()
 
 
-def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None):
+def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, plot_dim = None):
     """
     Return a2D animation of the PDE evolution and a 3D surface of the evoluton
     int time with teh evolving line moving on it.
@@ -102,14 +113,27 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None):
     evo = np.empty((Nt, n))
     func_mesh(evo, np.copy(uinit), Nt, *param) 
 
+    ## Define update functions #######
+    def my_surface(evo, X, Y, i, n, dx):
+        startt = i * dt
+        endt = (i+1) * dt
+        contoursy = {"show" : True, "start": startt, "end": endt, "size": 2*dt, "width" : 3}
+        return go.Surface( z=evo, x=X, y=Y, opacity = 0.4, contours = {'y': contoursy})
+
+    def my_scatter(x, func, u, plot_dim, *param):
+        if plot_dim == None: return go.Scatter(x = x, y = func(u, *param), mode = "lines")
+        else: return go.Scatter(x = x, y = func(u, *param)[plot_dim], mode = "lines")
+
     ######### Definire un subplot con Plolty
     fig = make_subplots( rows=1, cols=2, 
                          subplot_titles=('Title1', 'Title2'),
                          horizontal_spacing=0.051,
                          specs=[[{"type": "scatter"} , {"type": "surface"}]]
     )
+
     ## subplot 1 #######
-    init_scatter = go.Scatter( x=x, y=uinit, mode='lines')
+    if plot_dim == None: init_scatter = go.Scatter( x=x, y=uinit, mode='lines')
+    else: init_scatter = go.Scatter( x=x, y=uinit[plot_dim], mode='lines')
     fig.add_trace(init_scatter, row = 1, col = 1)
     fig.update_xaxes(title_text = "x")
     fig.update_yaxes(title_text = "u")
@@ -117,18 +141,16 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None):
     M = np.max(uinit)
     fig.update_layout(yaxis_range=[m , M ])
  
-    ## subplot 2 #######
-    def my_surface(evo, X, Y, i, n, dx):
-        startt = i * dt
-        endt = (i+1) * dt
-        contoursy = {"show" : True, "start": startt, "end": endt, "size": 2*dt, "width" : 3}
-        return go.Surface( z=evo, x=X, y=Y, opacity = 0.3, contours = {'y': contoursy})
 
+    ## subplot 2 #######
     fig.add_trace(my_surface(evo, X, Y, 0, n, dx), row = 1, col = 2)
 
-    ## Animazione #####
-    my_frames = [go.Frame(data = [go.Scatter(x = x, y = func(u, *param), mode = "lines"),
-                                  my_surface(evo, X, Y, i, n, dx)], traces=[0,1], name=str(i), layout_yaxis_range=[m , M]) for i in range(Nt)]
+    ## Evolving the frames ###############################################
+    my_frames = [go.Frame(data = [my_scatter(x, func, u, plot_dim, *param),
+                                  my_surface(evo, X, Y, i, n, dx)], 
+                traces=[0,1], name=str(i), layout_yaxis_range=[m , M])
+                for i in range(Nt)]
+
     fig.frames = my_frames
 
     ## Setting dello slider ##
