@@ -9,6 +9,7 @@ import numpy as np
 import time
 from numba import njit
 import LAX as lax
+import LAX_WEN as lax_wen
 import m4.animated_plot as aniplt
 
 def test_func(u):
@@ -17,11 +18,11 @@ def test_func(u):
 def test():
 
     v = -1
-    dt = 0.002
-    dx = 0.03
-    Nt = 100
-    n = 100
-    ninner = 2
+    dt = 0.0999
+    dx = 0.1
+    Nt = 200
+    n = 200
+    ninner = 1
 
     alpha = v * dt /dx
     print(alpha)
@@ -31,9 +32,11 @@ def test():
 
     u = test_func(x)
     uinit = np.copy(u)
+    uinit1 = np.copy(u)
 
-    aniplt.animated_full(lax.LAX, lax.LAX_complete, x, t, uinit, alpha, ninner, imported_title = 'Evoluzione Metodo LAX')
-#   aniplt.animated_basic(x, uinit, lax.LAX, Nt, alpha, ninner) 
+#    aniplt.animated_full(lax.LAX, lax.LAX_complete, x, t, uinit, alpha, ninner, imported_title = 'Evoluzione Metodo LAX')
+#    aniplt.animated_full(lax_wen.LAX_WEN, lax_wen.LAX_WEN_complete, x, t, uinit1, alpha, ninner, imported_title = 'Evoluzione Metodo LAX-WENDROF')
+    aniplt.animated_basic(x, uinit, lax_wen.LAX_WEN, Nt, alpha, ninner) 
 
 
 if __name__ == '__main__':
