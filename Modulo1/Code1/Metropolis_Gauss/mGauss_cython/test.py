@@ -6,7 +6,7 @@ sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
 ####################################################################
 
 import m_gauss
-from error import err_corr, err
+from error import err_mean_corr, err_naive
 import numpy as np
 import matplotlib.pyplot as plt
 import time 
@@ -34,11 +34,11 @@ acceptance = np.sum(acc[cut:])/(nstat-cut)
 # Extracting the error considering the correlation
 print( 'Evaluatete error: ...', end='\r') # Time consuming operation...
 start = time.time()
-tau, e_corr, Ck = err_corr(arr, kmax)
+tau, e_corr, Ck = err_mean_corr(arr, kmax)
 print(f'Evaluatete error: {(time.time()-start):.3f}s\n') # Time consuming operation...
 
 # Print the results
-print(f'Mean (no corr): {np.mean(arr):.6f} +- {err(arr):.6f}')
+print(f'Mean (no corr): {np.mean(arr):.6f} +- {err_naive(arr):.6f}')
 print(f'Mean (  corr ): {np.mean(arr):.6f} +- {e_corr:.6f}\n')
 print(f'Acceptance = {acceptance:.3f}')
 

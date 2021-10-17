@@ -7,7 +7,7 @@ from libc.math cimport exp
 
 def do_calc(int nlat, int iflag, int measures, 
             int i_decorrel, float extfield, 
-            float beta, int numfile):
+            float beta):
     """
     Main function for the ising model in 2D:
     Evaluate the energy and the magnetization of a "lattice of spin". 
@@ -27,8 +27,6 @@ def do_calc(int nlat, int iflag, int measures,
         External magnetic field.
     beta : float 
         Physics quantity defined by 1/(Kb*T) with T the standard temperature.
-    numfile : integer
-        Number of the output file (for multiple parallel simulation)
 
     Results
     -------
@@ -63,7 +61,7 @@ def do_calc(int nlat, int iflag, int measures,
         ene[i]  = energy(field, extfield, nlat, nvol, npp, nmm) # Compute energy
 
     np.savetxt('lattice', field, fmt='%0.f') # Save the lattice in file
-    np.savetxt(f'data/data{numfile}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
+    np.savetxt(f'data/data_beta{beta}_nlat{nlat}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
     return magn, ene
 
 @cython.boundscheck(False)  # Deactivate bounds checking ---> big power = big responsability

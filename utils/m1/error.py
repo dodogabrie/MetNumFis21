@@ -21,19 +21,22 @@ def err_mean_corr(x, kmax):
     """
     Ck = _C(x, kmax)
     tau = np.sum(Ck)
-    return tau, err(x) * np.sqrt(1 + 2*tau), Ck
+    return tau, err_naive(x) * np.sqrt(1 + 2*tau), Ck
 
 ## AUX function for err_mean_corr ####################################################
 def _PairCorr(x, y, mean_x):
     return (x - mean_x) * (y - mean_x)
 
 def _C(x, kmax):
+    e = np.exp(1)
     N = len(x)
     Ck = np.empty(kmax-1)
     mean_x = np.mean(x)
     for k in range(kmax-1):
         Ck[k] = 1/(N-(k+1)) * np.sum(_PairCorr(x[0 : N-(k+1) ], x[ k+1 : N ], mean_x))
-    return Ck 
+#        if Ck[k] <= 1/e:
+#            break
+    return Ck#[:k]
 ######################################################################################
 
 def err_naive(X):
@@ -54,7 +57,7 @@ def err_naive(X):
     N = float(len(X))
     return np.sqrt( 1/N * 1/(N-1) * np.sum((X-np.mean(X))**2))
 
-def bootstrap_corr(arr, M, estimator, n_fake_samples = 200):
+def bootstrap_corr(arr, M, estimator, n_fake_samples = 200, param = ()):
     N = len(arr) # Number of data in initial sample
     rest = N % M # Number of data not considered
     arr_new = np.empty( N - rest ) # Array divisible by M
@@ -65,7 +68,7 @@ def bootstrap_corr(arr, M, estimator, n_fake_samples = 200):
         for i in range(n_block): # loop over the number of blocks (of each fake samples)
             # Core of the bootstrap: create fake sample using numpy slicing
             arr_new[i*M : (i+1)*M] = arr[ N_rnd[i]*M : (N_rnd[i] + 1) * M ]
-        fake_estimator[j] = estimator(arr_new) # Computing fake estimator for fake sample j
+        fake_estimator[j] = estimator(arr_new, param) # Computing fake estimator for fake sample j
     error = np.std(fake_estimator) # Evaluate the standard dev over all fake samples
     return error # :)
 
