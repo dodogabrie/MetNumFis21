@@ -54,20 +54,20 @@ def err_naive(X):
     N = float(len(X))
     return np.sqrt( 1/N * 1/(N-1) * np.sum((X-np.mean(X))**2))
 
-def bootstrap_corr(arr, M, estimator):
-    N = len(arr)
-    rest = N%M
-    arr_new = np.empty(N-rest)
-    fake_estimator = np.empty(M)
-    xx = np.arange(M)
-    k = int(N/M)
-    for j in range(M):
-        for i in range(k):
-            N_rnd = int(np.random.rand()*k)
-            arr_new[i*M : (i+1)*M] = arr[ N_rnd*M : (N_rnd + 1) * M ]
-        fake_estimator[j] = estimator(arr_new)
-    error = np.std(fake_estimator)
-    return error
+def bootstrap_corr(arr, M, estimator, n_fake_samples = 200):
+    N = len(arr) # Number of data in initial sample
+    rest = N % M # Number of data not considered
+    arr_new = np.empty( N - rest ) # Array divisible by M
+    fake_estimator = np.empty( n_fake_samples ) # Initialized array for fake estimators
+    n_block = int(N/M) # Number of blocks
+    for j in range(n_fake_samples): # loop over number of fake samples
+        N_rnd = (np.random.rand(n_block)*n_block).astype(np.int_) # Random number in [0, n_block]
+        for i in range(n_block): # loop over the number of blocks (of each fake samples)
+            # Core of the bootstrap: create fake sample using numpy slicing
+            arr_new[i*M : (i+1)*M] = arr[ N_rnd[i]*M : (N_rnd[i] + 1) * M ]
+        fake_estimator[j] = estimator(arr_new) # Computing fake estimator for fake sample j
+    error = np.std(fake_estimator) # Evaluate the standard dev over all fake samples
+    return error # :)
 
 
 jit_module(nopython = True, fastmath = True, cache = True)
