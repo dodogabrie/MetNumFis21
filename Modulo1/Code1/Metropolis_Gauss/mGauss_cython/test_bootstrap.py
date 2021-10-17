@@ -17,44 +17,40 @@ def estimator(x):
 
 def test():    
     # Parameters of the test:
-    save_results = False # if save the final data
-    datafile = b"data/data.dat" # MC history data
+    save_results = True # if save the final data
+    dir_data = b"data/data.dat" # MC history data
     cut = 2000 # Number of data to cut
 
     start = time.time()
-    data = rf.fastload(datafile, int(1e7 + 2000))
+    data = rf.fastload(dir_data, int(1e7 + 2000))
     print(f'Data imported in {(time.time()-start):.2f}s')
     arr, acc = data[:, 0], data[:, 1]
-    
-    nstat = len(arr)
+    print(data[:10])
+
     arr = arr[cut:]
     
-    x4 = arr**4
-    x2 = arr**2
-    
-    print(f'Mean x4 (no corr): {np.mean(x4):.6f} +- {err_naive(x4):.6f}')
-    print(f'Mean x2 (no corr): {np.mean(x2):.6f} +- {err_naive(x2):.6f}')
-    Ed = np.mean(x4)/(3*np.mean(x2)**2)
+    Ed = estimator(arr)
     #start = time.time()
-    Kmax = 8
-    arr_err = np.empty(Kmax)
+    Kmax = 12
+    err_Ed = np.empty(Kmax)
+    start = time.time()
     for k in range(Kmax):
         print(k, end='\r')
         M = int(2**k)
-        err_Ed = bootstrap_corr(arr, M, estimator)
-        arr_err[k] = err_Ed
+        err_Ed[k] = bootstrap_corr(arr, M, estimator)
+    print(f'Time for evaluate errors: {time.time()-start}')
     
     import matplotlib.pyplot as plt
-    plt.scatter(np.arange(Kmax), arr_err)
+    plt.scatter(np.arange(Kmax), err_Ed)
     plt.xlabel('x')
     plt.ylabel('sigma')
     plt.yscale('log')
     plt.show()
     
     if save_results:
-        np.savetxt('bootstrap_testing.txt', np.column_stack((2**np.arange(Kmax), arr_err)))
+        np.savetxt('bootstrap_testing.txt', np.column_stack((2**np.arange(Kmax), err_Ed)))
     
-    print(f'Ed (corr): {Ed} +- {err_Ed}')
+    print(f'Ed (corr): {Ed} +- {err_Ed[-1]}')
 
 
 if __name__ == '__main__':
