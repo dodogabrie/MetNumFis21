@@ -60,17 +60,17 @@ def L_loop(iflag, L_array, beta_array,
         beta_loop(iflag, nlat, beta_array, 
               measures, i_decorrel, 
               extfield, M, njobs)
-        return
+    return
 
 if __name__ == '__main__':
     iflag = 1
-    nlat = 10
-    beta = np.linspace(0.36, 0.48, 96)
+    #nlat = 10
+    beta = np.linspace(0.36, 0.48, 100)
     L    = np.arange(10, 40, 10, dtype = int)
     measures = int(1e5)
     i_decorrel = 50
     extfield = 0.
     M = 2000
     start = time.time()
-#    beta_loop(iflag, nlat, beta, measures, i_decorrel, extfield, M)
+    L_loop(iflag, L, beta, measures, i_decorrel, extfield, M)
     print('\n', time.time()-start)
