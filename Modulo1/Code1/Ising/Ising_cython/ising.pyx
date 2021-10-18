@@ -6,8 +6,8 @@ cimport cython
 from libc.math cimport exp
 
 def do_calc(int nlat, int iflag, int measures, 
-            int i_decorrel, float extfield, 
-            float beta):
+            int i_decorrel, double extfield, 
+            double beta, int save_data = 1):
     """
     Main function for the ising model in 2D:
     Evaluate the energy and the magnetization of a "lattice of spin". 
@@ -59,9 +59,9 @@ def do_calc(int nlat, int iflag, int measures,
             update_metropolis(field, nlat, npp, nmm, beta, extfield, rr, idec*i_decorrel) # MC
         magn[i] = magnetization(field, nlat, nvol) # Compute magnetization
         ene[i]  = energy(field, extfield, nlat, nvol, npp, nmm) # Compute energy
-
-    np.savetxt('lattice', field, fmt='%0.f') # Save the lattice in file
-    np.savetxt(f'data/data_beta{beta}_nlat{nlat}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
+    if save_data:
+        np.savetxt('lattice', field, fmt='%0.f') # Save the lattice in file
+        np.savetxt(f'data/nlat{nlat}/data_beta{beta}_nlat{nlat}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
     return magn, ene
 
 @cython.boundscheck(False)  # Deactivate bounds checking ---> big power = big responsability
@@ -86,7 +86,7 @@ cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
     """
     rng =  np.random.Generator(np.random.PCG64())
 
-    cdef float x
+    cdef double x
     cdef int i, j
 
     if iflag == 0: # Cold start --> All spin up
@@ -121,7 +121,7 @@ cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 @cython.cdivision(True)   
-cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol, 
+cdef double energy(np.int_t[:,:] field, double extfield, int nlat, int nvol, 
                    np.int_t[:] npp, np.int_t[:] nmm):
     """
     Compute the energy of the system as 
@@ -141,13 +141,13 @@ cdef double energy(np.int_t[:,:] field, float extfield, int nlat, int nvol,
 cdef inline void update_metropolis(np.int_t[:,:] field, # the field
                                    int nlat, # lateral size
                                    np.int_t[:] npp, np.int_t[:] nmm, # geometry arrays
-                                   float beta, float extfield, # simulation parameters
+                                   double beta, double extfield, # simulation parameters
                                    np.double_t[:] rr, int skip): # random numbers parameters
     """
     Update the lattice with a metropolis.
     """
     cdef int ivol, i, j, phi
-    cdef float force
+    cdef double force
     for ivol in range(nlat*nlat):
         i = int(rr[skip + 3*ivol] * nlat)
         j = int(rr[skip + 3*ivol + 1] * nlat)

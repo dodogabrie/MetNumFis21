@@ -40,7 +40,7 @@ def beta_loop(iflag, nlat, beta_array,
     list_args = [[i, beta] for i, beta in enumerate(beta_array)]
     list_outputs = Parallel(n_jobs=n_jobs)(delayed(parallel_job)(*args) for args in list_args)
 
-    np.savetxt(f'data/data_obs_nlat{nlat}.dat', np.array(list_outputs)) 
+    np.savetxt(f'data/data_obs_nlat{nlat}_test.dat', np.array(list_outputs)) 
 
     return 
 
@@ -55,10 +55,10 @@ def L_loop(iflag, L_array, beta_array,
 
 if __name__ == '__main__':
     iflag = 1
-    beta_array = np.linspace(0.36, 0.48, 50)
-    L_array    = np.arange(20, 50, 10, dtype = int)
+    beta_array = np.linspace(0.36, 0.48, 30)
+    L_array    = np.arange(10, 20, 10, dtype = int)
     measures = int(1e5)
-    i_decorrel = 20
+    i_decorrel = 100
     extfield = 0.
     M = 2000
     start = time.time()
