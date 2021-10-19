@@ -41,10 +41,10 @@ def do_calc(int nlat, int iflag, int measures,
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
     # results array
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] magn = np.empty(measures).astype(float)
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] ene = np.empty(measures).astype(float)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] magn = np.empty(measures)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] ene = np.empty(measures)
     # random array
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] rr = np.empty(3*i_decorrel*nlat*nlat).astype(float)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] rr = np.empty(3*i_decorrel*nlat*nlat)
     # lattice array
     cdef np.ndarray[np.int_t, ndim=2, mode='c'] field = np.ones((nlat, nlat)).astype(int)
 
@@ -147,7 +147,7 @@ cdef inline void update_metropolis(np.int_t[:,:] field, # the field
     Update the lattice with a metropolis.
     """
     cdef int ivol, i, j, phi
-    cdef double force
+    cdef double force, p_rat
     for ivol in range(nlat*nlat):
         i = int(rr[skip + 3*ivol] * nlat)
         j = int(rr[skip + 3*ivol + 1] * nlat)

@@ -24,7 +24,7 @@ def beta_loop(iflag, nlat, beta_array,
               measures, i_decorrel, 
               extfield, M, n_jobs):
     def parallel_job(i, beta):
-        print(f'L: {nlat}, step {i} su {len(beta_array)}')
+        print(f'L: {nlat}, step {i} su {len(beta_array)}', end = '\r')
         magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta)
         m_abs = np.abs(magn)
         chi = compute_chi(m_abs, (nlat, beta))
@@ -47,20 +47,22 @@ def beta_loop(iflag, nlat, beta_array,
 def L_loop(iflag, L_array, beta_array, 
            measures, i_decorrel, 
            extfield, M, njobs = 1):
-    for nlat in L_array:
+    for i, nlat in enumerate(L_array):
+        start = time.time()
         beta_loop(iflag, nlat, beta_array, 
               measures, i_decorrel, 
               extfield, M, njobs)
+        print(f'\n--> Done L = {nlat} in {time.time()-start}s')
     return
 
 if __name__ == '__main__':
     iflag = 1
     beta_array = np.linspace(0.36, 0.48, 30)
-    L_array    = np.arange(10, 20, 10, dtype = int)
+    L_array    = np.arange(10, 70, 10, dtype = int)
     measures = int(1e5)
     i_decorrel = 100
     extfield = 0.
     M = 2000
     start = time.time()
     L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, M, njobs = 8)
-    print('\n', time.time()-start)
+    print('\n########################### Total Time:', time.time()-start)
