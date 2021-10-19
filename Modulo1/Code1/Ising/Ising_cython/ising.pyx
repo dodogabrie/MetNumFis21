@@ -36,7 +36,7 @@ def do_calc(int nlat, int iflag, int measures,
     # define the random generator
     rng =  np.random.Generator(np.random.PCG64())
     # volume of the lattice
-    nvol = nlat*nlat
+    cdef int nvol = nlat*nlat
     # geometry array
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
@@ -56,7 +56,7 @@ def do_calc(int nlat, int iflag, int measures,
     for i in range(measures):
         rr = rng.uniform(size = 3*i_decorrel*nlat*nlat) # Extract the random points for the MC
         for idec in range(i_decorrel):
-            update_metropolis(field, nlat, npp, nmm, beta, extfield, rr, idec*i_decorrel) # MC
+            update_metropolis(field, nlat, npp, nmm, beta, extfield, rr, idec*3*nlat*nlat) # MC
         magn[i] = magnetization(field, nlat, nvol) # Compute magnetization
         ene[i]  = energy(field, extfield, nlat, nvol, npp, nmm) # Compute energy
     if save_data:

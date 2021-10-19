@@ -25,7 +25,7 @@ def beta_loop(iflag, nlat, beta_array,
               extfield, M, n_jobs):
     def parallel_job(i, beta):
         print(f'L: {nlat}, step {i} su {len(beta_array)}', end = '\r')
-        magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta)
+        magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta, save_data = False)
         m_abs = np.abs(magn)
         chi = compute_chi(m_abs, (nlat, beta))
         c = compute_c(ene, (nlat, beta))
@@ -40,7 +40,7 @@ def beta_loop(iflag, nlat, beta_array,
     list_args = [[i, beta] for i, beta in enumerate(beta_array)]
     list_outputs = Parallel(n_jobs=n_jobs)(delayed(parallel_job)(*args) for args in list_args)
 
-    np.savetxt(f'data/data_obs_nlat{nlat}_test.dat', np.array(list_outputs)) 
+    np.savetxt(f'data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs)) 
 
     return 
 
@@ -58,9 +58,9 @@ def L_loop(iflag, L_array, beta_array,
 if __name__ == '__main__':
     iflag = 1
     beta_array = np.linspace(0.36, 0.48, 30)
-    L_array    = np.arange(10, 70, 10, dtype = int)
+    L_array    = np.arange(10, 30, 10, dtype = int)
     measures = int(1e5)
-    i_decorrel = 100
+    i_decorrel = 20
     extfield = 0.
     M = 2000
     start = time.time()
