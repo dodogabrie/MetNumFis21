@@ -19,7 +19,7 @@ from joblib import Parallel, delayed
 def test():
     nlat = 20
     n_jobs = 8
-    M = 2000
+    M = 2000 #sicuri?
     data_dir = "data/nlat20/"
     onlyfiles = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
    
