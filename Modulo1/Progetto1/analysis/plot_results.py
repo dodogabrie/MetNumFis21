@@ -4,12 +4,12 @@ import numpy as np
 #%%%%%%%%%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Data to esplore divided by lateral size of grid
-nlats = [10, 20, 30, 40, 50]
+nlats = [10, 20, 30, 40, 50, 60, 80]
 
 # Quantity to estimate 
-estimate = 'chi'
+#estimate = 'chi'
 #estimate = 'ene'
-#estimate = 'magn'
+estimate = 'magn'
 #estimate = 'c'
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,6 +26,6 @@ for d, l in zip(list_data, nlats):
     data = np.loadtxt(d) # Extract data
     x = data[:,0] # X coordinate is always beta
     y = data[:,i]
-    plt.errorbar(x, y, yerr = data[:,di], label = f'idec = 100, L {l}', fmt='.')
+    plt.errorbar(x, y, yerr = data[:,di], label = f'idec = 50, L {l}', fmt='.')
 plt.legend()
 plt.show()

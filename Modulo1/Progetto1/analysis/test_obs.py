@@ -23,9 +23,9 @@ from joblib import Parallel, delayed
 
 def test():
     #%%%%%%%%%%% Parameters %%%%%%%%%%%%%
-    nlat = 20
+    nlat = 60
     M = 2000 # sicuri? --> incide solo sull'errore...
-    data_dir = "../data/nlat20/"
+    data_dir = f"../data/nlat{nlat}/"
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     # Extract all file names in the folder
@@ -43,9 +43,9 @@ def test():
         
         # Compute all quantities
         m_abs = np.abs(magn)
-        chi = compute_chi(magn, (nlat, beta))
+        chi = compute_chi(m_abs, (nlat, beta))
         c = compute_c(ene, (nlat, beta))
-        dchi = bootstrap_corr(magn, M, compute_chi, param = (nlat, beta))
+        dchi = bootstrap_corr(m_abs, M, compute_chi, param = (nlat, beta))
         dc = bootstrap_corr(ene  , M, compute_c  , param = (nlat, beta))
         m_abs_mean = np.mean(m_abs)
         dm_abs = err_naive(m_abs)
@@ -57,9 +57,11 @@ def test():
     list_outputs = [extract_obs(data_dir + data_name) for data_name in onlyfiles]
 
     data = np.array(list_outputs)
+    data = data[np.argsort(data[:, 0])]
+#   np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', data)
 
     import matplotlib.pyplot as plt
-    plt.scatter(data[:,0], data[:, 1], label = 'magn')
+    plt.plot(data[:,0], data[:, 5], label = 'magn')
     plt.legend()
     plt.show()
     return 

@@ -41,7 +41,7 @@ def beta_loop(iflag, nlat, beta_array,
     list_args = [[i, beta] for i, beta in enumerate(beta_array)]
     list_outputs = Parallel(n_jobs=n_jobs)(delayed(parallel_job)(*args) for args in list_args)
 
-    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs)) 
+#    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs)) 
 
     return 
 
@@ -57,7 +57,9 @@ def L_loop(iflag, L_array, beta_array,
     return
 
 if __name__ == '__main__':
+
     #%%% Parameters of simulation %%%%%%%%%%%%%%%%%%%%%%%%
+    lock_simulation = True # don't risk to run unwanted simulations
     iflag = 1 # Start hot or cold
     i_decorrel = 50 # Number of decorrelation for metro
     extfield = 0. # External field
@@ -66,16 +68,26 @@ if __name__ == '__main__':
     beta_min = 0.38 # Minimum value of beta explored
     beta_max = 0.48 # Maximum value of beta explored
     beta_N = 100 # Number of beta observed
-    njobs = 8
+    L_min = 10 # Minumu L
+    L_max = 80 # Maximum L
+    L_step = 10 # Step between one L and another
+    njobs = 8 # Number of jobs
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    # Create non-linear beta interval (see explain_bootstrap)
+
+    #### Create non-linear beta interval (see explain_bootstrap)###############
     init_array = np.linspace(-1.2, 1.2, beta_N) # start from linear
     trans = np.tan(init_array) # Take tan of linear
     # Normalize the tan in 0-1, then dilatate and traslate in beta_min-beta_max
     trans = (trans + np.abs(np.min(trans)) )/(np.max(trans) - np.min(trans))
     # Finally the beta array
     beta_array = trans * (beta_max - beta_min) + beta_min 
-    L_array    = np.arange(10, 100, 10, dtype = int)
+    ###########################################################################
+    # Create L interval
+    L_array    = np.arange(L_min, L_max + L_step, L_step, dtype = int)
+    # Starting simulation
     start = time.time()
-    L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, M, njobs = njobs)
-    print('\n########################### Total Time:', time.time()-start)
+    if not lock_simulation:
+        L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, M, njobs = njobs)
+        print('\n########################### Total Time:', time.time()-start)
+    if lock_simulation:
+        print('The simulation is locked, please change the parameter lock_simulation')
