@@ -5,6 +5,7 @@ This module implement the sin(x) function using Cython and Numpy.
 import numpy as np
 import math
 cimport cython, numpy as np # Make numpy work with cython
+from cython.parallel import prange
 from libc.math cimport sin
 #from libc.stdio cimport printf
 
@@ -43,7 +44,5 @@ def MySin(int Lx, int N, int write = 0):
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void fill_f(DTYPE_t[:] x, DTYPE_t[:] f, int N):
     cdef int i
-    for i in range(N):
+    for i in prange(N, nogil=True):
         f[i] = sin(x[i])
-        #printf("%d\r", i)
-    #printf('\n')
