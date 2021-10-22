@@ -32,14 +32,18 @@ def test():
 
 #### Numpy implementation  ###############################
     start = time.time()
-    x = np.linspace(0, Lx * 2 * np.pi, N)
+    x = np.linspace(0, Lx * 2 * np.pi, N, endpoint = False)
     sinx = np.sin(x)
     print(f'Exec. time Numpy : {time.time()-start}')
 #    np.savetxt(f'data/data.dat', np.column_stack((x, sinx))) # Save Energy and Magnetization
 ##########################################################
 
-#    plt.plot(x, sinx)
-#    plt.show()
+    plt.plot(x, sinx, label='func')
+    der = np.copy(sinx)
+    simm_der(sinx, der)
+    plt.plot(x, der, label = 'der')
+    plt.legend()
+    plt.show()
 
 ### Derivate evaluation ##################################
 #    lowN = int(1e2)
