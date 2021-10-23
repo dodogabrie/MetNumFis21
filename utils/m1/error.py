@@ -1,6 +1,41 @@
 import numpy as np
 from numba import jit_module
 
+def err_mean_corr_early_stopping(x):
+    """
+    Error on the mean of sampling by a Montecarlo simulation 
+    considering the correlation between the point i and 
+    the point i + k. Stop the computation of Ck if 
+    Ck reaches 1/e.
+
+    Parameters
+    ----------
+    x : numpy 1d array
+        Output sample of the MC.
+
+    Returns 
+    -------
+    (float, float, numpy 1d array)
+        (tau, error with correlation, Array of Ck)
+    """
+    return tau, err_naive(x) * np.sqrt(1 + 2*tau), Ck
+
+## AUX function for err_mean_corr_early_stoppiing ####################################
+def _C_early(x, kmax):
+    e = np.exp(1)
+    N = len(x)
+    Ck = np.empty(kmax-1)
+    mean_x = np.mean(x)
+    sigma2_inv = 1/np.mean(_PairCorr(x,x, mean_x))
+    for k in range(kmax-1):
+        Ck[k] = sigma2_inv * np.mean(_PairCorr(x[0 : N-k ], x[ k : N ], mean_x)) 
+#        if Ck[k] <= 1/e:
+#            break
+    return Ck#[:k]
+######################################################################################
+
+
+
 def err_mean_corr(x, kmax):
     """
     Error on the mean of sampling by a Montecarlo simulation 
