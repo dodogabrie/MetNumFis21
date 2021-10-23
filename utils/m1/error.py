@@ -32,8 +32,9 @@ def _C(x, kmax):
     N = len(x)
     Ck = np.empty(kmax-1)
     mean_x = np.mean(x)
+    sigma2_inv = 1/np.mean(_PairCorr(x,x, mean_x))
     for k in range(kmax-1):
-        Ck[k] = 1/(N-(k+1)) * np.sum(_PairCorr(x[0 : N-(k+1) ], x[ k+1 : N ], mean_x))
+        Ck[k] = sigma2_inv * np.mean(_PairCorr(x[0 : N-k ], x[ k : N ], mean_x)) 
 #        if Ck[k] <= 1/e:
 #            break
     return Ck#[:k]
