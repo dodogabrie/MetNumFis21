@@ -79,7 +79,7 @@ def Ck_plot(list_file, data_dir, M):
     ax2.set_ylabel('C(k)')
     ax2.legend(fontsize = 10)
 
-    plt.savefig('../figures/Ck_L80.png', dpi = 300)
+#    plt.savefig('../figures/Ck_L80.png', dpi = 300)
     plt.show()
 
 if __name__ == '__main__':
