@@ -4,12 +4,12 @@ import numpy as np
 #%%%%%%%%%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Data to esplore divided by lateral size of grid
-nlats = [10, 20, 30, 40, 50, 60, 80]
+nlats = [10, 20, 30, 40, 50, 60, 70, 80]
 
 # Quantity to estimate 
-#estimate = 'chi'
+estimate = 'chi'
 #estimate = 'ene'
-estimate = 'magn'
+#estimate = 'magn'
 #estimate = 'c'
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
