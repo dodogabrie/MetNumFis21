@@ -12,9 +12,11 @@ sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
 
 import numpy as np
 from m1.readfile import slowload, fastload
-import time 
+import time
 
 def history(filename):
+    magn, ene = np.loadtxt(filename, unpack = True)
+    
 
 
 
@@ -23,4 +25,5 @@ def history(filename):
     import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
+    filename = '../data/nlat10/data_beta0.38_nlat10.dat'
     history(filename)
