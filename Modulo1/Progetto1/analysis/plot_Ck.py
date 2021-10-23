@@ -83,16 +83,17 @@ def Ck_plot(list_file, data_dir, M):
     plt.show()
 
 if __name__ == '__main__':
-
-    #list_file.append(f'../data/nlat80/data_beta0.43357382780849846_nlat80.dat
-    M = 1000
-    L = 80
-    list_beta = [0.41046433989067227, 0.4254422782390942, 0.43357382780849846, 0.4371291770333299, 0.4411613256236053, 0.4537481701522126]
+    M = 1000 # Correlation considered for the second plot (for the first is M*10)
+    L = 80   # Lateral side chosen
+    # Beta explored for this L (Manually selected from file)
+    list_beta = [0.41046433989067227, 0.4254422782390942, 
+                 0.43357382780849846, 0.4371291770333299, 
+                 0.4411613256236053, 0.4537481701522126]
     list_file = []
+    # Filling the list of file from database
     for beta in list_beta:
         list_file.append(f'../data/nlat{L}/data_beta{beta}_nlat{L}.dat')
 
-#    M = 10000
-    L = 80
+    # Folder with data
     data_dir = f'../data/nlat{L}/'
     Ck_plot(list_file, data_dir, M)

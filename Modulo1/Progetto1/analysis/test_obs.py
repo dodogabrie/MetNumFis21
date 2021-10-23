@@ -58,7 +58,7 @@ def test():
 
     data = np.array(list_outputs)
     data = data[np.argsort(data[:, 0])]
-#   np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', data)
+#   np.savetxt(f'../data/data_obs_nlat{nlat}_test_final.dat', data)
 
     import matplotlib.pyplot as plt
     plt.plot(data[:,0], data[:, 5], label = 'magn')
