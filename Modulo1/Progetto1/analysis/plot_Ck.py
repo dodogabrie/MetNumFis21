@@ -21,9 +21,10 @@ def Ck_plot(list_file, data_dir, M):
     # Extract all file names in the folder
     onlyfiles = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
     nfile = len(onlyfiles)
-    M_arr = np.arange(M-1)
+    LongM = M*10
+    M_arr = np.arange((LongM-1))
     beta_arr = np.empty(nfile)
-    Ck_matrix = np.empty((nfile, M-1))
+    Ck_matrix = np.empty((nfile, LongM-1))
     for i, data_name in enumerate(onlyfiles):
         print(f'{i} su {nfile}', end='\r')
         # Extract beta from file name 
@@ -33,7 +34,7 @@ def Ck_plot(list_file, data_dir, M):
         # Load all the magnetization and energy at fixed beta
         data = fastload((data_dir + data_name).encode('UTF-8'), int(1e5))
         magn, ene = data[:, 0], data[:, 1]
-        tau, error, Ck = err_mean_corr(magn, M)
+        tau, error, Ck = err_mean_corr(magn, LongM)
         Ck_matrix[i] = Ck 
     beta_sort = np.argsort(beta_arr)
     beta_arr = beta_arr[beta_sort]
@@ -43,7 +44,7 @@ def Ck_plot(list_file, data_dir, M):
     from matplotlib.gridspec import GridSpec
     from matplotlib.cm import ScalarMappable
 
-    fig = plt.figure(figsize = (15, 5))
+    fig = plt.figure(figsize = (17, 5))
     fonts = {'size' : 14}
     plt.rc('font', **fonts)
     plt.suptitle(r'Autocorrelazione di M al variare di $\beta$')
@@ -68,7 +69,6 @@ def Ck_plot(list_file, data_dir, M):
         tau, error, Ck = err_mean_corr(magn, M)
         plt.plot(Ck, linewidth = 1, label = rf'$\beta$ = {beta:.4f}')
 
-    ax2.set_title(rf'L = 80')
     ax2.minorticks_on()
     ax2.tick_params('x', which='major', direction='in', length=3)
     ax2.tick_params('y', which='major', direction='in', length=3)
@@ -79,15 +79,15 @@ def Ck_plot(list_file, data_dir, M):
     ax2.set_ylabel('C(k)')
     ax2.legend(fontsize = 10)
 
-    #plt.savefig('../figures/Ck_L80.png', dpi = 300)
+    plt.savefig('../figures/Ck_L80.png', dpi = 300)
     plt.show()
 
 if __name__ == '__main__':
 
-    #list_file.append(f'../data/nlat{L}/data_beta{beta}_nlat{L}.dat')
-    M = 9000
+    #list_file.append(f'../data/nlat80/data_beta0.43357382780849846_nlat80.dat
+    M = 1000
     L = 80
-    list_beta = [0.38, 0.4302356355217024, 0.4477279361553648, 0.48]
+    list_beta = [0.41046433989067227, 0.4254422782390942, 0.43357382780849846, 0.4371291770333299, 0.4411613256236053, 0.4537481701522126]
     list_file = []
     for beta in list_beta:
         list_file.append(f'../data/nlat{L}/data_beta{beta}_nlat{L}.dat')
