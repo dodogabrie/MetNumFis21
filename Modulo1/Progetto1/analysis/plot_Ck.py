@@ -32,7 +32,7 @@ def Ck_plot(list_file, data_dir, M):
         beta = float(tmp_string.split('beta')[1])# beta comes after 'beta'
         beta_arr[i] = beta 
         # Load all the magnetization and energy at fixed beta
-        data = fastload((data_dir + data_name).encode('UTF-8'), int(1e5))
+        data = np.loadtxt(data_dir + data_name)#.encode('UTF-8'), int(1e5))
         magn, ene = data[:, 0], data[:, 1]
         tau, error, Ck = err_mean_corr(magn, LongM)
         Ck_matrix[i] = Ck 

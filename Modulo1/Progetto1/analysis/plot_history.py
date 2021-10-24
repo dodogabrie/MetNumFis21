@@ -14,7 +14,7 @@ import numpy as np
 from m1.readfile import slowload, fastload
 import time
 
-def history(filename):
+def history_for_report(filename):
     magn, ene = np.loadtxt(filename, unpack = True)
     import matplotlib.pyplot as plt
     fig , axs = plt.subplots(1, 2, sharey = True, figsize = (10,5))
@@ -46,9 +46,18 @@ def history(filename):
     xticks = ax2.xaxis.get_major_ticks()
     xticks[0].set_visible(False)
 
-    plt.savefig('../figures/MC_history/historyMC_L50_043.png', dpi = 300)
+#    plt.savefig('../figures/MC_history/historyMC_L50_043.png', dpi = 300)
     plt.show()
 
+def single_history(filename):
+    data = fastload(filename.encode('UTF-8'), int(1e5))
+    magn, ene = data.T
+    import matplotlib.pyplot as plt
+    plt.plot(ene)
+    plt.show()
+    
+
 if __name__ == '__main__':
-    filename = '../data/nlat50/data_beta0.43260733300121035_nlat50.dat'
-    history(filename)
+    filename = '../data/nlat20/data_beta0.4642480170287998_nlat20.dat'
+#    history(filename)
+    single_history(filename)

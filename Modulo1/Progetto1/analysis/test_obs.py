@@ -21,9 +21,8 @@ from os.path import isfile, join
 
 from joblib import Parallel, delayed
 
-def test():
+def modify_results(nlat):
     #%%%%%%%%%%% Parameters %%%%%%%%%%%%%
-    nlat = 60
     M = 2000 # sicuri? --> incide solo sull'errore...
     data_dir = f"../data/nlat{nlat}/"
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,9 +47,9 @@ def test():
         dchi = bootstrap_corr(m_abs, M, compute_chi, param = (nlat, beta))
         dc = bootstrap_corr(ene  , M, compute_c  , param = (nlat, beta))
         m_abs_mean = np.mean(m_abs)
-        dm_abs = err_naive(m_abs)
+        _, dm_abs, _ = err_mean_corr(m_abs)
         ene_mean = np.mean(ene)
-        dene = err_naive(ene)
+        _, dene, _ = err_mean_corr(ene)
         # Returns all the quantities in a list
         return [beta, m_abs_mean, dm_abs, ene_mean, dene, chi, dchi, c, dc]
 
@@ -58,13 +57,57 @@ def test():
 
     data = np.array(list_outputs)
     data = data[np.argsort(data[:, 0])]
-#   np.savetxt(f'../data/data_obs_nlat{nlat}_test_final.dat', data)
+    np.savetxt(f'../data/final_results/data_obs_nlat{nlat}_test_final.dat', data)
 
-    import matplotlib.pyplot as plt
-    plt.plot(data[:,0], data[:, 5], label = 'magn')
-    plt.legend()
-    plt.show()
+#    import matplotlib.pyplot as plt
+#    plt.plot(data[:,0], data[:, 5], label = 'magn')
+#    plt.legend()
+#    plt.show()
     return 
 
+def test_error_magn():
+    #%%%%%%%%%%% Parameters %%%%%%%%%%%%%
+    nlat = 60
+    M = 2000 # sicuri? --> incide solo sull'errore...
+    data_dir = f"../data/nlat{nlat}/"
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    # Extract all file names in the folder
+    onlyfiles = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
+    
+    # Define the function that extract data in list
+    def extract_obs(data_name):
+        # Extract beta from file name 
+        tmp_string = data_name.split('_nlat')[0] # beta comes first of '_nlat'
+        beta = float(tmp_string.split('beta')[1])# beta comes after 'beta'
+        
+        # Load all the magnetization and energy at fixed beta
+        data = fastload(data_name.encode('UTF-8'), int(1e5))
+        magn, ene = data[:, 0], data[:, 1]
+        
+        # Compute all quantities
+        m_abs = np.abs(magn)
+        _, correlated, _ = err_mean_corr(m_abs)
+        naive = err_naive(m_abs)
+        # Returns all the quantities in a list
+        return [beta, correlated, naive]
+
+    list_outputs = [extract_obs(data_dir + data_name) for data_name in onlyfiles]
+
+    data = np.array(list_outputs)
+    data = data[np.argsort(data[:, 0])]
+#   np.savetxt(f'../data/data_obs_nlat{nlat}_test_final.dat', data)
+
+
+    import matplotlib.pyplot as plt
+    plt.plot(data[:,0], data[:, 1], label = 'corr')
+    plt.plot(data[:,0], data[:, 2], label = 'naive')
+    plt.legend()
+    plt.show()
+ 
 if __name__ == '__main__':
-    test()
+    Ls = [10, 20, 30, 40, 50, 60, 70, 80]
+    for nlat in Ls:
+        print(nlat, end='\r')
+        modify_results(nlat)
+    #test_error_magn()
