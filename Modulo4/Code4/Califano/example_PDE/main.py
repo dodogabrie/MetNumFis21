@@ -21,37 +21,48 @@ def burgers(f, x, nu, dx, der2):
     return - f * simm_der(f, dx, der2) + nu * simm_der2(f, dx, der2)
 
 def main(Nt, dt, L, N, a, phi0, nu):
-    tmax = dt * Nt
-    x = np.linspace(0, L, N, endpoint = False)
-    tt = np.arange(0, tmax, dt)
-    dx = L/N
-    alpha = nu * dt/dx**2 # Von Neumann stability
+
+    #------------- Initialize the problem -------------------------------------
+    tmax = dt * Nt # Total time
+    x = np.linspace(0, L, N, endpoint = False) # grid of the problem
+    tt = np.arange(0, tmax, dt)                # Temporal grid of the problem
+    dx = L/N                                   # spatial step size
+    alpha = nu * dt/dx**2                      # Von Neumann stability
     print(f'dx = {dx}')
     print(f'Von Neumann factor: {alpha}')
-    f0 = a * np.sin(2 * np.pi * x/L + phi0)
-    der2 = np.empty(len(x))
-    RKorder = 4
-    ### Time evolution
-    # Preparing the subplots
+    f0 = a * np.sin(2 * np.pi * x/L + phi0)    # Initial condition
+    der2 = np.empty(len(x))                    # Empty array for smart deriv.
+    RKorder = 4                                # RK order
+    check_behav = False                        # Check if FFT ~ 1/k**2
+    animation = False                          # Plot an animation in time
+    #--------------------------------------------------------------------------
+
+    #----------- Preparing the plots ------------------------------------------
     fig = plt.figure(figsize = (15, 7))
     gs2 = GridSpec(2, 3)
     ax1 = fig.add_subplot(gs2[:, :-1])
     ax2 = fig.add_subplot(gs2[:-1, -1])
     ax3 = fig.add_subplot(gs2[-1, -1])
+    #--------------------------------------------------------------------------
 
-    f = np.copy(f0)
-    # Siulation in time
-    FHS_params = (x, nu, dx, der2,)
-    meth_params = (4, burgers, dt)
-    params = (*meth_params, FHS_params)
+    #------------ Time evolution ----------------------------------------------
+    f = np.copy(f0)                   # Save the initial condition apart
+    FHS_params = (x, nu, dx, der2,)   # Parameters of the Right side
+    meth_params = (4, burgers, dt)    # Parameters of RK method
+    params = (*meth_params, FHS_params) # All the parameters together
+    # Evolution of the system direcly plotted
     plot_evolution(RKN, f, x, tt, params, ax = ax1, time_to_plot=5)
+    #--------------------------------------------------------------------------
+
+    # Title of plots containing info on simulation
     info_init = rf'init = a*sin(2$\pi$ x/L)       x $\in \left[0, L\right]$     a = {a}'
     info_simulation = rf'      nu = {nu}     dt = {dt}       (L = {L}  ,  Nx = {N}) $\rightarrow$ dx = {dx:.3f}'
     info = info_init + info_simulation
     plt.suptitle(info, fontsize = 15)
     ax1.set_title('Solution in time')
     ax1.legend()
-    # FFT
+
+    #------------- Fourier transform ------------------------------------------
     fft_init = np.fft.rfft(f0)[1:-1]
     fft_final = np.fft.rfft(f)[1:-1]
     N = len(fft_final)
@@ -62,24 +73,31 @@ def main(Nt, dt, L, N, a, phi0, nu):
     ax3.set_title('Final spectrum (log scale)')
     ax3.plot(freq[1:], np.abs(fft_final[1:-1])**2)
     ax3.set_yscale('log')
-#    ax2.plot(np.abs(fft_final))
+    #--------------------------------------------------------------------------
+
+    # Show results
     plt.tight_layout()
     plt.show()
-#    plt.plot(freq[1:], np.abs(fft_final[1:-1])**2*freq[1:]**2)
-#    plt.yscale('log')
-#    plt.show()
+    #-------- Eventually check the 1/k**2 behaviour of FFT(shock) -------------
+    if check_behav:
+        plt.plot(freq[1:], np.abs(fft_final[1:-1])**2*freq[1:]**2)
+        plt.yscale('log')
+        plt.show()
+    #--------------------------------------------------------------------------
 
-    # Runge Kutta
-#    FHS_params = (x, nu, L, dx, der2,)
-#    meth_params = (4, FHS, dt)
-#    param_func = (*meth_params, FHS_params)
-#    aniplt.animated_with_slider(x, f0, RKN, Nt, dt, *param_func, dilat_size = 2)
+    #---------------- Animation -----------------------------------------------
+    if animation:
+        FHS_params = (x, nu, dx, der2,)   # Parameters of the Right side
+        meth_params = (4, burgers, dt)
+        param_func = (*meth_params, FHS_params)
+        aniplt.animated_with_slider(RKN, f0, x, Nt, dt, param_func, dilat_size = 2)
+    #--------------------------------------------------------------------------
     return
 
 if __name__ == '__main__':
     # Parameters of the simulation
-    Nt = 200      # Temporal steps
-    dt = 1e-2     # Temporal step size
+    Nt = 100      # Temporal steps
+    dt = 2e-2     # Temporal step size
     Lx = 10        # Dimension of the x grid (in term of 2pi)
     Nx = 600       # Number of point in the grid
     # Parameters of the system.
