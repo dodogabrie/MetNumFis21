@@ -108,6 +108,7 @@ def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_
     duration = Nt
 
     u = np.copy(uinit)
+    utest = np.copy(uinit)
 
     def my_scatter(x, func, u, plot_dim, *param):
         if plot_dim == None: return go.Scatter(x = x, y = func(u, *param), mode = "lines+markers", marker=dict(size=6))
@@ -117,15 +118,18 @@ def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_
     if plot_dim == None: init_scatter = go.Scatter( x=x, y=uinit, mode='lines+markers', marker=dict(size=6))
     else: init_scatter = go.Scatter( x=x, y=uinit[plot_dim], mode='lines+markers', marker=dict(size=6))
 
+    for i in range(Nt):
+        func(utest, *param)
+
     fig = go.Figure(data = init_scatter)
     fig.update_xaxes(title_text = "x")
     fig.update_yaxes(title_text = "u")
     if plot_dim == None:
-        m = np.min(uinit)
-        M = np.max(uinit)
+        m = min(np.min(utest), np.min(uinit))
+        M = max(np.max(utest), np.max(uinit))
     else:
-        m = np.min(uinit[plot_dim])
-        M = np.max(uinit[plot_dim])
+        m = min(np.min(utest[plot_dim]),np.min(uinit[plot_dim]))
+        M = max(np.max(utest[plot_dim]), np.max(uinit[plot_dim]))
     dilat = (M - m) * dilat_size
     fig.update_layout(yaxis_range=[m - dilat , M + dilat ])
  
@@ -188,9 +192,9 @@ def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_
     return 
 
 
-def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, plot_dim = None):
+def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, plot_dim = None, dilat_size = 0.1):
     """
-    Return a2D animation of the PDE evolution and a 3D surface of the evoluton
+    Return a 2D animation of the PDE evolution and a 3D surface of the evoluton
     int time with teh evolving line moving on it.
 
     Parameters
@@ -268,10 +272,17 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
     fig.add_trace(init_scatter, row = 1, col = 1)
     fig.update_xaxes(title_text = "x")
     fig.update_yaxes(title_text = "u")
-    m = np.min(uinit)
-    M = np.max(uinit)
-    fig.update_layout(yaxis_range=[m , M ])
- 
+    utest = np.copy(uinit)
+    for i in range(Nt):
+        func(utest, *param)
+    if plot_dim == None:
+        m = min(np.min(utest), np.min(uinit))
+        M = max(np.max(utest), np.max(uinit))
+    else:
+        m = min(np.min(utest[plot_dim]),np.min(uinit[plot_dim]))
+        M = max(np.max(utest[plot_dim]), np.max(uinit[plot_dim]))
+    dilat = (M - m) * dilat_size
+    fig.update_layout(yaxis_range=[m - dilat , M + dilat ])
 
     ## subplot 2 #######
     fig.add_trace(my_surface(evo, X, Y, 0, n, dx), row = 1, col = 2)
