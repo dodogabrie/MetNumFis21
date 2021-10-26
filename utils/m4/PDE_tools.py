@@ -1,5 +1,5 @@
 """
-This module contains tools for PDE integration: Routine of integration and 
+This module contains tools for PDE integration: Routine of integration and
 simple function for visualization.
 """
 import numpy as np
@@ -15,12 +15,12 @@ def euler(f, FHS, dt, param):
     Parameters
     ----------
     f : numpy nd array
-        Array of initial value of function (it will be modified by euler, 
+        Array of initial value of function (it will be modified by euler,
         better to pass a copy of the intial values).
     FHS : python funciton
         Function that return the evaluation of the force of the system.
-        The parameters of the function need to be: FHS(f, *param), where 
-        f is the first argument of euler, and *param are all the other 
+        The parameters of the function need to be: FHS(f, *param), where
+        f is the first argument of euler, and *param are all the other
         parameters (passed in euler in a tuple).
     dt : float
         Temporal step size for the integrator.
@@ -32,7 +32,7 @@ def euler(f, FHS, dt, param):
     numpy nd array
         Function f evaluated in this temporal step.
     """
-    f[:] = f + FHS(f, *param) * dt 
+    f[:] = f + FHS(f, *param) * dt
     return f
 
 def RKN(f, N, FHS, dt, param):
@@ -42,14 +42,14 @@ def RKN(f, N, FHS, dt, param):
     Parameters
     ----------
     f : numpy nd array
-        Array of initial value of function (it will be modified by euler, 
+        Array of initial value of function (it will be modified by euler,
         better to pass a copy of the intial values).
     N : int
         Runge Kutta order.
     FHS : python funciton
         Function that return the evaluation of the force of the system.
-        The parameters of the function need to be: FHS(f, *param), where 
-        f is the first argument of euler, and *param are all the other 
+        The parameters of the function need to be: FHS(f, *param), where
+        f is the first argument of euler, and *param are all the other
         parameters (passed in euler in a tuple).
     dt : float
         Temporal step size for the integrator.
@@ -77,25 +77,25 @@ def plot_evolution(Method, f, x, tt, params, ax = None, time_to_plot=5):
     Method: python function
         Integration method (like RKN or euler).
     f : numpy nd array
-        Array of initial value of function (it will be modified by euler, 
+        Array of initial value of function (it will be modified by euler,
         better to pass a copy of the intial values).
     x : numpy 1d array
         Spatial grid of the function f.
     tt : numpy 1d array
-        Temporal grid containing each temporal step for the evaluation of f 
+        Temporal grid containing each temporal step for the evaluation of f
         over time.
     N : int
         Runge Kutta order.
     FHS : python funciton
         Function that return the evaluation of the force of the system.
-        The parameters of the function need to be: FHS(f, *param), where 
-        f is the first argument of euler, and *param are all the other 
+        The parameters of the function need to be: FHS(f, *param), where
+        f is the first argument of euler, and *param are all the other
         parameters (passed in euler in a tuple).
     dt : float
         Temporal step size for the integrator.
     param : tuple
-        Tuple containing the parameters of the method (first argument). Note 
-        that the parameter of 'method' contain also the parameter of RHS, for 
+        Tuple containing the parameters of the method (first argument). Note
+        that the parameter of 'method' contain also the parameter of RHS, for
         this reason the suggestion is to manage this argument like:
 
         >>> RHS_param = (...)
@@ -163,7 +163,7 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
         Function that evaluate the next temporal step of the solution u.
         Here you can pass the implementation of the LAX methods.
         The parameters of the function needs to be: func(u, *param) where
-        u is the solution at time i and *param are the other parameters of the 
+        u is the solution at time i and *param are the other parameters of the
         system (like alpha and ninner for the implemented LAX).
     x : 1d numpy array
         Spatial grid of the system.
@@ -179,7 +179,7 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
     imported_title : string
         The title of the figure, if None the function will set this automatic.
     plot_dim : int
-        In multidimensional case pass here the dimention to analize. If None 
+        In multidimensional case pass here the dimention to analize. If None
         the problem are assumed 1D.
 
     Returns
@@ -197,16 +197,28 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
         u = func(u, *param)
         evo[i+1] = u[plot_dim]
 
+    m = min(np.min(evo[-1]),np.min(uinit[plot_dim]))
+    M = max(np.max(evo[-1]), np.max(uinit[plot_dim]))
+
+
     ## Define update functions #######
     def my_surface(evo, x, t, X, Y, dt, dx):
         startt = t[0]
         endt = t[-1]
         startx = x[0]
         endx = x[-1]
-        contoursy = {"show" : True, "start": startt, "end": endt, "size": dt, "width" : 1, "usecolormap" : True}
-        contoursx = {"show" : True, "start": startx, "end": endx, "size": 2 * dx, "width" : 1, "usecolormap" : True}
-        return go.Surface( z=evo, x=X, y=Y, opacity = 0.0, colorscale = 'Viridis', contours = {'y': contoursy, 'x' : contoursx})
+#        contoursy = {"show" : True, "start": startt, "end": endt, "size": dt, "width" : 1, "usecolormap" : True}
+#        contoursx = {"show" : True, "start": startx, "end": endx, "size": 2 * dx, "width" : 1, "usecolormap" : True}
+        startContourf = {"show" : True, "start": startt, "end": startt + dt, "size": dt, "width" : 1}
+        return go.Surface( z=evo, x=X, y=Y, opacity = 0.7, colorscale = 'Viridis', contours = {'y' : startContourf})
     fig = go.Figure(data = my_surface(evo, x, t, X, Y, dt, dx))
+    fig.update_layout(scene = dict(
+                    zaxis = {'range' : [m - 0.5*np.abs(m), M + 0.5*np.abs(M)]},
+                    xaxis_title='x',
+                    yaxis_title='t',
+                    zaxis_title='u'),
+                    scene_camera_eye=dict(x=0, y=-2, z=0.6),
+    )
     fig.show()
 
 
@@ -219,7 +231,7 @@ def test_diffusion(f, nu, dx, der2):
     Parameters
     ----------
     f : numpy nd array
-        Array of initial value of function (it will be modified by euler, 
+        Array of initial value of function (it will be modified by euler,
         better to pass a copy of the intial values).
     nu : float
         Diffusion parameter.
@@ -244,7 +256,7 @@ def test_wave(f, dx, der2):
     Parameters
     ----------
     f : numpy nd array
-        Array of initial value of function (it will be modified by euler, 
+        Array of initial value of function (it will be modified by euler,
         better to pass a copy of the intial values).
     dx : float
         Spatial step size for the derivative evaluation.

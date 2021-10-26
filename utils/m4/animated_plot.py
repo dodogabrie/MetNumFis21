@@ -4,45 +4,43 @@ import matplotlib.animation as animation
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-def animated_basic(x, uinit, func, Nt, *param, plot_dim = None, dilat_size = 0.2):
+def animated_basic(func, uinit, x, Nt, param, plot_dim = None, dilat_size = 0.2):
     """
     Return a matplotlib 2D animation of the PDE evolution.
 
     Parameters
     ----------
-    x : 1d numpy array
-        Spatial grid of the system.
-    uinit : 1d numpy array.
-        Initial condition of the PDE (a function evaluated on x).
     func : function
         Function that evaluate the next temporal step of the solution u.
         Here you can pass the implementation of the LAX methods.
         The parameters of the function needs to be: func(u, *param) where
-        u is the solution at time i and *param are the other parameters of the 
+        u is the solution at time i and *param are the other parameters of the
         system (like alpha and ninner for the implemented LAX).
+    uinit : 1d numpy array.
+        Initial condition of the PDE (a function evaluated on x).
+    x : 1d numpy array
+        Spatial grid of the system.
     Nt : int
         Number of temporal step for the evolution of the PDE.
-    *param : *params argument
-        This values will be passed to func, for example you can put here
-        alpha, ninner in the case of the LAX method.
+    param : tuple
+        Values will be passed to func in a tuple (excluded u), for example you
+        can put here (alpha, ninner) in the case of the LAX method.
     plot_dim : int or None
         The dimension to plot in case of multidimensional problem. If None
         the problem is assumed 1D.
     dilat_size : float
-        The dilatation of the ylim respect to the max and the min of the 
+        The dilatation of the ylim respect to the max and the min of the
         function at initial time.
-    
+
     Returns
     -------
     """
     def animate(i, plot_dim):
         # LAX goes directly here
-        if plot_dim == None:
-            line.set_ydata( func(u, *param) )  # update the data
-        else:
-            line.set_ydata( func(u, *param)[plot_dim] )  # update the data
+        if plot_dim == None: line.set_ydata( func(u, *param) )  # update the data
+        else: line.set_ydata( func(u, *param)[plot_dim] )  # update the data
         return line,
-    
+
     def init():
         line.set_ydata(np.ma.array(x, mask=True))
         return line,
@@ -66,44 +64,43 @@ def animated_basic(x, uinit, func, Nt, *param, plot_dim = None, dilat_size = 0.2
                                   interval=25, blit=True)
     plt.show()
 
-def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_size = 0.1, imported_title = None):
+def animated_with_slider(func, uinit, x, Nt, dt, param, plot_dim = None, dilat_size = 0.1, title = None):
     """
     Return a matplotlib 2D animation of the PDE evolution.
 
     Parameters
     ----------
-    x : 1d numpy array
-        Spatial grid of the system.
-    uinit : 1d numpy array.
-        Initial condition of the PDE (a function evaluated on x).
     func : function
         Function that evaluate the next temporal step of the solution u.
         Here you can pass the implementation of the LAX methods.
         The parameters of the function needs to be: func(u, *param) where
-        u is the solution at time i and *param are the other parameters of the 
+        u is the solution at time i and *param are the other parameters of the
         system (like alpha and ninner for the implemented LAX).
+    uinit : 1d numpy array.
+        Initial condition of the PDE (a function evaluated on x).
+    x : 1d numpy array
+        Spatial grid of the system.
     Nt : int
         Number of temporal step for the evolution of the PDE.
     dt : float
         Temporal step of the simulation.
-    *param : *params argument
-        This values will be passed to func, for example you can put here
-        alpha, ninner in the case of the LAX method.
+    param : tuple
+        Values will be passed to func in a tuple (excluded u), for example you
+        can put here (alpha, ninner) in the case of the LAX method.
     plot_dim : int or None
         The dimension to plot in case of multidimensional problem. If None
         the problem is assumed 1D.
     dilat_size : float
-        The dilatation of the ylim respect to the max and the min of the 
+        The dilatation of the ylim respect to the max and the min of the
         function at initial time.
-    imported_title: string
+    title: string
         Title of the figure.
-    
+
     Returns
     -------
     """
 
-    if imported_title == None:
-        imported_title = 'Animated plot'
+    if title == None: title = 'Animated plot'
 
     duration = Nt
 
@@ -132,7 +129,7 @@ def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_
         M = max(np.max(utest[plot_dim]), np.max(uinit[plot_dim]))
     dilat = (M - m) * dilat_size
     fig.update_layout(yaxis_range=[m - dilat , M + dilat ])
- 
+
 
     ## Evolving the frames ###############################################
     my_frames = [go.Frame(data = [my_scatter(x, func, u, plot_dim, *param)],
@@ -141,58 +138,13 @@ def animated_with_slider(x, uinit, func, Nt, dt, *param, plot_dim = None, dilat_
 
     fig.frames = my_frames
 
-    ## Setting dello slider ##
-    def frame_args(duration):
-        return dict(frame={"duration": duration},
-                    mode ="immediate",
-                    fromcurrent=True,
-                    transition={"duration": duration, 
-                                "easing": "linear"},)
-    # Definire i parametri dello slider 
-    sliders = [{"pad": {"b": 10, "t": 60},
-                "len": 0.5,
-                "x": 0.1,
-                "y": 0,
-                "steps": [{"args": [[f.name], frame_args(duration*dt)],
-                           "label": 't = ' + str(k*dt),
-                           "method": "animate",}
-                    for k, f in enumerate(fig.frames)],}]
-
-    ## Layout generale della figura ##
-    fig.update_layout(
-         title=imported_title,
-         width=1200,
-         height=700,
-         scene=dict(
-             xaxis_title='x',
-             yaxis_title='t',
-             zaxis_title='u',
-             aspectratio=dict(x=1, y=1, z=1)),
-         updatemenus = [
-                {
-                "buttons": [
-                    {"args": [None, frame_args(duration)],
-                     "label": "&#9654;", # play symbol
-                     "method": "animate",},
-                    {"args": [[None], frame_args(duration)],
-                     "label": "&#9724;", # pause symbol
-                     "method": "animate",
-                    },],
-                "direction": "left",
-                "pad": {"r": 10, "t": 70},
-                "type": "buttons",
-                "x": 0.1,
-                "y": 0,
-            }
-         ],
-         sliders=sliders
-    )
+    _fig_update_layout(fig, duration, title)
 
     fig.show()
-    return 
+    return
 
 
-def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, plot_dim = None, dilat_size = 0.1):
+def animated_full(func, x, t, uinit, param, title = None, plot_dim = None, dilat_size = 0.1):
     """
     Return a 2D animation of the PDE evolution and a 3D surface of the evoluton
     int time with teh evolving line moving on it.
@@ -203,18 +155,8 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
         Function that evaluate the next temporal step of the solution u.
         Here you can pass the implementation of the LAX methods.
         The parameters of the function needs to be: func(u, *param) where
-        u is the solution at time i and *param are the other parameters of the 
+        u is the solution at time i and param are the other parameters of the
         system (like alpha and ninner for the implemented LAX).
-    func_mesh : function
-        Function that evaluate all the temporal step of the solution u. The
-        steps need to be putted in a grid by the function in orther to be 
-        plotted in a surface plot.
-        Here you can pass the implementation of the LAX methods.
-        The parameters of the function needs to be: func(mesh, uinit, Nt, *param) 
-        where mesh is the grid (numpy 2d matrix of size((len(x), len(t))), 
-        uinit is the solution at initial time, Nt is Number of temporal step for
-        the evolution of the PDE,*param are the other parameters of the system 
-        (like alpha and ninner for the implemented LAX).
     x : 1d numpy array
         Spatial grid of the system.
     t : 1d numpy array
@@ -223,18 +165,18 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
         Initial condition of the PDE (a function evaluated on x).
         Nt : int
         Number of temporal step for the evolution of the PDE.
-    *param : *params argument
-        This values will be passed to func, for example you can put here
-        alpha, ninner in the case of the LAX method.
-    imported_title : string
+    param : tuple
+        Values passed to func (excluded u), for example you can put here
+        (alpha, ninner) in the case of the LAX method.
+    title : string
         The title of the figure, if None the function will set this automatic.
 
     Returns
     -------
     """
 
-    if imported_title == None:
-        imported_title = 'Animated plot'
+    if title == None:
+        title = 'Animated plot'
     dx = x[1] - x[0]
     dt = t[1] - t[0]
 
@@ -246,7 +188,11 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
     u = np.copy(uinit)
     X, Y = np.meshgrid(x, t)
     evo = np.empty((Nt, n))
-    func_mesh(evo, np.copy(uinit), Nt, *param) 
+    evo[0] = u[plot_dim]
+    for i in range(Nt-1):
+        u = func(u, *param)
+        evo[i+1] = u[plot_dim]
+    u = np.copy(uinit)
 
     ## Define update functions #######
     def my_surface(evo, X, Y, i, n, dx):
@@ -260,8 +206,8 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
         else: return go.Scatter(x = x, y = func(u, *param)[plot_dim], mode = "lines")
 
     ######### Definire un subplot con Plolty
-    fig = make_subplots( rows=1, cols=2, 
-                         subplot_titles=('Title1', 'Title2'),
+    fig = make_subplots( rows=1, cols=2,
+                         subplot_titles=('Evolution in time', 'Surface with evolution'),
                          horizontal_spacing=0.051,
                          specs=[[{"type": "scatter"} , {"type": "surface"}]]
     )
@@ -289,57 +235,44 @@ def animated_full(func, func_mesh, x, t, uinit, *param, imported_title = None, p
 
     ## Evolving the frames ###############################################
     my_frames = [go.Frame(data = [my_scatter(x, func, u, plot_dim, *param),
-                                  my_surface(evo, X, Y, i, n, dx)], 
+                                  my_surface(evo, X, Y, i, n, dx)],
                 traces=[0,1], name=str(i), layout_yaxis_range=[m , M])
                 for i in range(Nt)]
 
     fig.frames = my_frames
 
+    _fig_update_layout(fig, duration, title)
+
+    fig.show()
+
+
+
+def _fig_update_layout(fig, duration, title):
     ## Setting dello slider ##
     def frame_args(duration):
-        return dict(frame={"duration": duration},
-                    mode ="immediate",
-                    fromcurrent=True,
-                    transition={"duration": duration, 
+        return dict(frame={"duration": duration}, mode ="immediate", fromcurrent=True,
+                    transition={"duration": duration,
                                 "easing": "linear"},)
-    # Definire i parametri dello slider 
-    sliders = [{"pad": {"b": 10, "t": 60},
-                "len": 0.5,
-                "x": 0.1,
-                "y": 0,
+    # Definire i parametri dello slider
+    sliders = [{"pad": {"b": 10, "t": 60}, "len": 0.5, "x": 0.1, "y": 0,
                 "steps": [{"args": [[f.name], frame_args(duration)],
                            "label": str(k),
                            "method": "animate",}
                     for k, f in enumerate(fig.frames)],}]
 
     ## Layout generale della figura ##
-    fig.update_layout(
-         title=imported_title,
-         width=1200,
-         height=700,
-         scene=dict(
-             xaxis_title='x',
-             yaxis_title='t',
-             zaxis_title='u',
-             aspectratio=dict(x=1, y=1, z=1)),
+    fig.update_layout( title=title, width=1200, height=700,
+         scene=dict( xaxis_title='x', yaxis_title='t', zaxis_title='u', aspectratio=dict(x=1, y=1, z=1)),
          updatemenus = [
                 {
                 "buttons": [
-                    {"args": [None, frame_args(duration)],
-                     "label": "&#9654;", # play symbol
+                    {"args": [None, frame_args(duration)], "label": "&#9654;", # play symbol
                      "method": "animate",},
-                    {"args": [[None], frame_args(duration)],
-                     "label": "&#9724;", # pause symbol
+                    {"args": [[None], frame_args(duration)], "label": "&#9724;", # pause symbol
                      "method": "animate",
                     },],
-                "direction": "left",
-                "pad": {"r": 10, "t": 70},
-                "type": "buttons",
-                "x": 0.1,
-                "y": 0,
+                "direction": "left", "pad": {"r": 10, "t": 70}, "type": "buttons", "x": 0.1,"y": 0,
             }
-         ],
-         sliders=sliders
+         ], sliders=sliders
     )
-
-    fig.show()
+    return
