@@ -6,7 +6,7 @@ import numpy as np
 # Data to esplore divided by lateral size of grid
 nlats = [10, 20, 30, 40, 50, 60, 70, 80]
 
-# Quantity to estimate 
+# Quantity to estimate
 estimate = 'chi'
 #estimate = 'ene'
 #estimate = 'magn'
