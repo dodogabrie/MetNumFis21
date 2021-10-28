@@ -1,6 +1,6 @@
-""" 
-This module loop on beta values and on L values in the Ising simulation 
-computing M and E. It also evaluate chi and c (and the relative errors) 
+"""
+This module loop on beta values and on L values in the Ising simulation
+computing M and E. It also evaluate chi and c (and the relative errors)
 for each simulation.
 """
 
@@ -15,14 +15,14 @@ from m1.error import err_mean_corr, err_naive, bootstrap_corr
 from m1.estimator import compute_chi, compute_c
 import numpy as np
 import ising
-import time 
+import time
 from numba import njit
 import joblib
 from joblib import Parallel, delayed
 ###
 
-def beta_loop(iflag, nlat, beta_array, 
-              measures, i_decorrel, 
+def beta_loop(iflag, nlat, beta_array,
+              measures, i_decorrel,
               extfield, M, n_jobs):
     def parallel_job(i, beta):
         print(f'L: {nlat}, step {i} su {len(beta_array)}', end = '\r')
@@ -36,22 +36,22 @@ def beta_loop(iflag, nlat, beta_array,
         dm_abs = err_naive(m_abs)
         ene_mean = np.mean(ene)
         dene = err_naive(ene)
-        return [beta, m_abs_mean, dm_abs, ene_mean, dene, chi, dchi, c, dc] 
+        return [beta, m_abs_mean, dm_abs, ene_mean, dene, chi, dchi, c, dc]
 
     list_args = [[i, beta] for i, beta in enumerate(beta_array)]
     list_outputs = Parallel(n_jobs=n_jobs)(delayed(parallel_job)(*args) for args in list_args)
 
-#    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs)) 
+#    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs))
 
-    return 
+    return
 
-def L_loop(iflag, L_array, beta_array, 
-           measures, i_decorrel, 
+def L_loop(iflag, L_array, beta_array,
+           measures, i_decorrel,
            extfield, M, njobs = 1):
     for i, nlat in enumerate(L_array):
         start = time.time()
-        beta_loop(iflag, nlat, beta_array, 
-              measures, i_decorrel, 
+        beta_loop(iflag, nlat, beta_array,
+              measures, i_decorrel,
               extfield, M, njobs)
         print(f'\n--> Done L = {nlat} in {time.time()-start}s')
     return
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # Normalize the tan in 0-1, then dilatate and traslate in beta_min-beta_max
     trans = (trans + np.abs(np.min(trans)) )/(np.max(trans) - np.min(trans))
     # Finally the beta array
-    beta_array = trans * (beta_max - beta_min) + beta_min 
+    beta_array = trans * (beta_max - beta_min) + beta_min
     ###########################################################################
     # Create L interval
     L_array    = np.arange(L_min, L_max + L_step, L_step, dtype = int)
