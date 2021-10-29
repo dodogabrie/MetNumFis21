@@ -11,6 +11,7 @@ sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
 
 import matplotlib.pyplot as plt
 import m4.animated_plot as aniplt
+import m4.tridiag as td
 from m4.PDE_tools import surface_xt, plot_evolution
 import numpy as np
 from numba import njit
@@ -25,7 +26,8 @@ def diffusion_simple(u, D, dx, dt, ninner):
         u[0], u[-1] = u[-2], u[1]
     return u
 
-def wiener_process(u, D, f, x, dx, dt, ninner, t):
+
+def wiener_process_simple(u, D, f, x, dx, dt, ninner, t):
     """
     Solution to the Wiener Process:
         dx = fdt + sqrt(2D) * dw
@@ -42,17 +44,27 @@ def wiener_process(u, D, f, x, dx, dt, ninner, t):
         t += dt
     return u
 
+def diffusion_tridiag(u, N, alpha, ninner):
+    for i in range(ninner):
+        diag_in = np.ones(N) * ( 1 + 2 * alpha )
+        dlo_in = np.ones(N-1) * ( - alpha )
+        dup_in = np.ones(N-1) * ( - alpha )
+        u[1:-1], inv = td.solve(diag_in, dlo_in, dup_in, u[1:-1])
+        u[0], u[-1] = u[-2], u[1]
+    return u
+
+
 def test():
     def initial_value(x, t0, v):
         return np.exp( - (x + v*t0)**2/2 )
     def f(x, t):
         return - 10*np.cos(2*np.pi*x) - t*7
-    D = 9.9e-1
+    D = 6e-1
     dt = 2e-3
     dx = 9e-2
-    Nt = 100
-    n = 200
-    ninner = 20
+    Nt = 200
+    n = 300
+    ninner = 100
 
     print(f'Alpha : {D * dt / dx**2}')
 
@@ -62,18 +74,28 @@ def test():
 
     u = initial_value(x, 0, 1)
     uinit = np.copy(u)
-    param_simple = (D, dx, dt, ninner)
-    param_wiener = [D, f, x, dx, dt, ninner, t[0]]
 
     # Simple process
+#    param_simple = (D, dx, dt, ninner)
 #    plot_evolution(diffusion_simple, u, x, t, param_simple)
 
-    # Wiener process
-    surface_xt(wiener_process, uinit, x, t, param_wiener, t_dependent=True, dilat_size = 0.1)
-#    plot_evolution(wiener_process, u, x, t, param_wiener)
-#    aniplt.animated_with_slider(wiener_process, uinit, x, t, param_wiener, plot_dim = None, t_dependent = True)
-#    plot_evolution(wiener_process, uinit, x, t, param_wiener, t_dependent=True, time_to_plot=10)
-#    surface_xt(wiener_process, uinit, x, t, param_wiener, t_dependent=True)
+    # Wiener process simple
+#    param_wiener_simple = [D, f, x, dx, dt, ninner, t[0]]
+#    surface_xt(wiener_process_simple, uinit, x, t, param_wiener_simple, t_dependent=True, dilat_size = 0.1)
+#    plot_evolution(wiener_process_simple, u, x, t, param_wiener_simple)
+#    aniplt.animated_with_slider(wiener_process_simple, uinit, x, t,
+#                                param_wiener_simple, plot_dim = None, t_dependent = True)
+#    plot_evolution(wiener_process_simple, uinit, x, t, param_wiener_simple, t_dependent=True, time_to_plot=10)
+#    surface_xt(wiener_process_simple, uinit, x, t, param_wiener_simple, t_dependent=True)
+
+    # Tridiagonal Diffusion
+    alpha = dt/(dx**2) * D
+    N = int(len(x)-2)
+    param_diffusion_tridiag = [N, alpha, ninner]
+#    aniplt.animated_with_slider(diffusion_tridiag, uinit, x, t,
+#                                param_diffusion_tridiag, plot_dim = None)
+    plot_evolution(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag, time_to_plot=10)
+#    surface_xt(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag)
 
     plt.show()
 
