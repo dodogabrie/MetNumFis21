@@ -66,47 +66,46 @@ def binder_evaluation(beta, M):
     np.savetxt(f'../data/binder_computed_beta{beta}.dat', data)
     return
 
-def plot_binder(beta):
+def plot_binder(beta, ax = None):
     L, B, dB = np.loadtxt(f'../data/binder_computed_beta{beta}.dat', unpack = True)
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
+    if ax == None: fig, ax = plt.subplots()
     ax.errorbar(L, B, yerr = dB, color = 'brown', fmt = '.', ms = 4)
     ax.set_xlabel('L', fontsize = 12)
     ax.set_ylabel('B', fontsize = 12)
-    ax.set_title(rf'Cumulante di Binder per $\beta$ = {beta}', fontsize = 15)
+    #ax.set_title(rf'Cumulante di Binder per $\beta$ = {beta}', fontsize = 15)
     ax.minorticks_on()
     ax.tick_params('x', which='major', direction='in', length=3)
     ax.tick_params('y', which='major', direction='in', length=3)
     ax.tick_params('y', which='minor', direction='in', length=1.5, left=True)
     ax.tick_params('x', which='minor', direction='in', length=1.5, bottom=True)
     ax.grid(alpha = 0.2)
-    plt.show()
     return
 
 if __name__ == '__main__':
     # Simulate the system ranging L for some betas in order to compute Binder
     #%%% Parameters of simulation %%%%%%%%%%%%%%%%%%%%%%%%
-    lock_simulation = True # don't risk to run unwanted simulations
-    iflag = 1 # Start hot or cold
-    i_decorrel = 50 # Number of decorrelation for metro
-    extfield = 0. # External field
-    measures = int(1e5) # Number of measures
-    M = 2000 # Blocksize for bootstrap
-    L_min = 5  # Minumu L
-    L_max = 81 # Maximum L
-    L_step = 1 # Step between one L and another
-    n_jobs = 6 # Number of jobs
-    beta_disordered = 0.30
-    beta_medium1 = 0.42
-    beta_medium2 = 0.46
-    beta_ordered = 0.50
-    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    param = (iflag, measures, i_decorrel, extfield)
-    L_array = np.arange(L_min, L_max, L_step)
-    binder_simulation(L_array, param, beta_disordered, M, n_jobs)
-    binder_simulation(L_array, param, beta_medium1, M, n_jobs)
-    binder_simulation(L_array, param, beta_medium2, M, n_jobs)
-    binder_simulation(L_array, param, beta_ordered, M, n_jobs)
+#    lock_simulation = True # don't risk to run unwanted simulations
+#    iflag = 1 # Start hot or cold
+#    i_decorrel = 50 # Number of decorrelation for metro
+#    extfield = 0. # External field
+#    measures = int(1e5) # Number of measures
+#    M = 2000 # Blocksize for bootstrap
+#    L_min = 5  # Minumu L
+#    L_max = 81 # Maximum L
+#    L_step = 1 # Step between one L and another
+#    n_jobs = 6 # Number of jobs
+#    beta_disordered = 0.30
+#    beta_medium1 = 0.42
+#    beta_medium2 = 0.46
+#    beta_ordered = 0.50
+#    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#    param = (iflag, measures, i_decorrel, extfield)
+#    L_array = np.arange(L_min, L_max, L_step)
+#    binder_simulation(L_array, param, beta_disordered, M, n_jobs)
+#    binder_simulation(L_array, param, beta_medium1, M, n_jobs)
+#    binder_simulation(L_array, param, beta_medium2, M, n_jobs)
+#    binder_simulation(L_array, param, beta_ordered, M, n_jobs)
 
     # Compute Binder cumulant for the simulations runned above
 #    beta = 0.38
@@ -114,7 +113,18 @@ if __name__ == '__main__':
 #    binder_evaluation(beta, M)
 #
 #    # Plotting binder vs L
-#    beta = 0.38
-#    plot_binder(beta)
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    beta_disordered = 0.30
+    beta_medium1 = 0.42
+    beta_medium2 = 0.46
+    beta_ordered = 0.50
+    plot_binder(beta_disordered, ax)
+#    plot_binder(beta_medium1, ax)
+    plt.show()
+    fig, ax = plt.subplots()
+#    plot_binder(beta_medium2, ax)
+    plot_binder(beta_ordered, ax)
+    plt.show()
     pass
 
