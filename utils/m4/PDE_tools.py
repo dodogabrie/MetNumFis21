@@ -67,7 +67,7 @@ def RKN(f, N, FHS, dt, param):
     f[:] = g
     return f
 
-def plot_evolution(Method, f, x, tt, params, ax = None, time_to_plot=5):
+def plot_evolution(Method, f, x, tt, params, ax = None, time_to_plot=5, t_dependent = False):
     """
     Plot the evolution of a PDE given the method of integration and
     the equation to solve.
@@ -84,15 +84,6 @@ def plot_evolution(Method, f, x, tt, params, ax = None, time_to_plot=5):
     tt : numpy 1d array
         Temporal grid containing each temporal step for the evaluation of f
         over time.
-    N : int
-        Runge Kutta order.
-    FHS : python funciton
-        Function that return the evaluation of the force of the system.
-        The parameters of the function need to be: FHS(f, *param), where
-        f is the first argument of euler, and *param are all the other
-        parameters (passed in euler in a tuple).
-    dt : float
-        Temporal step size for the integrator.
     param : tuple
         Tuple containing the parameters of the method (first argument). Note
         that the parameter of 'method' contain also the parameter of RHS, for
@@ -146,14 +137,23 @@ def plot_evolution(Method, f, x, tt, params, ax = None, time_to_plot=5):
     plot_instant = tt[::equally_div]
     j = 1
     ax.plot(x, f, lw = 2, c = 'green', label = f't = {tt[0]}')
-    for i, t in enumerate(tt):
-        Method(f, *params)
-        if t == plot_instant[j]:
-            ax.plot(x, f, alpha = 0.4, linewidth = 1, c = 'orange')
-            if j < time_to_plot-1: j+=1
+    if t_dependent:
+        for i, t in enumerate(tt):
+            params[-1] = t
+            Method(f, *params)
+            if t == plot_instant[j]:
+                ax.plot(x, f, alpha = 0.4, linewidth = 1, c = 'orange')
+                if j < time_to_plot-1: j+=1
+    else:
+        for i, t in enumerate(tt):
+            Method(f, *params)
+            if t == plot_instant[j]:
+                ax.plot(x, f, alpha = 0.4, linewidth = 1, c = 'orange')
+                if j < time_to_plot-1: j+=1
     ax.plot(x, f, lw = 2, c='r', label = f't = {tt[-1]}')
 
-def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None):
+def surface_xt(func, uinit, x, t, param, imported_title = None, plot_dim = None,
+               t_dependent = False, dilat_size = 0.1):
     """
     Return a 2D surface of the solution of PDE in time.
 
@@ -181,6 +181,11 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
     plot_dim : int
         In multidimensional case pass here the dimention to analize. If None
         the problem are assumed 1D.
+    time_dependent : boolean
+        If True some term of equation depend on the temporal instant.
+    dilat_size : float
+        Dilatation of the plot in the z direction (relative to the maximum value
+        reached in the simulation). default is 0.5
 
     Returns
     -------
@@ -192,14 +197,20 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
     u = np.copy(uinit)
     X, Y = np.meshgrid(x, t)
     evo = np.empty((Nt, n))
-    evo[0] = u[0]
-    for i in range(Nt-1):
-        u = func(u, *param)
-        evo[i+1] = u[plot_dim]
+    evo[0] = u[plot_dim]
+    if t_dependent:
+        for i in range(Nt-1):
+            u = func(u, *param)
+            evo[i+1] = u[plot_dim]
+            param[-1] = t[i+1]
+    else:
+        for i in range(Nt-1):
+            u = func(u, *param)
+            evo[i+1] = u[plot_dim]
 
-    m = min(np.min(evo[-1]),np.min(uinit[plot_dim]))
-    M = max(np.max(evo[-1]), np.max(uinit[plot_dim]))
 
+    m = np.min(evo)
+    M = np.max(evo)
 
     ## Define update functions #######
     def my_surface(evo, x, t, X, Y, dt, dx):
@@ -207,17 +218,20 @@ def surface_xt(func, x, t, uinit, param, imported_title = None, plot_dim = None)
         endt = t[-1]
         startx = x[0]
         endx = x[-1]
-#        contoursy = {"show" : True, "start": startt, "end": endt, "size": dt, "width" : 1, "usecolormap" : True}
+#        contoursy = {"show" : True, "start": startt, "end": endt, "size": dt, "width" : 1, "color":'blue'}
 #        contoursx = {"show" : True, "start": startx, "end": endx, "size": 2 * dx, "width" : 1, "usecolormap" : True}
         startContourf = {"show" : True, "start": startt, "end": startt + dt, "size": dt, "width" : 1}
-        return go.Surface( z=evo, x=X, y=Y, opacity = 0.7, colorscale = 'Viridis', contours = {'y' : startContourf})
+        return go.Surface( z=evo, x=X, y=Y, opacity = 1, colorscale = 'Blues_r',contours = {'y' : startContourf}, showscale = False)
+
     fig = go.Figure(data = my_surface(evo, x, t, X, Y, dt, dx))
-    fig.update_layout(scene = dict(
-                    zaxis = {'range' : [m - 0.5*np.abs(m), M + 0.5*np.abs(M)]},
-                    xaxis_title='x',
-                    yaxis_title='t',
-                    zaxis_title='u'),
-                    scene_camera_eye=dict(x=0, y=-2, z=0.6),
+    fig.update_layout(
+                    scene = dict(
+                        zaxis = {'range' : [m - dilat_size*np.abs(m), M + dilat_size*np.abs(M)]},
+                        xaxis_title='x',
+                        yaxis_title='t',
+                        zaxis_title='u',
+                        aspectratio = dict(x= 4, y= 4, z= 1)),
+                    scene_camera_eye=dict(x=0, y=-5, z=0.6),
     )
     fig.show()
 
