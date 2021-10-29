@@ -12,7 +12,7 @@ sys.path.append(path.split(main_folder)[0] + main_folder + 'utils/')
 
 import matplotlib.pyplot as plt
 import m4.animated_plot as aniplt
-from m4.PDE_tools import surface_xt
+from m4.PDE_tools import surface_xt, RKN
 import numpy as np
 from numba import njit
 

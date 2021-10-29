@@ -69,9 +69,9 @@ def test():
     # Copy of u for plotting
     uinit = np.copy(u)
     lax_param = (x, v1, s, dt, dx, ninner)
-#    aniplt.animated_full(lax_wen, x, t, uinit, lax_param, title = 'Evoluzione Metodo LAX-WENDROF', plot_dim = 0)
+#    aniplt.animated_full(lax_wen, uinit, x, t, lax_param, title = 'Evoluzione Metodo LAX-WENDROF', plot_dim = 0)
     aniplt.animated_with_slider(lax_wen, uinit, x, Nt, dt, lax_param, plot_dim = 0, dilat_size = 0.1, title = None)
-#    surface_xt(lax_wen, x, t, uinit, lax_param, plot_dim = 0)
+#    surface_xt(lax_wen, uinit, x, t, lax_param, plot_dim = 0)
 
 if __name__ == '__main__':
     test()
