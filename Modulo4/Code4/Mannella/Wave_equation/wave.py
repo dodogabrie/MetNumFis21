@@ -84,7 +84,7 @@ def test():
     lax_param_hard = (cx, dt, dx, ninner)
 #    aniplt.animated_full(lax_wen_simple, x, t, uinit, lax_param_simple, title = 'Evoluzione Metodo LAX-WENDROF', plot_dim = 0)
 #    aniplt.animated_with_slider(lax_wen_simple, uinit, x, Nt, dt, lax_param_simple, plot_dim = 0, dilat_size = 0.1, title = None)
-    surface_xt(lax_wen_hard, x, t, uinit, lax_param_hard, plot_dim = 0)
+    surface_xt(lax_wen_hard, uinit, x, t, lax_param_hard, plot_dim = 0)
 
 if __name__ == '__main__':
     test()

@@ -34,9 +34,8 @@ def test():
     uinit = np.copy(u)
     uinit1 = np.copy(u)
 
-#    aniplt.animated_full(lax.LAX, lax.LAX_complete, x, t, uinit, alpha, ninner, imported_title = 'Evoluzione Metodo LAX')
-#    aniplt.animated_full(lax_wen.LAX_WEN, lax_wen.LAX_WEN_complete, x, t, uinit1, alpha, ninner, imported_title = 'Evoluzione Metodo LAX-WENDROF')
-    aniplt.animated_basic(x, uinit, lax_wen.LAX_WEN, Nt, alpha, ninner) 
+#    aniplt.animated_full(lax_wen.LAX_WEN, uinit1, x, t, (alpha, ninner), title = 'Evoluzione Metodo LAX-WENDROF')
+    aniplt.animated_with_slider(lax_wen.LAX_WEN, uinit1, x, t, (alpha, ninner), title = 'Evoluzione Metodo LAX-WENDROF')
 
 
 if __name__ == '__main__':
