@@ -45,6 +45,10 @@ def wiener_process_simple(u, D, f, x, dx, dt, ninner, t):
     return u
 
 def diffusion_tridiag(u, N, alpha, ninner):
+    """
+    Implementation of the implicit solver of diffusive equation. The method is
+    based on the inversion of the tridiagonal matrix of the system.
+    """
     for i in range(ninner):
         diag_in = np.ones(N) * ( 1 + 2 * alpha )
         dlo_in = np.ones(N-1) * ( - alpha )
@@ -54,6 +58,11 @@ def diffusion_tridiag(u, N, alpha, ninner):
     return u
 
 def diffusion_tridiag_drift(u, drift, x, dt, N, alpha, beta, ninner, t):
+    """
+    Implementation of the implicit solver of diffusive equation with a drift
+    term. The method is based on the inversion of the tridiagonal matrix of the
+    system.
+    """
     for i in range(ninner):
         t += dt
         diag_in = np.ones(N) * ( 1 + 2 * alpha )
