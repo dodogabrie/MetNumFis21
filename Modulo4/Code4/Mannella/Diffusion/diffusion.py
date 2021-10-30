@@ -53,18 +53,28 @@ def diffusion_tridiag(u, N, alpha, ninner):
         u[0], u[-1] = u[-2], u[1]
     return u
 
+def diffusion_tridiag_drift(u, drift, x, dt, N, alpha, beta, ninner, t):
+    for i in range(ninner):
+        t += dt
+        diag_in = np.ones(N) * ( 1 + 2 * alpha )
+        dlo_in = np.ones(N-1) * ( - alpha - beta * drift(x[1:], t))
+        dup_in = np.ones(N-1) * ( - alpha + beta * drift(x[:-1], t))
+        u, inv = td.solve(diag_in, dlo_in, dup_in, u)
+        u[0], u[-1] = u[-2], u[1]
+    return u
+
 
 def test():
     def initial_value(x, t0, v):
         return np.exp( - (x + v*t0)**2/2 )
     def f(x, t):
-        return - 10*np.cos(2*np.pi*x) - t*7
-    D = 6e-1
+        return - np.sin(t*5)*20 - t
+    D = 1e-1
     dt = 2e-3
     dx = 9e-2
-    Nt = 200
+    Nt = 500
     n = 300
-    ninner = 100
+    ninner = 20
 
     print(f'Alpha : {D * dt / dx**2}')
 
@@ -89,13 +99,24 @@ def test():
 #    surface_xt(wiener_process_simple, uinit, x, t, param_wiener_simple, t_dependent=True)
 
     # Tridiagonal Diffusion
-    alpha = dt/(dx**2) * D
-    N = int(len(x)-2)
-    param_diffusion_tridiag = [N, alpha, ninner]
+#    alpha = dt/(dx**2) * D
+#    N = int(len(x)-2)
+#    param_diffusion_tridiag = [N, alpha, ninner]
 #    aniplt.animated_with_slider(diffusion_tridiag, uinit, x, t,
 #                                param_diffusion_tridiag, plot_dim = None)
-    plot_evolution(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag, time_to_plot=10)
+#    plot_evolution(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag, time_to_plot=10)
 #    surface_xt(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag)
+
+    # Tridiagonal Diffusion with drift
+    alpha = dt/(dx**2) * D
+    beta = dt/(2*dx)
+    N = len(x)
+    param_diffusion_tridiag_drift = [f, x, dt, N, alpha, beta, ninner, t[0]]
+#    aniplt.animated_with_slider(diffusion_tridiag, uinit, x, t,
+#                                param_diffusion_tridiag_drift, plot_dim = None)
+#    plot_evolution(diffusion_tridiag, uinit, x, t, param_diffusion_tridiag_drift, time_to_plot=10)
+    surface_xt(diffusion_tridiag_drift, uinit, x, t, param_diffusion_tridiag_drift, t_dependent = True)
+
 
     plt.show()
 
