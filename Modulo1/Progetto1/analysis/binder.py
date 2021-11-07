@@ -156,7 +156,9 @@ def fit_binder(beta, remove = 10, ax = None):
 
     plt.suptitle(rf'Cumulante di Binder per $\beta$ = {beta} (fase disordinata)', fontsize = 14)
     plt.tight_layout()
-    plt.savefig(f'../figures/fit_binder{beta}.png', dpi = 200)
+    plt.savefig(f'../figures/Binder_fit/fit_binder{beta}.png', dpi = 200)
+    np.savetxt(f'../figures/Binder_fit/fit_binder{beta}.txt', L_fit,
+               header = f'L values for binder fit with beta: {beta}', fmt='%.0f')
     plt.show()
     return
 
@@ -199,6 +201,5 @@ if __name__ == '__main__':
 
     # Fit binder
 #    fit_binder(beta_disordered, remove = 5)
-
     pass
 

@@ -14,7 +14,7 @@ from m1.error import err_mean_corr, err_naive, bootstrap_corr
 from m1.readfile import slowload, fastload
 from m1.estimator import compute_chi, compute_c
 import numpy as np
-import time 
+import time
 from numba import njit
 from os import listdir
 from os.path import isfile, join
@@ -23,29 +23,28 @@ from joblib import Parallel, delayed
 
 def modify_results(nlat):
     #%%%%%%%%%%% Parameters %%%%%%%%%%%%%
-    M = 2000 # sicuri? --> incide solo sull'errore...
     data_dir = f"../data/nlat{nlat}/"
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     # Extract all file names in the folder
     onlyfiles = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
-    
+
     # Define the function that extract data in list
     def extract_obs(data_name):
-        # Extract beta from file name 
+        # Extract beta from file name
         tmp_string = data_name.split('_nlat')[0] # beta comes first of '_nlat'
         beta = float(tmp_string.split('beta')[1])# beta comes after 'beta'
-        
+
         # Load all the magnetization and energy at fixed beta
         data = fastload(data_name.encode('UTF-8'), int(1e5))
         magn, ene = data[:, 0], data[:, 1]
-        
+
         # Compute all quantities
         m_abs = np.abs(magn)
         chi = compute_chi(m_abs, (nlat, beta))
         c = compute_c(ene, (nlat, beta))
-        dchi = bootstrap_corr(m_abs, M, compute_chi, param = (nlat, beta))
-        dc = bootstrap_corr(ene  , M, compute_c  , param = (nlat, beta))
+        dchi = bootstrap_corr(m_abs, compute_chi, param = (nlat, beta))
+        dc = bootstrap_corr(ene, compute_c  , param = (nlat, beta))
         m_abs_mean = np.mean(m_abs)
         _, dm_abs, _ = err_mean_corr(m_abs)
         ene_mean = np.mean(ene)
@@ -63,7 +62,7 @@ def modify_results(nlat):
 #    plt.plot(data[:,0], data[:, 5], label = 'magn')
 #    plt.legend()
 #    plt.show()
-    return 
+    return
 
 def test_error_magn():
     #%%%%%%%%%%% Parameters %%%%%%%%%%%%%
@@ -71,20 +70,20 @@ def test_error_magn():
     M = 2000 # sicuri? --> incide solo sull'errore...
     data_dir = f"../data/nlat{nlat}/"
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     # Extract all file names in the folder
     onlyfiles = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
-    
+
     # Define the function that extract data in list
     def extract_obs(data_name):
-        # Extract beta from file name 
+        # Extract beta from file name
         tmp_string = data_name.split('_nlat')[0] # beta comes first of '_nlat'
         beta = float(tmp_string.split('beta')[1])# beta comes after 'beta'
-        
+
         # Load all the magnetization and energy at fixed beta
         data = fastload(data_name.encode('UTF-8'), int(1e5))
         magn, ene = data[:, 0], data[:, 1]
-        
+
         # Compute all quantities
         m_abs = np.abs(magn)
         _, correlated, _ = err_mean_corr(m_abs)
@@ -104,7 +103,7 @@ def test_error_magn():
     plt.plot(data[:,0], data[:, 2], label = 'naive')
     plt.legend()
     plt.show()
- 
+
 if __name__ == '__main__':
     Ls = [10, 20, 30, 40, 50, 60, 70, 80]
     for nlat in Ls:
