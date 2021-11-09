@@ -23,15 +23,15 @@ from joblib import Parallel, delayed
 
 def beta_loop(iflag, nlat, beta_array,
               measures, i_decorrel,
-              extfield, M, n_jobs):
+              extfield, n_jobs):
     def parallel_job(i, beta):
         print(f'L: {nlat}, step {i} su {len(beta_array)}', end = '\r')
         magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta, save_data = True)
         m_abs = np.abs(magn)
         chi = compute_chi(m_abs, (nlat, beta))
         c = compute_c(ene, (nlat, beta))
-        dchi = bootstrap_corr(m_abs, M, compute_chi, param = (nlat, beta))
-        dc = bootstrap_corr(ene  , M, compute_c  , param = (nlat, beta))
+        dchi = bootstrap_corr(m_abs, compute_chi, param = (nlat, beta))
+        dc = bootstrap_corr(ene  , compute_c  , param = (nlat, beta))
         m_abs_mean = np.mean(m_abs)
         dm_abs = err_naive(m_abs)
         ene_mean = np.mean(ene)
@@ -41,37 +41,36 @@ def beta_loop(iflag, nlat, beta_array,
     list_args = [[i, beta] for i, beta in enumerate(beta_array)]
     list_outputs = Parallel(n_jobs=n_jobs)(delayed(parallel_job)(*args) for args in list_args)
 
-#    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs))
+    np.savetxt(f'../data/data_obs_nlat{nlat}_test_new.dat', np.array(list_outputs))
 
     return
 
 def L_loop(iflag, L_array, beta_array,
            measures, i_decorrel,
-           extfield, M, njobs = 1):
+           extfield, njobs = 1):
     for i, nlat in enumerate(L_array):
         start = time.time()
         beta_loop(iflag, nlat, beta_array,
               measures, i_decorrel,
-              extfield, M, njobs)
+              extfield, njobs)
         print(f'\n--> Done L = {nlat} in {time.time()-start}s')
     return
 
 if __name__ == '__main__':
 
     #%%% Parameters of simulation %%%%%%%%%%%%%%%%%%%%%%%%
-    lock_simulation = True # don't risk to run unwanted simulations
+    lock_simulation = False # don't risk to run unwanted simulations
     iflag = 1 # Start hot or cold
     i_decorrel = 50 # Number of decorrelation for metro
     extfield = 0. # External field
     measures = int(1e5) # Number of measures
-    M = 2000 # Blocksize for bootstrap
     beta_min = 0.38 # Minimum value of beta explored
     beta_max = 0.48 # Maximum value of beta explored
     beta_N = 100 # Number of beta observed
-    L_min = 10 # Minumu L
-    L_max = 80 # Maximum L
+    L_min = 45 # Minumu L
+    L_max = 75 # Maximum L
     L_step = 10 # Step between one L and another
-    njobs = 8 # Number of jobs
+    njobs = 6 # Number of jobs
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     #### Create non-linear beta interval (see explain_bootstrap)###############
@@ -87,7 +86,7 @@ if __name__ == '__main__':
     # Starting simulation
     start = time.time()
     if not lock_simulation:
-        L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, M, njobs = njobs)
+        L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, njobs = njobs)
         print('\n########################### Total Time:', time.time()-start)
     if lock_simulation:
         print('The simulation is locked, please change the parameter lock_simulation')
