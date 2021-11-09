@@ -5,12 +5,12 @@ cimport numpy as np # Make numpy work with cython
 cimport cython
 from libc.math cimport exp
 
-def do_calc(int nlat, int iflag, int measures, 
-            int i_decorrel, double extfield, 
-            double beta, int save_data = 1):
+def do_calc(int nlat, int iflag, int measures,
+            int i_decorrel, double extfield,
+            double beta, int save_data = 1, int save_lattice = 1):
     """
     Main function for the ising model in 2D:
-    Evaluate the energy and the magnetization of a "lattice of spin". 
+    Evaluate the energy and the magnetization of a "lattice of spin".
 
     Parameters
     ----------
@@ -25,8 +25,12 @@ def do_calc(int nlat, int iflag, int measures,
         Number of iteration of the metropolis to decorrelate.
     extfield : float
         External magnetic field.
-    beta : float 
+    beta : float
         Physics quantity defined by 1/(Kb*T) with T the standard temperature.
+    save_data : bool
+        Save magnetization and energy in a txt file
+    save_lattice : bool
+        Save the lattice in a txt file
 
     Results
     -------
@@ -49,7 +53,7 @@ def do_calc(int nlat, int iflag, int measures,
     cdef np.ndarray[np.int_t, ndim=2, mode='c'] field = np.ones((nlat, nlat)).astype(int)
 
     cdef int i, idec # index for loops
-    
+
     geometry(nlat, npp, nmm) # Set the boundary conditions
     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
 
@@ -60,15 +64,17 @@ def do_calc(int nlat, int iflag, int measures,
         magn[i] = magnetization(field, nlat, nvol) # Compute magnetization
         ene[i]  = energy(field, extfield, nlat, nvol, npp, nmm) # Compute energy
     if save_data:
-        np.savetxt('lattice', field, fmt='%0.f') # Save the lattice in file
         np.savetxt(f'../data/nlat{nlat}/data_beta{beta}_nlat{nlat}.dat', np.column_stack((magn, ene))) # Save Energy and Magnetization
+    if save_lattice:
+        np.savetxt(f'../data/lattice_matrix/lattice_nlat{nlat}_beta{beta}', field,
+                   fmt='%0.f', header = f'L: {nlat}, beta: {beta}, measures : {measures}, i_decorrel : {i_decorrel}, iflag : {iflag}') # Save the lattice in file
     return magn, ene
 
 @cython.boundscheck(False)  # Deactivate bounds checking ---> big power = big responsability
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
     """
-    Set the boundary conditions on the lattice: in this case the conditions 
+    Set the boundary conditions on the lattice: in this case the conditions
     are periodic.
     """
     cdef int i
@@ -105,7 +111,7 @@ cdef void inizialize_lattice(int iflag, int nlat, np.int_t[:,:] field):
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)     # Activate C division 
+@cython.cdivision(True)     # Activate C division
 cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
     """
     Compute the magnetization of the system as (sum of the spin)/Volume
@@ -119,11 +125,11 @@ cdef double magnetization(np.int_t[:,:] field, int nlat, int nvol):
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
-@cython.cdivision(True)   
-cdef double energy(np.int_t[:,:] field, double extfield, int nlat, int nvol, 
+@cython.cdivision(True)
+cdef double energy(np.int_t[:,:] field, double extfield, int nlat, int nvol,
                    np.int_t[:] npp, np.int_t[:] nmm):
     """
-    Compute the energy of the system as 
+    Compute the energy of the system as
         E = [0.5 * sum(neighboor * spin) - sum(extfield * spin)]/Volume
     """
     cdef int i, j, force
@@ -153,7 +159,7 @@ cdef inline void update_metropolis(np.int_t[:,:] field, # the field
 
         force = beta * ( neigh_force(i, j, field, npp, nmm) + extfield )
         phi = field[i, j]
-        
+
         p_rat = exp(-2. * phi * force)
 
         if rr[skip + 3*ivol + 2] < p_rat: field[i, j] = - phi
