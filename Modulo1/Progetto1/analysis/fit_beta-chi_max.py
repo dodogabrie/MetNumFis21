@@ -29,9 +29,11 @@ def fit_chi_beta(L, sigma_fraction= 0.5):
     chi_fit = chi[chi > chi_max_hypot - chi_dev]
     dchi_fit = dchi[chi > chi_max_hypot - chi_dev]
     beta_fit = beta[chi > chi_max_hypot - chi_dev]
+
     # Fit function
     def fit_func(x, chi_max, x_c, b):
         return chi_max - b*(x - x_c)**2
+
     # Initial conditions
     init = [np.max(chi_fit), beta_fit[np.argmax(chi_fit)], 10]
     xx = np.linspace(np.min(beta_fit), np.max(beta_fit), 1000)
@@ -54,11 +56,12 @@ def fit_chi_beta(L, sigma_fraction= 0.5):
 
     plt.plot(xx, fit_func(xx, *pars))
     plt.errorbar(beta_fit, chi_fit, yerr = dchi_fit, fmt = '.')
+#    plt.show()
     return chi_max, dchi_max, beta_max, dbeta_max, chi/ndof
 
 if __name__ == '__main__':
-    list_L = [10, 20, 30, 40, 50, 60, 70, 80]
-    sigma_fractions = [1.2, 0.4, 0.33, 0.45, 0.32, 0.4, 0.7, 0.6]
+    list_L          = [10,  15,  20,  25,  30,   35,   40,   50,  60,  70,  80]
+    sigma_fractions = [1.2, 0.4, 0.4, 0.4, 0.33, 0.5, 0.45, 0.32, 0.4, 0.7, 0.6]
     chi_max_list, dchi_max_list, beta_max_list, dbeta_max_list, chi_red_list = [],[],[],[],[]
     for L, frac in zip(list_L, sigma_fractions):
         chi_max, dchi_max, beta_max, dbeta_max, chi_red = fit_chi_beta(L, frac)
