@@ -25,7 +25,7 @@ def fit_gamma_nu(data_file):
     dchi = dchi[remove:]
     def fit_func(x, a, b, c):
         return a + b * x**c
-    init = [-20, 0.17, 1.7,]
+    init = [-20, 0.17, 1.75,]
     xx = np.linspace(np.min(L), np.max(L), 1000)
     sigma = dchi
     w = 1/sigma**2

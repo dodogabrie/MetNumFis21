@@ -44,7 +44,7 @@ def fit_chi_beta(L, sigma_fraction= 0.5):
     chi =((w*(chi_fit-fit_func(beta_fit,*pars))**2)).sum()
     ndof = len(beta_fit) - len(init)
     errors = np.sqrt(np.diag(covm))
-    print('Results:')
+    print(f'Results for L {L}:')
     chi_max, dchi_max = pars[0], errors[0]
     beta_max, dbeta_max = pars[1], errors[1]
     b, db = pars[2], errors[2]
@@ -60,8 +60,8 @@ def fit_chi_beta(L, sigma_fraction= 0.5):
     return chi_max, dchi_max, beta_max, dbeta_max, chi/ndof
 
 if __name__ == '__main__':
-    list_L          = [10,  15,  20,  25,  30,   35,   40,   50,  60,  70,  80]
-    sigma_fractions = [1.2, 0.4, 0.4, 0.4, 0.33, 0.5, 0.45, 0.32, 0.4, 0.7, 0.6]
+    list_L          = [10,  15,  20,  25,  30,   35,   40,  45,   50,  55,   60,  70,  80]
+    sigma_fractions = [1.2, 0.4, 0.4, 0.4, 0.33, 0.5, 0.45, 0.4, 0.32, 0.4,  0.4, 0.7, 0.6]
     chi_max_list, dchi_max_list, beta_max_list, dbeta_max_list, chi_red_list = [],[],[],[],[]
     for L, frac in zip(list_L, sigma_fractions):
         chi_max, dchi_max, beta_max, dbeta_max, chi_red = fit_chi_beta(L, frac)

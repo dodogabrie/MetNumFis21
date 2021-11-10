@@ -19,6 +19,10 @@ from scipy import stats
 
 def fit_nu_gamma_betac(data_file):
     L, _, _, beta_max ,dbeta_max , _ = np.loadtxt(data_file, unpack = True)
+    remove = 0
+    L = L[remove:]
+    beta_max = beta_max[remove:]
+    dbeta_max = dbeta_max[remove:]
     def fit_func(x, betac, xbar, nu):
         return betac + xbar * x**(-1/nu)
     init = [0.43, -0.5, 0.93,]
