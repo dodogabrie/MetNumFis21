@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     # PEAK SIMULATIONS
     #%%% Different parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    lock_simulation = False # don't risk to run unwanted simulations
+    lock_simulation = True # don't risk to run unwanted simulations
     beta_min = 0.43 # Minimum value of beta explored
     beta_max = 0.44 # Maximum value of beta explored
     beta_N = 24 # Number of beta observed
