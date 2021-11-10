@@ -1,8 +1,9 @@
 # Didattic Material
 Modulo0/Dida0/
 Modulo1/Dida1/
-Modulo1/Progetto1/data/nlat
-Modulo1/Progetto1/data/binder_history_beta*
+**/Modulo1/Progetto1/data/*/
+!Modulo1/Progetto1/data/final_results
+#Modulo1/Progetto1/data/binder_history_beta*
 #Modulo1/Progetto1/data/nlat15
 #Modulo1/Progetto1/data/nlat20
 #Modulo1/Progetto1/data/nlat25
