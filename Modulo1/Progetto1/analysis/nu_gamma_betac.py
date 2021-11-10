@@ -19,10 +19,12 @@ from scipy import stats
 
 def fit_nu_gamma_betac(data_file):
     L, _, _, beta_max ,dbeta_max , _ = np.loadtxt(data_file, unpack = True)
-    remove = 0
-    L = L[remove:]
-    beta_max = beta_max[remove:]
-    dbeta_max = dbeta_max[remove:]
+    remove = 2
+    up_remove = 0
+    n_data = len(L)
+    L = L[remove:n_data-up_remove]
+    beta_max = beta_max[remove:n_data-up_remove]
+    dbeta_max = dbeta_max[remove:n_data-up_remove]
     def fit_func(x, betac, xbar, nu):
         return betac + xbar * x**(-1/nu)
     init = [0.43, -0.5, 0.93,]
@@ -46,7 +48,12 @@ def fit_nu_gamma_betac(data_file):
 
     plt.plot(xx, fit_func(xx, *pars))
     plt.errorbar(L, beta_max, yerr = dbeta_max, fmt = '.')
-    plt.show()
+#    plt.show()
+    gamma_over_nu = 1.74
+    dgamma_over_nu = 0.01
+    gamma = gamma_over_nu * nu
+    dgamma = np.sqrt((dgamma_over_nu * nu )**2 + (dnu * gamma_over_nu)**2)
+    print(f'gamma = {gamma} +- {dgamma}')
 
 #    fig, ax = plt.subplots(figsize=(6, 5))
 #    ax.errorbar(x, y, yerr = dy, fmt = '.', color = 'k')

@@ -22,13 +22,18 @@ from scipy import stats
 def fit_chi_beta(L, sigma_fraction= 0.5):
     data_file = f'../data/final_results/data_obs_nlat{L}_test_final.dat'
     beta, _, _, _, _, chi, dchi, _, _ = np.loadtxt(data_file, unpack = True)
-    # Mean and standard deviation
-    chi_max_hypot = np.max(chi)
-    chi_dev = np.std(chi)*sigma_fraction
-    # extract values on peak
-    chi_fit = chi[chi > chi_max_hypot - chi_dev]
-    dchi_fit = dchi[chi > chi_max_hypot - chi_dev]
-    beta_fit = beta[chi > chi_max_hypot - chi_dev]
+    if len(beta) > 30:
+        # Mean and standard deviation
+        chi_max_hypot = np.max(chi)
+        chi_dev = np.std(chi)*sigma_fraction
+        # extract values on peak
+        chi_fit = chi[chi > chi_max_hypot - chi_dev]
+        dchi_fit = dchi[chi > chi_max_hypot - chi_dev]
+        beta_fit = beta[chi > chi_max_hypot - chi_dev]
+    else:
+        chi_fit = chi
+        dchi_fit = dchi
+        beta_fit = beta
 
     # Fit function
     def fit_func(x, chi_max, x_c, b):
@@ -60,8 +65,8 @@ def fit_chi_beta(L, sigma_fraction= 0.5):
     return chi_max, dchi_max, beta_max, dbeta_max, chi/ndof
 
 if __name__ == '__main__':
-    list_L          = [10,  15,  20,  25,  30,   35,   40,  45,   50,  55,   60,  70,  80]
-    sigma_fractions = [1.2, 0.4, 0.4, 0.4, 0.33, 0.5, 0.45, 0.4, 0.32, 0.4,  0.4, 0.7, 0.6]
+    list_L          = [10,  15,  20,  25,  30,   35,   40,  45,   50,  55,   60,  65,  70,  75,  80, 85, 90]
+    sigma_fractions = [1.2, 0.4, 0.4, 0.4, 0.33, 0.5, 0.45, 0.4, 0.32, 0.4,  0.4, 0.,  0.7, 0., 0.6, 0., 0.]
     chi_max_list, dchi_max_list, beta_max_list, dbeta_max_list, chi_red_list = [],[],[],[],[]
     for L, frac in zip(list_L, sigma_fractions):
         chi_max, dchi_max, beta_max, dbeta_max, chi_red = fit_chi_beta(L, frac)

@@ -19,7 +19,7 @@ from scipy import stats
 
 def fit_gamma_nu(data_file):
     L, chi, dchi,_ ,_ , _ = np.loadtxt(data_file, unpack = True)
-    remove = 0
+    remove = 2
     L = L[remove:]
     chi = chi[remove:]
     dchi = dchi[remove:]
