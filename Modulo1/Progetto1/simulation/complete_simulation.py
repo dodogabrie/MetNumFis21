@@ -25,8 +25,8 @@ def beta_loop(iflag, nlat, beta_array,
               measures, i_decorrel,
               extfield, n_jobs):
     def parallel_job(i, beta):
-        print(f'L: {nlat}, step {i} su {len(beta_array)}', end = '\r')
-        magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta, save_data = True)
+        print(f'L: {nlat}, step {i} su {len(beta_array)}')
+        magn, ene = ising.do_calc(nlat, iflag, measures, i_decorrel, extfield, beta, save_data = True, save_lattice = False)
         m_abs = np.abs(magn)
         chi = compute_chi(m_abs, (nlat, beta))
         c = compute_c(ene, (nlat, beta))
@@ -58,8 +58,9 @@ def L_loop(iflag, L_array, beta_array,
 
 if __name__ == '__main__':
 
+    # GENERAL SIMULATIONS
     #%%% Parameters of simulation %%%%%%%%%%%%%%%%%%%%%%%%
-    lock_simulation = False # don't risk to run unwanted simulations
+    lock_simulation = True # don't risk to run unwanted simulations
     iflag = 1 # Start hot or cold
     i_decorrel = 50 # Number of decorrelation for metro
     extfield = 0. # External field
@@ -67,10 +68,10 @@ if __name__ == '__main__':
     beta_min = 0.38 # Minimum value of beta explored
     beta_max = 0.48 # Maximum value of beta explored
     beta_N = 100 # Number of beta observed
-    L_min = 45 # Minumu L
-    L_max = 75 # Maximum L
+    L_min = 10 # Minumu L
+    L_max = 80 # Maximum L
     L_step = 10 # Step between one L and another
-    njobs = 6 # Number of jobs
+    njobs = 8 # Number of jobs
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     #### Create non-linear beta interval (see explain_bootstrap)###############
@@ -85,6 +86,26 @@ if __name__ == '__main__':
     L_array    = np.arange(L_min, L_max + L_step, L_step, dtype = int)
     # Starting simulation
     start = time.time()
+    if not lock_simulation:
+        L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, njobs = njobs)
+        print('\n########################### Total Time:', time.time()-start)
+    if lock_simulation:
+        print('The simulation is locked, please change the parameter lock_simulation')
+
+
+    # PEAK SIMULATIONS
+    #%%% Different parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    lock_simulation = False # don't risk to run unwanted simulations
+    beta_min = 0.43 # Minimum value of beta explored
+    beta_max = 0.44 # Maximum value of beta explored
+    beta_N = 24 # Number of beta observed
+    L_min = 65 # Minumu L
+    L_max = 85 # Maximum L
+    L_step = 10 # Step between one L and another
+    njobs = 6 # Number of jobs
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    beta_array = np.linspace(beta_min, beta_max, beta_N)
+    L_array = np.arange(L_min, L_max + L_step, L_step, dtype = int)
     if not lock_simulation:
         L_loop(iflag, L_array, beta_array, measures, i_decorrel, extfield, njobs = njobs)
         print('\n########################### Total Time:', time.time()-start)
