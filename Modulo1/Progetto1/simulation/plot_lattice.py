@@ -16,27 +16,35 @@ import ising
 from os import listdir
 from os.path import isfile, join
 import time
+from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 
 def plot_simulations(beta_array, param, simulate = False, save_fig = False):
     fig = plt.figure(figsize = (20, 6))
-    rowcolnum = 131
-    for beta in beta_array:
+    ax1 = fig.add_subplot(131,projection='3d')
+    ax2 = fig.add_subplot(132,projection='3d')
+    ax3 = fig.add_subplot(133,projection='3d')
+    def parallel_plot(ax, beta):
         if simulate:
             ising.do_calc(*param, beta, save_data = False, save_lattice = True)
-        ax = plot_lattice(f'../data/lattice_matrix/lattice_nlat{param[0]}_beta{beta}', fig = fig, rowcolnum =rowcolnum)
+
+    list_args = [[ax, beta] for ax, beta in zip([ax1, ax2, ax3], beta_array)]
+    list_outputs = Parallel(n_jobs=3)(delayed(parallel_plot)(*args) for args in list_args)
+
+    for ax, beta in zip([ax1, ax2, ax3], beta_array):
+        plot_lattice(f'../data/lattice_matrix/lattice_nlat{param[0]}_beta{beta}', ax = ax)
         ax.set_title(rf'$\beta$ = {beta}', fontsize = 15)
-        rowcolnum += 1
     plt.tight_layout()
     if save_fig:
         plt.savefig(f'../figures/plot3D_lattice.png', dpi = 200)
     plt.show()
     return
 
-def plot_lattice(lattice_file, fig = None, rowcolnum = None):
+def plot_lattice(lattice_file, ax = None):
     lattice = np.loadtxt(lattice_file)
-    if fig == None: fig = plt.figure()
-    ax = fig.add_subplot(rowcolnum,projection='3d')
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111,projection='3d')
     x = np.arange(len(lattice))
     y = np.arange(len(lattice))
     X, Y = np.meshgrid(x, y)
@@ -55,9 +63,9 @@ if __name__ == '__main__':
     iflag = 1 # Start hot or cold
     i_decorrel = 100 # Number of decorrelation for metro
     extfield = 0. # External field
-    measures = int(1e3) # Number of measures
+    measures = int(1e5) # Number of measures
     L = 70
     param = [L, iflag, measures, i_decorrel, extfield]
     beta_array = [0.38, 0.44, 0.48]
-    plot_simulations(beta_array, param)
+    plot_simulations(beta_array, param, simulate = True)
     pass
