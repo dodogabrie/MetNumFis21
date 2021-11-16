@@ -145,16 +145,16 @@ def fit_binder(beta, remove = 10, ax = None):
     axs[1].errorbar(x_fit, B_fit, yerr = dB_fit, ls='', fmt ='.', c = 'black', label = 'dati di fit')
     axs[1].errorbar(x_outlier, B_outlier, yerr = dB_outlier, ls='', fmt ='.', c = 'red', label = 'outliers')
 
-    axs[1].text(0.85, 0.85, f'B = {a:.3f} $\pm$ {da:.3f}\n$\chi$ ridotto = {(chi/ndof):.2f}',
+    axs[1].text(0.8, 0.15, f'B = {a:.6f} $\pm$ {da:.6f}\n$\chi$ ridotto = {(chi/ndof):.2f}',
                 horizontalalignment='center', verticalalignment='center',
                 transform=axs[1].transAxes, fontsize = 10)
     axs[1].set_xlabel('1/L')
     axs[1].set_ylabel('B')
     axs[1].grid(alpha = 0.2)
-    axs[1].legend(loc = 'lower left')
+    axs[1].legend(loc = 'upper left')
 #    axs[1].set_xscale('log')
 
-    plt.suptitle(rf'Cumulante di Binder per $\beta$ = {beta} (fase disordinata)', fontsize = 14)
+    plt.suptitle(rf'Cumulante di Binder per $\beta$ = {beta} (fase ordinata)', fontsize = 14)
     plt.tight_layout()
     plt.savefig(f'../figures/Binder_fit/fit_binder{beta}.png', dpi = 200)
     np.savetxt(f'../figures/Binder_fit/fit_binder{beta}.txt', L_fit,
@@ -200,6 +200,6 @@ if __name__ == '__main__':
 #    plt.show()
 
     # Fit binder
-#    fit_binder(beta_disordered, remove = 5)
+#    fit_binder(beta_ordered, remove = 30)
     pass
 
