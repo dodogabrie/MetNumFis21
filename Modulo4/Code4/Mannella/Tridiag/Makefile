@@ -19,6 +19,7 @@ compile:
 	mkdir -p data
 	mkdir -p core
 	python setup.py build_ext --build-lib core/
+	cp core/* ../../../../utils/m4/
 annotate:
 	cython -3 -a *.pyx
 	@echo "Annotated HTML of the code"
