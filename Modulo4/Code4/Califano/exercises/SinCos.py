@@ -38,7 +38,7 @@ def foward_der(u,dx):
     """
     der = np.empty(len(u))
     der[:-1] = (u[1:] - u[:-1])/dx
-    der[-1] = der[0]
+    der[-1] = (u[0] - u[-1])/dx # periodic boundary condition
     return der
 
 def backward_der(u,dx):
@@ -47,10 +47,28 @@ def backward_der(u,dx):
     """
     der = np.empty(len(u))
     der[1:] = (u[1:] - u[:-1])/dx
-    der[0] = der[-1]
+    der[0] = (u[0] - u[-1])/dx # periodic boundary condition
     return der
 
+def simm_der(u,dx):
+    """
+    Derivative considering the previous point
+    """
+    der = np.empty(len(u))
+    der[1:-1] = (u[2:] - u[:-2])/(2*dx)
+    der[0] = (u[1] - u[-1])/(2*dx) # left periodic boundary condition
+    der[-1] = (u[0] - u[-2])/(2*dx) # right periodic boundary condition
+    return der
+
+#####Compare numerical derivative and analitical derivative
 plt.plot(x, u1(x), color = 'blue')
 plt.plot(x, foward_der(u(x), dx), color = 'red')
 plt.plot(x, backward_der(u(x), dx), color = 'green')
+plt.plot(x, simm_der(u(x), dx), color = 'pink')
 plt.show()
+
+#####verify periodicity of derivative
+#plt.plot(np.concatenate((x,x+L)),np.concatenate((backward_der(u(x), dx), backward_der( u(x+L), dx ))))
+#plt.show()
+
+
