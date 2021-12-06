@@ -54,6 +54,9 @@ def fft_der(u,dx):
 def diff_fin_comp_der(u, dx):
     """
     Compact finite different derivative using Shepard Morrisoni formula.
+    References:
+    - http://wwwmayr.in.tum.de/konferenzen/Jass09/courses/2/Soldatenko_presentation.pdf
+    - http://www.phys.lsu.edu/classes/fall2013/phys7412/lecture10.pdf
     """
 
     gamma = -1. # Why this gamma work? Literature say to use -diag[0] = -4
