@@ -140,3 +140,14 @@ def diff_fin_comp_der2(u, dx):
     der[-1] = (b[-1] - (v[0]+v[-1]))/(diag[0] - (u[0] + u[-1])) # f'_tilde
     der[:-1] = v - u * der[-1] # f'_n
     return der
+
+def simm_der2(u, dx):
+    """
+    Second symmetric derivative
+    """
+    der = np.empty(len(u))
+    der[1:-1] = (u[2:] - 2 * u[1:-1] + u[:-2])/(dx**2)
+    der[0] = (u[1] - 2 * u[0] + u[-1])/(dx**2) # left periodic boundary condition
+    der[-1] = (u[0] - 2 * u[-1] + u[-2])/(dx**2) # right periodic boundary condition
+    return der
+

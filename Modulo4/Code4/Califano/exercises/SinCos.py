@@ -23,7 +23,7 @@ dx = L/N
 x = np.linspace(0,L,N, endpoint = False)
 
 ###############################################################
-#evaluate the function u 
+#evaluate the function u
 def u(x):
     return np.sin(2*np.pi*x/L)
 
@@ -32,6 +32,9 @@ def u(x):
 
 def u1(x):
     return 2*np.pi/L * np.cos(2*np.pi*x/L)
+
+def u2(x):
+    return - (2*np.pi/L)**2 * np.sin(2*np.pi*x/L)
 
 #numerical derivative
 def forward_der(u,dx):
@@ -70,8 +73,8 @@ def fft_der(u,dx):
     # => dy = dx/(2*pi)
     dy =  dx / (2 * np.pi)
     # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
-    fft = fftpack.fft(u) # Discret fourier transform 
-    k = fftpack.fftfreq( N, dy) 
+    fft = fftpack.fft(u) # Discret fourier transform
+    k = fftpack.fftfreq( N, dy)
     ikfft = 1j * k * fft
     der = fftpack.ifft(ikfft)
     return der.real
@@ -126,14 +129,26 @@ def diff_fin_comp_der2(u, dx):
     b[-1] = 3/dx * (u[0] - u[-2])
 
     # b_tilde = b[:-1]
-    v, inv = solve(diag[:-1], dlo[:-1], 
+    v, inv = solve(diag[:-1], dlo[:-1],
                    dup[:-1], b[:-1])
-    u, inv = solve(diag[:-1], dlo[:-1], 
+    u, inv = solve(diag[:-1], dlo[:-1],
                    dup[:-1], F)
 
     der[-1] = (b[-1] - (v[0]+v[-1]))/(diag[0] - (u[0] + u[-1]))
     der[:-1] = v - u * der[-1]
     return der
+
+
+def simm_der2(u, dx):
+    """
+    Second symmetric derivative
+    """
+    der = np.empty(len(u))
+    der[1:-1] = (u[2:] - 2 * u[1:-1] + u[:-2])/(dx**2)
+    der[0] = (u[1] - 2 * u[0] + u[-1])/(dx**2) # left periodic boundary condition
+    der[-1] = (u[0] - 2 * u[-1] + u[-2])/(dx**2) # right periodic boundary condition
+    return der
+
 ########################SAVE IN FILE############################
 
 
@@ -165,5 +180,12 @@ plt.plot(x, simm_der(u(x), dx), color = 'pink', label = 'simm')
 plt.plot(x, fft_der(u(x), dx), color = 'black', label = 'fft')
 plt.plot(x, diff_fin_comp_der(u(x), dx), color = 'brown', label = 'dfc')
 plt.plot(x, diff_fin_comp_der2(u(x), dx), color = 'orange', label = 'dfc2')
+plt.legend()
+plt.show()
+
+
+##########################VERIFY SECOND DERIVATIVE################
+plt.plot(x, u2(x), color = 'blue', label = 'analytical')
+plt.plot(x, simm_der2(u(x), dx), color = 'pink', label = 'simm')
 plt.legend()
 plt.show()
