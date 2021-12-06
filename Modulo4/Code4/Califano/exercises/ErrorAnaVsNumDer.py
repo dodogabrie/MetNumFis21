@@ -57,6 +57,7 @@ list_err1_f = []
 list_err1_s = []
 list_err1_fft = []
 list_err1_dfc = []
+list_err1_dfc2 = []
 list_err2 = []
 for N in range(10,1000,5):
 	dx = L / N
@@ -79,6 +80,9 @@ for N in range(10,1000,5):
 	f_num = der.diff_fin_comp_der(u(x), dx)
 	list_err1_dfc.append(err1(f_ana, f_num))
 
+    # diff fin comp 2
+	f_num = der.diff_fin_comp_der2(u(x), dx)
+	list_err1_dfc2.append(err1(f_ana, f_num))
 	list_N.append(N)
 	list_dx.append(dx)
 	
@@ -86,7 +90,8 @@ plt.plot(list_dx, list_err1_f, marker = '.', label = 'ForW') #error of order dx
 plt.plot(list_dx, list_err1_b, marker = '.', label = 'BackW') #error of order dx
 plt.plot(list_dx, list_err1_s, marker = '.', label = 'simm') #error of order dx**2
 plt.plot(list_dx, list_err1_fft, marker = '.', label = 'fft') #error of order very low
-plt.plot(list_dx, list_err1_dfc, marker = '.', label = 'diff fin comp.') #error of order dx**4
+#plt.plot(list_dx, list_err1_dfc, marker = '.', label = 'diff fin comp.') #error of order dx**4
+plt.plot(list_dx, list_err1_dfc2, marker = '.', label = 'diff fin comp. 2') #error of order dx**4
 #plt.plot(list_dx, list_err2, marker = '.', c = 'brown') #bad 'cause not linear...
 plt.grid(alpha = 0.3)
 plt.xlabel('dx')
