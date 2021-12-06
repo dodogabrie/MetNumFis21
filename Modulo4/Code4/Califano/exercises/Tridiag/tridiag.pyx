@@ -31,9 +31,12 @@ def solve(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b):
     cdef int inv, N = len(b)
     # x is the solution of the tridiagonal system
     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] x = np.empty(N).astype(float)
-    inv = gauss_reduction(diag, dlo, dup, b, N)
+    # This copy are needed for not modify original vectors
+    cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] diag_cp = np.copy(diag) 
+    cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)
+    inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
     if inv != 0:
-        inv = find_solution(diag, dup, b, x, N)
+        inv = find_solution(diag_cp, dup, b_cp, x, N)
     return x, bool(inv)
 
  

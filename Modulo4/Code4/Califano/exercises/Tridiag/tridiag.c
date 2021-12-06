@@ -2248,7 +2248,9 @@ static const char __pyx_k_dup[] = "dup";
 static const char __pyx_k_inv[] = "inv";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_obj[] = "obj";
+static const char __pyx_k_b_cp[] = "b_cp";
 static const char __pyx_k_base[] = "base";
+static const char __pyx_k_copy[] = "copy";
 static const char __pyx_k_diag[] = "diag";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_main[] = "__main__";
@@ -2280,6 +2282,7 @@ static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_update[] = "update";
+static const char __pyx_k_diag_cp[] = "diag_cp";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_tridiag[] = "tridiag";
@@ -2366,6 +2369,7 @@ static PyObject *__pyx_n_s_View_MemoryView;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_astype;
 static PyObject *__pyx_n_s_b;
+static PyObject *__pyx_n_s_b_cp;
 static PyObject *__pyx_n_s_base;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
@@ -2373,7 +2377,9 @@ static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_kp_s_contiguous_and_direct;
 static PyObject *__pyx_kp_s_contiguous_and_indirect;
+static PyObject *__pyx_n_s_copy;
 static PyObject *__pyx_n_s_diag;
+static PyObject *__pyx_n_s_diag_cp;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_dlo;
 static PyObject *__pyx_n_s_dtype_is_object;
@@ -2623,6 +2629,12 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   int __pyx_v_inv;
   int __pyx_v_N;
   PyArrayObject *__pyx_v_x = 0;
+  PyArrayObject *__pyx_v_diag_cp = 0;
+  PyArrayObject *__pyx_v_b_cp = 0;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_b_cp;
+  __Pyx_Buffer __pyx_pybuffer_b_cp;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_diag_cp;
+  __Pyx_Buffer __pyx_pybuffer_diag_cp;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_x;
   __Pyx_Buffer __pyx_pybuffer_x;
   PyObject *__pyx_r = NULL;
@@ -2634,8 +2646,12 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   PyArrayObject *__pyx_t_7 = NULL;
-  int __pyx_t_8;
-  __Pyx_memviewslice __pyx_t_9 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyArrayObject *__pyx_t_8 = NULL;
+  PyArrayObject *__pyx_t_9 = NULL;
+  __Pyx_memviewslice __pyx_t_10 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_11 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_12;
+  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2644,6 +2660,14 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   __pyx_pybuffer_x.refcount = 0;
   __pyx_pybuffernd_x.data = NULL;
   __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
+  __pyx_pybuffer_diag_cp.pybuffer.buf = NULL;
+  __pyx_pybuffer_diag_cp.refcount = 0;
+  __pyx_pybuffernd_diag_cp.data = NULL;
+  __pyx_pybuffernd_diag_cp.rcbuffer = &__pyx_pybuffer_diag_cp;
+  __pyx_pybuffer_b_cp.pybuffer.buf = NULL;
+  __pyx_pybuffer_b_cp.refcount = 0;
+  __pyx_pybuffernd_b_cp.data = NULL;
+  __pyx_pybuffernd_b_cp.rcbuffer = &__pyx_pybuffer_b_cp;
 
   /* "tridiag.pyx":31
  *         (the solution, invertibility of A)
@@ -2659,8 +2683,8 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
  *     cdef int inv, N = len(b)
  *     # x is the solution of the tridiagonal system
  *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] x = np.empty(N).astype(float)             # <<<<<<<<<<<<<<
- *     inv = gauss_reduction(diag, dlo, dup, b, N)
- *     if inv != 0:
+ *     # This copy are needed for not modify original vectors
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] diag_cp = np.copy(diag)
  */
   __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -2717,62 +2741,166 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   __pyx_v_x = ((PyArrayObject *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "tridiag.pyx":34
- *     # x is the solution of the tridiagonal system
- *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] x = np.empty(N).astype(float)
- *     inv = gauss_reduction(diag, dlo, dup, b, N)             # <<<<<<<<<<<<<<
- *     if inv != 0:
- *         inv = find_solution(diag, dup, b, x, N)
- */
-  __pyx_v_inv = __pyx_f_7tridiag_gauss_reduction(__pyx_v_diag, __pyx_v_dlo, __pyx_v_dup, __pyx_v_b, __pyx_v_N);
-
   /* "tridiag.pyx":35
  *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] x = np.empty(N).astype(float)
- *     inv = gauss_reduction(diag, dlo, dup, b, N)
+ *     # This copy are needed for not modify original vectors
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] diag_cp = np.copy(diag)             # <<<<<<<<<<<<<<
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_copy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_diag, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_7tridiag_DTYPE_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_7tridiag_DTYPE_t, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_4 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_8 = ((PyArrayObject *)__pyx_t_2);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_diag_cp.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_nn___pyx_t_7tridiag_DTYPE_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
+      __pyx_v_diag_cp = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_diag_cp.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 35, __pyx_L1_error)
+    } else {__pyx_pybuffernd_diag_cp.diminfo[0].strides = __pyx_pybuffernd_diag_cp.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_diag_cp.diminfo[0].shape = __pyx_pybuffernd_diag_cp.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_8 = 0;
+  __pyx_v_diag_cp = ((PyArrayObject *)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "tridiag.pyx":36
+ *     # This copy are needed for not modify original vectors
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] diag_cp = np.copy(diag)
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)             # <<<<<<<<<<<<<<
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
+ *     if inv != 0:
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_copy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_b, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_7tridiag_DTYPE_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_7tridiag_DTYPE_t, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = NULL;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_5);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_5, function);
+    }
+  }
+  __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_9 = ((PyArrayObject *)__pyx_t_2);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_b_cp.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_7tridiag_DTYPE_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
+      __pyx_v_b_cp = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_b_cp.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 36, __pyx_L1_error)
+    } else {__pyx_pybuffernd_b_cp.diminfo[0].strides = __pyx_pybuffernd_b_cp.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_b_cp.diminfo[0].shape = __pyx_pybuffernd_b_cp.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_9 = 0;
+  __pyx_v_b_cp = ((PyArrayObject *)__pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "tridiag.pyx":37
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] diag_cp = np.copy(diag)
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)             # <<<<<<<<<<<<<<
+ *     if inv != 0:
+ *         inv = find_solution(diag_cp, dup, b_cp, x, N)
+ */
+  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_diag_cp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_b_cp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_v_inv = __pyx_f_7tridiag_gauss_reduction(__pyx_t_10, __pyx_v_dlo, __pyx_v_dup, __pyx_t_11, __pyx_v_N);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+  __pyx_t_10.memview = NULL;
+  __pyx_t_10.data = NULL;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+  __pyx_t_11.memview = NULL;
+  __pyx_t_11.data = NULL;
+
+  /* "tridiag.pyx":38
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
  *     if inv != 0:             # <<<<<<<<<<<<<<
- *         inv = find_solution(diag, dup, b, x, N)
+ *         inv = find_solution(diag_cp, dup, b_cp, x, N)
  *     return x, bool(inv)
  */
-  __pyx_t_8 = ((__pyx_v_inv != 0) != 0);
-  if (__pyx_t_8) {
+  __pyx_t_12 = ((__pyx_v_inv != 0) != 0);
+  if (__pyx_t_12) {
 
-    /* "tridiag.pyx":36
- *     inv = gauss_reduction(diag, dlo, dup, b, N)
+    /* "tridiag.pyx":39
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
  *     if inv != 0:
- *         inv = find_solution(diag, dup, b, x, N)             # <<<<<<<<<<<<<<
+ *         inv = find_solution(diag_cp, dup, b_cp, x, N)             # <<<<<<<<<<<<<<
  *     return x, bool(inv)
  * 
  */
-    __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_x), PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 36, __pyx_L1_error)
-    __pyx_v_inv = __pyx_f_7tridiag_find_solution(__pyx_v_diag, __pyx_v_dup, __pyx_v_b, __pyx_t_9, __pyx_v_N);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
-    __pyx_t_9.memview = NULL;
-    __pyx_t_9.data = NULL;
+    __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_diag_cp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_b_cp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_7tridiag_DTYPE_t(((PyObject *)__pyx_v_x), PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __pyx_v_inv = __pyx_f_7tridiag_find_solution(__pyx_t_11, __pyx_v_dup, __pyx_t_10, __pyx_t_13, __pyx_v_N);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+    __pyx_t_11.memview = NULL;
+    __pyx_t_11.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+    __pyx_t_10.memview = NULL;
+    __pyx_t_10.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
+    __pyx_t_13.memview = NULL;
+    __pyx_t_13.data = NULL;
 
-    /* "tridiag.pyx":35
- *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] x = np.empty(N).astype(float)
- *     inv = gauss_reduction(diag, dlo, dup, b, N)
+    /* "tridiag.pyx":38
+ *     cdef np.ndarray[DTYPE_t, ndim=1, mode='c'] b_cp = np.copy(b)
+ *     inv = gauss_reduction(diag_cp, dlo, dup, b_cp, N)
  *     if inv != 0:             # <<<<<<<<<<<<<<
- *         inv = find_solution(diag, dup, b, x, N)
+ *         inv = find_solution(diag_cp, dup, b_cp, x, N)
  *     return x, bool(inv)
  */
   }
 
-  /* "tridiag.pyx":37
+  /* "tridiag.pyx":40
  *     if inv != 0:
- *         inv = find_solution(diag, dup, b, x, N)
+ *         inv = find_solution(diag_cp, dup, b_cp, x, N)
  *     return x, bool(inv)             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_inv); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_inv); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_12 < 0)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyBool_FromLong((!(!__pyx_t_8))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong((!(!__pyx_t_12))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(((PyObject *)__pyx_v_x));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
@@ -2799,20 +2927,28 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_9, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
     __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_b_cp.rcbuffer->pybuffer);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_diag_cp.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
   __Pyx_AddTraceback("tridiag.solve", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_b_cp.rcbuffer->pybuffer);
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_diag_cp.rcbuffer->pybuffer);
   __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
   __pyx_L2:;
   __Pyx_XDECREF((PyObject *)__pyx_v_x);
+  __Pyx_XDECREF((PyObject *)__pyx_v_diag_cp);
+  __Pyx_XDECREF((PyObject *)__pyx_v_b_cp);
   __PYX_XDEC_MEMVIEW(&__pyx_v_diag, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_dlo, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_dup, 1);
@@ -2822,7 +2958,7 @@ static PyObject *__pyx_pf_7tridiag_solve(CYTHON_UNUSED PyObject *__pyx_self, __P
   return __pyx_r;
 }
 
-/* "tridiag.pyx":43
+/* "tridiag.pyx":46
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int gauss_reduction(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b, int N):             # <<<<<<<<<<<<<<
@@ -2845,7 +2981,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
   Py_ssize_t __pyx_t_7;
   __Pyx_RefNannySetupContext("gauss_reduction", 0);
 
-  /* "tridiag.pyx":44
+  /* "tridiag.pyx":47
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int gauss_reduction(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b, int N):
  *     cdef int i, inv = 1 # inv = 1 => invertible system             # <<<<<<<<<<<<<<
@@ -2854,7 +2990,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
  */
   __pyx_v_inv = 1;
 
-  /* "tridiag.pyx":46
+  /* "tridiag.pyx":49
  *     cdef int i, inv = 1 # inv = 1 => invertible system
  *     cdef DTYPE_t factor
  *     for i in range(1, N):             # <<<<<<<<<<<<<<
@@ -2866,7 +3002,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
   for (__pyx_t_3 = 1; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "tridiag.pyx":49
+    /* "tridiag.pyx":52
  *         # if the previous diag. element = 0 stop the loop:
  *         # the factor would be infinite!
  *         if diag[i-1] == 0:             # <<<<<<<<<<<<<<
@@ -2877,7 +3013,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
     __pyx_t_5 = (((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_4 * __pyx_v_diag.strides[0]) ))) == 0.0) != 0);
     if (__pyx_t_5) {
 
-      /* "tridiag.pyx":50
+      /* "tridiag.pyx":53
  *         # the factor would be infinite!
  *         if diag[i-1] == 0:
  *             inv = 0 # matrix not invertible in this case             # <<<<<<<<<<<<<<
@@ -2886,7 +3022,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
  */
       __pyx_v_inv = 0;
 
-      /* "tridiag.pyx":51
+      /* "tridiag.pyx":54
  *         if diag[i-1] == 0:
  *             inv = 0 # matrix not invertible in this case
  *             break # stop the loop             # <<<<<<<<<<<<<<
@@ -2895,7 +3031,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
  */
       goto __pyx_L4_break;
 
-      /* "tridiag.pyx":49
+      /* "tridiag.pyx":52
  *         # if the previous diag. element = 0 stop the loop:
  *         # the factor would be infinite!
  *         if diag[i-1] == 0:             # <<<<<<<<<<<<<<
@@ -2904,7 +3040,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
  */
     }
 
-    /* "tridiag.pyx":54
+    /* "tridiag.pyx":57
  *         else: # prev. diag. element != 0
  *             # don't forget that dlo[0] = a_21
  *             factor = dlo[i-1]/diag[i-1]             # <<<<<<<<<<<<<<
@@ -2916,7 +3052,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
       __pyx_t_6 = (__pyx_v_i - 1);
       __pyx_v_factor = ((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_dlo.data + __pyx_t_4 * __pyx_v_dlo.strides[0]) ))) / (*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_6 * __pyx_v_diag.strides[0]) ))));
 
-      /* "tridiag.pyx":55
+      /* "tridiag.pyx":58
  *             # don't forget that dlo[0] = a_21
  *             factor = dlo[i-1]/diag[i-1]
  *             diag[i] = diag[i] - factor * dup[i-1]             # <<<<<<<<<<<<<<
@@ -2928,7 +3064,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
       __pyx_t_7 = __pyx_v_i;
       *((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_7 * __pyx_v_diag.strides[0]) )) = ((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_6 * __pyx_v_diag.strides[0]) ))) - (__pyx_v_factor * (*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_dup.data + __pyx_t_4 * __pyx_v_dup.strides[0]) )))));
 
-      /* "tridiag.pyx":56
+      /* "tridiag.pyx":59
  *             factor = dlo[i-1]/diag[i-1]
  *             diag[i] = diag[i] - factor * dup[i-1]
  *             b[i] = b[i] - factor * b[i-1]             # <<<<<<<<<<<<<<
@@ -2943,7 +3079,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
   }
   __pyx_L4_break:;
 
-  /* "tridiag.pyx":57
+  /* "tridiag.pyx":60
  *             diag[i] = diag[i] - factor * dup[i-1]
  *             b[i] = b[i] - factor * b[i-1]
  *     return inv             # <<<<<<<<<<<<<<
@@ -2953,7 +3089,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
   __pyx_r = __pyx_v_inv;
   goto __pyx_L0;
 
-  /* "tridiag.pyx":43
+  /* "tridiag.pyx":46
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int gauss_reduction(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b, int N):             # <<<<<<<<<<<<<<
@@ -2967,7 +3103,7 @@ static int __pyx_f_7tridiag_gauss_reduction(__Pyx_memviewslice __pyx_v_diag, __P
   return __pyx_r;
 }
 
-/* "tridiag.pyx":62
+/* "tridiag.pyx":65
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int find_solution(DTYPE_t[:] diag, DTYPE_t[:] dup, DTYPE_t[:] b, DTYPE_t[:] x, int N):             # <<<<<<<<<<<<<<
@@ -2988,7 +3124,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
   Py_ssize_t __pyx_t_6;
   __Pyx_RefNannySetupContext("find_solution", 0);
 
-  /* "tridiag.pyx":63
+  /* "tridiag.pyx":66
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int find_solution(DTYPE_t[:] diag, DTYPE_t[:] dup, DTYPE_t[:] b, DTYPE_t[:] x, int N):
  *     cdef int i, inv = 1             # <<<<<<<<<<<<<<
@@ -2997,7 +3133,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
  */
   __pyx_v_inv = 1;
 
-  /* "tridiag.pyx":66
+  /* "tridiag.pyx":69
  *     # Now we start from the bottom: if the last diag element is 0
  *     # the system is not invertible
  *     if diag[N-1] == 0:             # <<<<<<<<<<<<<<
@@ -3008,7 +3144,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
   __pyx_t_2 = (((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_1 * __pyx_v_diag.strides[0]) ))) == 0.0) != 0);
   if (__pyx_t_2) {
 
-    /* "tridiag.pyx":67
+    /* "tridiag.pyx":70
  *     # the system is not invertible
  *     if diag[N-1] == 0:
  *         inv = 0             # <<<<<<<<<<<<<<
@@ -3017,7 +3153,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
  */
     __pyx_v_inv = 0;
 
-    /* "tridiag.pyx":66
+    /* "tridiag.pyx":69
  *     # Now we start from the bottom: if the last diag element is 0
  *     # the system is not invertible
  *     if diag[N-1] == 0:             # <<<<<<<<<<<<<<
@@ -3027,7 +3163,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
     goto __pyx_L3;
   }
 
-  /* "tridiag.pyx":70
+  /* "tridiag.pyx":73
  *     else:
  *         # the first element is different because it doesn't have dlo or dup
  *         x[N-1] = b[N-1]/diag[N-1]             # <<<<<<<<<<<<<<
@@ -3040,7 +3176,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
     __pyx_t_4 = (__pyx_v_N - 1);
     *((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_x.data + __pyx_t_4 * __pyx_v_x.strides[0]) )) = ((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_b.data + __pyx_t_1 * __pyx_v_b.strides[0]) ))) / (*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_3 * __pyx_v_diag.strides[0]) ))));
 
-    /* "tridiag.pyx":71
+    /* "tridiag.pyx":74
  *         # the first element is different because it doesn't have dlo or dup
  *         x[N-1] = b[N-1]/diag[N-1]
  *         for i in range(N-2, -1, -1):             # <<<<<<<<<<<<<<
@@ -3050,7 +3186,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
     for (__pyx_t_5 = (__pyx_v_N - 2); __pyx_t_5 > -1; __pyx_t_5-=1) {
       __pyx_v_i = __pyx_t_5;
 
-      /* "tridiag.pyx":72
+      /* "tridiag.pyx":75
  *         x[N-1] = b[N-1]/diag[N-1]
  *         for i in range(N-2, -1, -1):
  *             if diag[i] == 0:             # <<<<<<<<<<<<<<
@@ -3061,7 +3197,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
       __pyx_t_2 = (((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_diag.data + __pyx_t_3 * __pyx_v_diag.strides[0]) ))) == 0.0) != 0);
       if (__pyx_t_2) {
 
-        /* "tridiag.pyx":73
+        /* "tridiag.pyx":76
  *         for i in range(N-2, -1, -1):
  *             if diag[i] == 0:
  *                 inv = 0             # <<<<<<<<<<<<<<
@@ -3070,7 +3206,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
  */
         __pyx_v_inv = 0;
 
-        /* "tridiag.pyx":74
+        /* "tridiag.pyx":77
  *             if diag[i] == 0:
  *                 inv = 0
  *                 break             # <<<<<<<<<<<<<<
@@ -3079,7 +3215,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
  */
         goto __pyx_L5_break;
 
-        /* "tridiag.pyx":72
+        /* "tridiag.pyx":75
  *         x[N-1] = b[N-1]/diag[N-1]
  *         for i in range(N-2, -1, -1):
  *             if diag[i] == 0:             # <<<<<<<<<<<<<<
@@ -3088,7 +3224,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
  */
       }
 
-      /* "tridiag.pyx":75
+      /* "tridiag.pyx":78
  *                 inv = 0
  *                 break
  *             b[i] = b[i] - dup[i] * x[i+1]             # <<<<<<<<<<<<<<
@@ -3101,7 +3237,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
       __pyx_t_6 = __pyx_v_i;
       *((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_b.data + __pyx_t_6 * __pyx_v_b.strides[0]) )) = ((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_b.data + __pyx_t_3 * __pyx_v_b.strides[0]) ))) - ((*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_dup.data + __pyx_t_1 * __pyx_v_dup.strides[0]) ))) * (*((__pyx_t_7tridiag_DTYPE_t *) ( /* dim=0 */ (__pyx_v_x.data + __pyx_t_4 * __pyx_v_x.strides[0]) )))));
 
-      /* "tridiag.pyx":76
+      /* "tridiag.pyx":79
  *                 break
  *             b[i] = b[i] - dup[i] * x[i+1]
  *             x[i] = b[i]/diag[i]             # <<<<<<<<<<<<<<
@@ -3116,7 +3252,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
   }
   __pyx_L3:;
 
-  /* "tridiag.pyx":77
+  /* "tridiag.pyx":80
  *             b[i] = b[i] - dup[i] * x[i+1]
  *             x[i] = b[i]/diag[i]
  *     return inv             # <<<<<<<<<<<<<<
@@ -3124,7 +3260,7 @@ static int __pyx_f_7tridiag_find_solution(__Pyx_memviewslice __pyx_v_diag, __Pyx
   __pyx_r = __pyx_v_inv;
   goto __pyx_L0;
 
-  /* "tridiag.pyx":62
+  /* "tridiag.pyx":65
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Make division fast like C
  * cdef int find_solution(DTYPE_t[:] diag, DTYPE_t[:] dup, DTYPE_t[:] b, DTYPE_t[:] x, int N):             # <<<<<<<<<<<<<<
@@ -17962,6 +18098,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_astype, __pyx_k_astype, sizeof(__pyx_k_astype), 0, 0, 1, 1},
   {&__pyx_n_s_b, __pyx_k_b, sizeof(__pyx_k_b), 0, 0, 1, 1},
+  {&__pyx_n_s_b_cp, __pyx_k_b_cp, sizeof(__pyx_k_b_cp), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
@@ -17969,7 +18106,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_kp_s_contiguous_and_direct, __pyx_k_contiguous_and_direct, sizeof(__pyx_k_contiguous_and_direct), 0, 0, 1, 0},
   {&__pyx_kp_s_contiguous_and_indirect, __pyx_k_contiguous_and_indirect, sizeof(__pyx_k_contiguous_and_indirect), 0, 0, 1, 0},
+  {&__pyx_n_s_copy, __pyx_k_copy, sizeof(__pyx_k_copy), 0, 0, 1, 1},
   {&__pyx_n_s_diag, __pyx_k_diag, sizeof(__pyx_k_diag), 0, 0, 1, 1},
+  {&__pyx_n_s_diag_cp, __pyx_k_diag_cp, sizeof(__pyx_k_diag_cp), 0, 0, 1, 1},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_dlo, __pyx_k_dlo, sizeof(__pyx_k_dlo), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
@@ -18040,7 +18179,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 49, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 947, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(2, 133, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(2, 148, __pyx_L1_error)
@@ -18279,10 +18418,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *     """
  *     Solve linear system Ax = b with A tridiagonal.
  */
-  __pyx_tuple__21 = PyTuple_Pack(7, __pyx_n_s_diag, __pyx_n_s_dlo, __pyx_n_s_dup, __pyx_n_s_b, __pyx_n_s_inv, __pyx_n_s_N, __pyx_n_s_x); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(9, __pyx_n_s_diag, __pyx_n_s_dlo, __pyx_n_s_dup, __pyx_n_s_b, __pyx_n_s_inv, __pyx_n_s_N, __pyx_n_s_x, __pyx_n_s_diag_cp, __pyx_n_s_b_cp); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(4, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tridiag_pyx, __pyx_n_s_solve, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(4, 0, 9, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tridiag_pyx, __pyx_n_s_solve, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 11, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
