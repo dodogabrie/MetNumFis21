@@ -54,12 +54,13 @@ def fft_der(u,dx):
 def diff_fin_comp_der(u, dx):
     """
     Compact finite different derivative using Shepard Morrisoni formula.
+    We did not really understand why this work, is like a magic formula about maths...
     References:
     - http://wwwmayr.in.tum.de/konferenzen/Jass09/courses/2/Soldatenko_presentation.pdf
     - http://www.phys.lsu.edu/classes/fall2013/phys7412/lecture10.pdf
     """
 
-    gamma = -1. # Why this gamma work? Literature say to use -diag[0] = -4
+    gamma = -4. # -1 was an error: problem solved in the tridiagonal routine...
     beta = 1. # term out of diagonal (upper right)
     alpha = 1. # term out of diagonal (lower left)
 
@@ -97,4 +98,45 @@ def diff_fin_comp_der(u, dx):
 
     # compute the derivative using the factor.
     der = y - num/den * z
+    return der
+
+def diff_fin_comp_der2(u, dx):
+    """
+    Compact finite different derivative using 'splitting tridiagonal idea'.
+    This one is clear to us and it is easy to learn (same results that previous,
+    is just the same idea with a different implementation).
+    References:
+    http://www.sciencedirect.com/science/article/pii/0021999175900819/pdf?md5=4b9194f11c72ae3e22efccd620719bf9&pid=1-s2.0-0021999175900819-main.pdf
+    """
+    # Initialize size of the system
+    n = len(u)
+    # Initialize results array
+    der = np.empty(n)
+    
+    # Define the tridiagonal system
+    diag = 4 * np.ones(n)
+    dlo = np.ones(n-1)
+    dup = np.ones(n-1)
+
+    b = np.empty(n)
+    b[1:-1] = 3/dx * (u[2:] - u[:-2])
+    b[0] = 3/dx * (u[1] - u[-1])
+    b[-1] = 3/dx * (u[0] - u[-2])
+
+    # Define auxiliar vector
+    F = np.zeros(n-1)
+    F[0] = 1
+    F[-1] = 1
+
+    # E is the tridiagonal matrix but the last line/row:
+    # diag[:-1], dlo[:-1], dup[:-1]
+    # b_tilde is just b[:-1]
+    v, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], b[:-1])
+    u, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], F)
+
+    # Return the results using the solution of the system of 2 equations
+    der[-1] = (b[-1] - (v[0]+v[-1]))/(diag[0] - (u[0] + u[-1])) # f'_tilde
+    der[:-1] = v - u * der[-1] # f'_n
     return der
