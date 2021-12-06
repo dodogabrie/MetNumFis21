@@ -78,7 +78,7 @@ def fft_der(u,dx):
 
 def diff_fin_comp_der(u, dx):
 
-    gamma = -1.
+    gamma = -4.
     beta = 1.
     alpha = 1.
 
@@ -106,6 +106,34 @@ def diff_fin_comp_der(u, dx):
     den = 1 + z[0] + beta * z[-1]/gamma
     der = y - num/den * z
     return der
+
+def diff_fin_comp_der2(u, dx):
+    n = len(u)
+    der = np.empty(n)
+
+    diag = 4 * np.ones(n)
+    dlo = np.ones(n-1)
+    dup = np.ones(n-1)
+
+    b = np.empty(n)
+
+    F = np.zeros(n-1)
+    F[0] = 1
+    F[-1] = 1
+    # n operation
+    b[1:-1] = 3/dx * (u[2:] - u[:-2])
+    b[0] = 3/dx * (u[1] - u[-1])
+    b[-1] = 3/dx * (u[0] - u[-2])
+
+    # b_tilde = b[:-1]
+    v, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], b[:-1])
+    u, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], F)
+
+    der[-1] = (b[-1] - (v[0]+v[-1]))/(diag[0] - (u[0] + u[-1]))
+    der[:-1] = v - u * der[-1]
+    return der
 ########################SAVE IN FILE############################
 
 
@@ -130,11 +158,12 @@ np.savetxt('SinCos.txt', np.column_stack((x,u(x),u1(x))),
 
 #####################NUMERICAL VS ANALITICAL######################
 #Compare numerical derivative and analitical derivative
-plt.plot(x, u1(x), color = 'blue')
+plt.plot(x, u1(x), color = 'blue', label = 'analytical')
 plt.plot(x, forward_der(u(x), dx), color = 'red', label = 'forw')
 plt.plot(x, backward_der(u(x), dx), color = 'green', label = 'backw')
 plt.plot(x, simm_der(u(x), dx), color = 'pink', label = 'simm')
 plt.plot(x, fft_der(u(x), dx), color = 'black', label = 'fft')
-plt.plot(x, diff_fin_comp_der(u(x), dx), color = 'brown', label = 'fft')
+plt.plot(x, diff_fin_comp_der(u(x), dx), color = 'brown', label = 'dfc')
+plt.plot(x, diff_fin_comp_der2(u(x), dx), color = 'orange', label = 'dfc2')
 plt.legend()
 plt.show()
