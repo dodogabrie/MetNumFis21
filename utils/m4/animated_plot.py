@@ -22,8 +22,6 @@ def animated_with_slider(func, uinit, x, t, param, plot_dim = None, dilat_size =
         Spatial grid of the system.
     t : numpy 1d Array
         Temporal grid of the system.
-    dt : float
-        Temporal step of the simulation.
     param : tuple
         Values will be passed to func in a tuple (excluded u), for example you
         can put here (alpha, ninner) in the case of the LAX method.
