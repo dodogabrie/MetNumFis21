@@ -92,38 +92,37 @@ def ampl2(int_method, u, F):
     fft_u, k_u = my_real_fft(u_t.real, dx) # FFT of final u 
     
     # Plot results
-    plt.figure(figsize=(16, 7))
+    plt.figure(figsize=(10, 6))
     equation = r'$\partial_t u = \nu \partial_x^2 u - u \partial_x u \ \longrightarrow$  Derivative with simm. finite difference'
     integ_params = '\n\nIntegrated with Runge Kutta of order 2'
     sistem_params = f'\n\nL = {L},    dx = {dx},    dt = {dt},    N step = {N_step},    nu = {nu}'
     stability = f'\n\nVon Neumann Factor = nu dt/dx = {von_neumann:.3f}'
     plt.suptitle(equation + integ_params + sistem_params + stability, fontsize = 15)
-    plt.subplot(131)
+    plt.subplot(121)
     plt.plot(x, u_init, label = 'init')
     plt.plot(x, u_t.real, label = 'final')
     plt.xlabel('x', fontsize=15)
     plt.ylabel('u', fontsize=15)
     plt.legend(fontsize=13)
     
-    plt.subplot(132)
-    plt.plot(k_u_init, fft_u_init**2, label = 'init', marker='.',markersize = 10, lw = 0.)
-    plt.plot(k_u, fft_u**2, label = 'final', marker = '.', markersize = 10, lw = 0.)
-    plt.xlabel('k', fontsize=15)
-    plt.ylabel(r'$\left|u_k\right|^2$', fontsize=15)
-    plt.legend(fontsize=13)
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.tight_layout()
+#   plt.subplot(122)
+#   plt.plot(k_u_init, fft_u_init**2, label = 'init', marker='.',markersize = 10, lw = 0.)
+#   plt.plot(k_u, fft_u**2, label = 'final', marker = '.', markersize = 10, lw = 0.)
+#   plt.xlabel('k', fontsize=15)
+#   plt.ylabel(r'$\left|u_k\right|^2$', fontsize=15)
+#   plt.legend(fontsize=13)
+#   plt.yscale('log')
+#   plt.xscale('log')
     
-    plt.subplot(133)
-    plt.plot(k_u, fft_u**2 * k_u**2, label = r'$fft \cdot k^2$', marker = '.', markersize = 10, lw = 0.)
+    plt.subplot(122)
+    plt.plot(k_u, fft_u**2 * k_u**2, label = r'$fft \cdot k^2$', marker = '.', markersize = 10, lw = 0., color = 'C1')
     plt.xlabel('k', fontsize=15)
     plt.ylabel(r'$\left|u_k\right|^2 \cdot k^2$', fontsize=15)
     plt.legend(fontsize=13)
     plt.yscale('log')
     plt.xscale('log')
     plt.tight_layout()
-    #plt.savefig('figures/8_evo_shocking_Burger.png', dpi = 200)
+#    plt.savefig('figures/8_evo_shocking_Burger.png', dpi = 200)
     plt.show()
     
 if __name__ == '__main__':
