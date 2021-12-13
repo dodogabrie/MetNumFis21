@@ -99,15 +99,17 @@ def lax_wendroff(f, dx, dt, n_step, v, s):
     f1_LAX = np.empty(len(f1)-1)
     f2_LAX = np.empty(len(f1)-1)
     for i in range(n_step):
-        # LAX step                                                    (      h                       )
-        f1_LAX = 0.5*(f1[1:] + f1[:-1]) - alpha*(f1[1:] - f1[:-1])  + 0.5*dt*(f2[1:] + f2[:-1])
+        # LAX step                                                    (       h                       )
+        f1_LAX = 0.5*(f1[1:] + f1[:-1]) - alpha*(f1[1:] - f1[:-1])  + 0.5 * dt * (f2[1:] + f2[:-1])
         f2_LAX = 0.5*(f2[1:] + f2[:-1]) - alpha*(-f2[1:] + f2[:-1]) + dt*(0.5*v*(f1[1:] + f1[:-1]) + s)
         # Leap Frog
         f1[1:-1] = f1[1:-1] - 2*alpha*(f1_LAX[1:]-f1_LAX[:-1]) + 0.5 * dt * ( f2_LAX[1:] + f2_LAX[:-1] )
-        f2[1:-1] = f2[1:-1] - 2*alpha*(f2_LAX[1:]-f2_LAX[:-1]) + dt * (0.5 * v * (f1_LAX[1:] + f1_LAX[:-1]) + s )
+        f2[1:-1] = f2[1:-1] - 2*alpha*(- f2_LAX[1:] + f2_LAX[:-1]) + dt * (0.5 * v * (f1_LAX[1:] + f1_LAX[:-1]) + s )
         f[:, 0], f[:, -1] = f[:, -2], f[:, 1] # boundary condition (wait)
     return f
 
+# Come fare a capire se l'algoritmo funziona?
+# Cos'è quella piccola coda dietro la gaussiana?
 
 if __name__ == "__main__":
     main()

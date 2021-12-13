@@ -47,14 +47,14 @@ def test():
     def sum_of_der(x, t0):
         return 0#- 2 * (x + t0)*initial_value(x, t0)
     def v(x):
-        return - np.exp(-(x-10)**2)
+        return np.zeros(len(x))# - np.exp(-(x-10)**2)
     def v1(x):
         v0 = 1
         return - v0 * np.exp(-x**2*0.01)
     s = 0
     dt = 0.05
     dx = 0.1
-    Nt = 50
+    Nt = 500
     n = 300
     ninner = 2
 
@@ -68,9 +68,9 @@ def test():
     u[1] = sum_of_der(x, 0.)
     # Copy of u for plotting
     uinit = np.copy(u)
-    lax_param = (x, v1, s, dt, dx, ninner)
+    lax_param = (x, v, s, dt, dx, ninner)
 #    aniplt.animated_full(lax_wen, uinit, x, t, lax_param, title = 'Evoluzione Metodo LAX-WENDROF', plot_dim = 0)
-    aniplt.animated_with_slider(lax_wen, uinit, x, Nt, dt, plot_dim = 0, dilat_size = 0.1, title = None)
+    aniplt.animated_with_slider(lax_wen, uinit, x, t, lax_param, plot_dim = 0, dilat_size = 0.1, title = None)
 #    surface_xt(lax_wen, uinit, x, t, lax_param, plot_dim = 0)
 
 if __name__ == '__main__':
