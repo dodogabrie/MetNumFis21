@@ -49,7 +49,22 @@ def fft_der(u,dx):
     k = fftpack.fftfreq( N, dy) 
     ikfft = 1j * k * fft
     der = fftpack.ifft(ikfft)
-    return der
+    return der.real
+    
+def fft_der2(u,dx):
+    """
+    Second derivative using Fast Fourier Transform.
+    """
+    N = len(u)
+    # x : 2 * pi = y : 1 ---> unitary rate
+    # => dy = dx/(2*pi)
+    dy =  dx / (2 * np.pi)
+    # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
+    fft = fftpack.fft(u) # Discret fourier transform 
+    k = fftpack.fftfreq( N, dy) 
+    k2fft = - k**2 * fft
+    der = fftpack.ifft(k2fft)
+    return der.real
 
 def diff_fin_comp_der(u, dx):
     """
