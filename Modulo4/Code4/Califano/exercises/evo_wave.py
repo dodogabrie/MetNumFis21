@@ -19,12 +19,12 @@ def F(u, c, dx):
     return - c * der.fft_der(u, dx)
 
 # Define the initial condition
-def u_sin_simple(x, L):
+def u_sin_simple(x, L, A = 1.):
     """
     Initial condition (given by a function 'cause here evolve a function.
     """
     k = 1
-    return np.sin(k * 2*np.pi*x/L)
+    return A * np.sin(k * 2*np.pi*x/L)
 
 def u_sin_hard(x, L):
     """
@@ -119,7 +119,7 @@ def ampl2(int_method, u):
     nu = 0.01 # useless parameter
     
     # temporal inputs
-    dt = 0.1 # Temporal step
+    dt = 0.05 # Temporal step
     N_step = 50 # Number of Temporal steps
     
     ###############################################################
@@ -131,7 +131,7 @@ def ampl2(int_method, u):
     c = speed
     
     # Define starting function
-    u_init = u(x, L) # save initial condition 
+    u_init = u(x, L, A = 1) # save initial condition 
     u_t = np.copy(u_init) # create e copy to evolve it in time
     # Fourier transform in time 
     c = c/2
@@ -144,8 +144,8 @@ def ampl2(int_method, u):
         # => dy = dx/(2*pi)
         dy =  dx / (2 * np.pi)
         # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
-        fft = fftpack.rfft(u) # Discret fourier transform 
-        k = fftpack.rfftfreq(N, dy) 
+        fft = fftpack.fft(u) # Discret fourier transform 
+        k = fftpack.fftfreq(N, dy) 
         return fft, k
     
     # Amplitude**2 of Fourier coefficients #
@@ -153,8 +153,19 @@ def ampl2(int_method, u):
         u_t = int_method(u_t, F, dt, c, dx)
     
     fft_u_init, k_u_init = my_real_fft(u_init, dx)# FFT of initial u 
-    fft_u, k_u = my_real_fft(u_t.real, dx) # FFT of final u 
-    
+    fft_u, k_u = my_real_fft(u_t, dx) # FFT of final u 
+
+    mod_fft2_u = (np.abs(fft_u)/N)**2 # square of module of fft final
+    mod_fft2_u_init = (np.abs(fft_u_init)/N)**2 # square of module of fft final
+
+    mask_pos_k_u = k_u >= 0 # mask for positive k final
+    mod_fft2_u = mod_fft2_u[mask_pos_k_u]
+    k_u = k_u[mask_pos_k_u]
+
+    mask_pos_k_u_init = k_u_init >= 0 # mask for positive k init
+    mod_fft2_u_init = mod_fft2_u_init[mask_pos_k_u_init]
+    k_u_init = k_u_init[mask_pos_k_u_init]
+
     # Plot results
     plt.figure(figsize=(10, 6))
     equation = r'$\partial_t u = - c \partial_x u \ \longrightarrow$  Derivative with FFT'
@@ -168,8 +179,8 @@ def ampl2(int_method, u):
     plt.ylabel('u', fontsize=15)
     plt.legend(fontsize=13)
     plt.subplot(122)
-    plt.scatter(k_u_init, fft_u_init**2, label = 'init')
-    plt.scatter(k_u, fft_u**2, label = 'final')
+    plt.scatter(k_u_init, mod_fft2_u_init, label = 'init')
+    plt.scatter(k_u, mod_fft2_u, label = 'final')
     plt.xlabel('k', fontsize=15)
     plt.ylabel(r'$\left|u_k\right|^2$', fontsize=15)
     plt.legend(fontsize=13)

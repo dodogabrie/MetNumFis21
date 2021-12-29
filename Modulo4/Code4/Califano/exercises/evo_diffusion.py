@@ -83,8 +83,8 @@ def ampl2(int_method, u, F):
         # => dy = dx/(2*pi)
         dy =  dx / (2 * np.pi)
         # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
-        fft = fftpack.rfft(u) # Discret fourier transform 
-        k = fftpack.rfftfreq(N, dy) 
+        fft = fftpack.fft(u) # Discret fourier transform 
+        k = fftpack.fftfreq(N, dy) 
         return fft, k
     
     # Amplitude**2 of Fourier coefficients #
@@ -93,7 +93,19 @@ def ampl2(int_method, u, F):
     
     fft_u_init, k_u_init = my_real_fft(u_init, dx)# FFT of initial u 
     fft_u, k_u = my_real_fft(u_t.real, dx) # FFT of final u 
-    
+ 
+    mod_fft2_u = (np.abs(fft_u)/N)**2 # square of module of fft final
+    mod_fft2_u_init = (np.abs(fft_u_init)/N)**2 # square of module of fft final
+
+    mask_pos_k_u = k_u >= 0 # mask for positive k final
+    mod_fft2_u = mod_fft2_u[mask_pos_k_u]
+    k_u = k_u[mask_pos_k_u]
+
+    mask_pos_k_u_init = k_u_init >= 0 # mask for positive k init
+    mod_fft2_u_init = mod_fft2_u_init[mask_pos_k_u_init]
+    k_u_init = k_u_init[mask_pos_k_u_init]
+
+   
     # Plot results
     plt.figure(figsize=(10, 6))
     equation = r'$\partial_t u = \nu \partial_x^2 u - c \partial_x u \ \longrightarrow$  Derivative with simm. finite difference'
@@ -108,14 +120,14 @@ def ampl2(int_method, u, F):
     plt.ylabel('u', fontsize=15)
     plt.legend(fontsize=13)
     plt.subplot(122)
-    plt.plot(k_u_init, fft_u_init**2, label = 'init', marker='.',markersize = 10, lw = 0.5)
-    plt.plot(k_u, fft_u**2, label = 'final', marker = '.', markersize = 10, lw = 0.5)
+    plt.scatter(k_u_init, mod_fft2_u_init, label = 'init')
+    plt.scatter(k_u, mod_fft2_u, label = 'final')
     plt.xlabel('k', fontsize=15)
     plt.ylabel(r'$\left|u_k\right|^2$', fontsize=15)
     plt.legend(fontsize=13)
     plt.yscale('log')
     plt.tight_layout()
-    plt.savefig('figures/6_evo_diffusion_hard_function.png', dpi = 200)
+#    plt.savefig('figures/6_evo_diffusion_hard_function.png', dpi = 200)
     plt.show()
     
 if __name__ == '__main__':

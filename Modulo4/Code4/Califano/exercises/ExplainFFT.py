@@ -1,3 +1,7 @@
+"""
+This file test the Fast Fourier Transform by scipy.
+"""
+
 import numpy as np
 from scipy import fftpack
 import matplotlib.pyplot as plt
@@ -6,10 +10,7 @@ def my_fft(u, dx):
     """
     Derivative using Fast Fourier Transform.
     """
-    # x : 2 * pi = y : 1 ---> unitary rate
-    # => dy = dx/(2*pi)
-    dy =  dx / (2 * np.pi)
-    # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
+    dy =  dx / (2 * np.pi) # sampling rate
     fft = fftpack.fft(u) # Discret fourier transform 
     k = fftpack.fftfreq(N, dy) 
     return fft, k
