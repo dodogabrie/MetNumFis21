@@ -51,22 +51,8 @@ def fft_der(u,dx):
     der = fftpack.ifft(ikfft)
     return der.real
     
-def fft_der2(u,dx):
-    """
-    Second derivative using Fast Fourier Transform.
-    """
-    N = len(u)
-    # x : 2 * pi = y : 1 ---> unitary rate
-    # => dy = dx/(2*pi)
-    dy =  dx / (2 * np.pi)
-    # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
-    fft = fftpack.fft(u) # Discret fourier transform 
-    k = fftpack.fftfreq( N, dy) 
-    k2fft = - k**2 * fft
-    der = fftpack.ifft(k2fft)
-    return der.real
 
-def diff_fin_comp_der(u, dx):
+def diff_fin_comp_der_magic(u, dx):
     """
     Compact finite different derivative using Shepard Morrisoni formula.
     We did not really understand why this work, is like a magic formula about maths...
@@ -115,7 +101,7 @@ def diff_fin_comp_der(u, dx):
     der = y - num/den * z
     return der
 
-def diff_fin_comp_der2(u, dx):
+def diff_fin_comp_der(u, dx):
     """
     Compact finite different derivative using 'splitting tridiagonal idea'.
     This one is clear to us and it is easy to learn (same results that previous,
@@ -156,6 +142,8 @@ def diff_fin_comp_der2(u, dx):
     der[:-1] = v - u * der[-1] # f'_n
     return der
 
+########################SECOND DERIVATIVE########################
+
 def simm_der2(u, dx):
     """
     Second symmetric derivative
@@ -164,5 +152,59 @@ def simm_der2(u, dx):
     der[1:-1] = (u[2:] - 2 * u[1:-1] + u[:-2])/(dx**2)
     der[0] = (u[1] - 2 * u[0] + u[-1])/(dx**2) # left periodic boundary condition
     der[-1] = (u[0] - 2 * u[-1] + u[-2])/(dx**2) # right periodic boundary condition
+    return der
+
+def fft_der2(u,dx):
+    """
+    Second derivative using Fast Fourier Transform.
+    """
+    N = len(u)
+    # x : 2 * pi = y : 1 ---> unitary rate
+    # => dy = dx/(2*pi)
+    dy =  dx / (2 * np.pi)
+    # fft(j) = (u * exp(-2*pi*i*j*np.arange(n)/n)).sum()
+    fft = fftpack.fft(u) # Discret fourier transform 
+    k = fftpack.fftfreq( N, dy) 
+    k2fft = - k**2 * fft
+    der = fftpack.ifft(k2fft)
+    return der.real
+
+def diff_fin_comp_der2(u, dx):
+    """
+    Compact finite different second derivative using 'splitting tridiagonal idea'.
+    This one is clear to us and it is easy to learn (same results that previous,
+    is just the same idea with a different implementation).
+    """
+    # Initialize size of the system
+    n = len(u)
+    # Initialize results array
+    der = np.empty(n)
+    
+    # Define the tridiagonal system
+    diag = 10 * np.ones(n)
+    dlo = np.ones(n-1)
+    dup = np.ones(n-1)
+
+    b = np.empty(n)
+    b[1:-1] = 12/dx**2 * (u[2:] - 2 * u[1:-1] + u[:-2])
+    b[0] = 12/dx**2 * (u[1] - 2 * u[0] + u[-1])
+    b[-1] = 12/dx**2 * (u[0] - 2 * u[-1] + u[-2])
+
+    # Define auxiliar vector
+    F = np.zeros(n-1)
+    F[0] = 1
+    F[-1] = 1
+
+    # E is the tridiagonal matrix but the last line/row:
+    # diag[:-1], dlo[:-1], dup[:-1]
+    # b_tilde is just b[:-1]
+    v, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], b[:-1])
+    u, inv = solve(diag[:-1], dlo[:-1], 
+                   dup[:-1], F)
+
+    # Return the results using the solution of the system of 2 equations
+    der[-1] = (b[-1] - (v[0]+v[-1]))/(diag[0] - (u[0] + u[-1])) # f'_tilde
+    der[:-1] = v - u * der[-1] # f'_n
     return der
 

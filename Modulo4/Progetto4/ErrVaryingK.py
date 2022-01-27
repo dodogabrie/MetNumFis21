@@ -42,7 +42,6 @@ list_err1_f = []
 list_err1_s = []
 list_err1_fft = []
 list_err1_dfc = []
-list_err1_dfc2 = []
 k_M = np.pi/dx # Nyquist K: max k (wave number) solved
 #              # for grid with resolution dx
 k_to_test = np.unique(np.logspace(0, 3, 50).astype(int))
@@ -67,10 +66,6 @@ for k in k_to_test:
     # diff fin comp error
     f_num = der.diff_fin_comp_der(u(x, k), dx) # Derivative
     list_err1_dfc.append(err1(f_ana, f_num)) # append error
-    # diff fin comp error2
-    f_num = der.diff_fin_comp_der2(u(x, k), dx) # Derivative
-    list_err1_dfc2.append(err1(f_ana, f_num)) # append error
-
     # Append k array
     list_k.append(k)
 
@@ -80,8 +75,7 @@ ax.plot(list_k, list_err1_b, marker = 's', label = 'BackW', lw = 0.6) #error of 
 ax.plot(list_k, list_err1_f, marker = '*', label = 'ForW', lw = 0.6) #error of order dx
 ax.plot(list_k, list_err1_s, marker = '.', label = 'simm', lw = 0.6) #error of order dx**2
 ax.plot(list_k, list_err1_fft, marker = '.', label = 'fft', lw = 0.6) #error of order very low
-#plt.plot(list_k, list_err1_dfc, marker = '.', label = 'diff fin comp') #error of order dx**4
-ax.plot(list_k, list_err1_dfc2, marker = '.', label = 'diff fin comp', lw = 0.6) #error of order dx**4
+ax.plot(list_k, list_err1_dfc, marker = '.', label = 'diff fin comp', lw = 0.6) #error of order dx**4
 ax.grid(alpha = 0.3)
 ax.loglog()
 ax.minorticks_on()
@@ -96,5 +90,5 @@ ax.set_ylabel('Errore', fontsize = 15)
 title = "Errore della derivata prima al variare di k"
 ax.set_title(title, fontsize = 15)
 plt.legend(fontsize = 12)
-plt.savefig('figures/derivatives/err_varying_k.png', dpi = 200)
+#plt.savefig('figures/derivatives/err_varying_k.png', dpi = 200)
 plt.show()
