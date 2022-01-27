@@ -32,7 +32,7 @@ def u1(x, k):
 ##########################SCALING dx##############################
 
 L = 10
-N = 5000
+N = 50000
 nu = 0.01
 dx = L/N
 x = np.linspace(0,L,N, endpoint = False)
@@ -45,7 +45,8 @@ list_err1_dfc = []
 list_err1_dfc2 = []
 k_M = np.pi/dx # Nyquist K: max k (wave number) solved
 #              # for grid with resolution dx
-for k in range(1, 60):
+k_to_test = np.unique(np.logspace(0, 3, 50).astype(int))
+for k in k_to_test:
     if k > k_M: # If k > k_M interrupt the loop
         print('Max k reached!!!')
         break
@@ -73,14 +74,27 @@ for k in range(1, 60):
     # Append k array
     list_k.append(k)
 
-plt.plot(list_k, list_err1_f, marker = '.', label = 'ForW') #error of order dx
-plt.plot(list_k, list_err1_b, marker = '.', label = 'BackW') #error of order dx
-plt.plot(list_k, list_err1_s, marker = '.', label = 'simm') #error of order dx**2
-plt.plot(list_k, list_err1_fft, marker = '.', label = 'fft') #error of order very low
+
+fig, ax = plt.subplots(1, 1, figsize = (8, 8))
+ax.plot(list_k, list_err1_b, marker = 's', label = 'BackW', lw = 0.6) #error of order dx
+ax.plot(list_k, list_err1_f, marker = '*', label = 'ForW', lw = 0.6) #error of order dx
+ax.plot(list_k, list_err1_s, marker = '.', label = 'simm', lw = 0.6) #error of order dx**2
+ax.plot(list_k, list_err1_fft, marker = '.', label = 'fft', lw = 0.6) #error of order very low
 #plt.plot(list_k, list_err1_dfc, marker = '.', label = 'diff fin comp') #error of order dx**4
-plt.plot(list_k, list_err1_dfc2, marker = '.', label = 'diff fin comp 2') #error of order dx**4
-plt.grid(alpha = 0.3)
-plt.xlabel('k')
-plt.ylabel('Err1')
-plt.legend()
+ax.plot(list_k, list_err1_dfc2, marker = '.', label = 'diff fin comp', lw = 0.6) #error of order dx**4
+ax.grid(alpha = 0.3)
+ax.loglog()
+ax.minorticks_on()
+ax.tick_params('x', which='major', direction='in', length=5)
+ax.tick_params('y', which='major', direction='in', length=5)
+ax.tick_params('y', which='minor', direction='in', length=3, left=True)
+ax.tick_params('x', which='minor', direction='in', length=3, bottom=True)
+plt.xticks(fontsize=13)
+plt.yticks(fontsize=13)
+ax.set_xlabel('k', fontsize = 15)
+ax.set_ylabel('Errore', fontsize = 15)
+title = "Errore della derivata prima al variare di k"
+ax.set_title(title, fontsize = 15)
+plt.legend(fontsize = 12)
+plt.savefig('figures/derivatives/err_varying_k.png', dpi = 200)
 plt.show()
