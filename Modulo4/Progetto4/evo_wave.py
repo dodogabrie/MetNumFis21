@@ -52,7 +52,7 @@ def evo_varying_speed(int_method, u):
         Function of equation:
              du/dt = c * du/dx = F(u)
         """
-        return c * der.simm_der(u, dx)
+        return -c * der.backward_der(u, dx)
 
     #define input variable
     # spatial inputs
@@ -62,7 +62,7 @@ def evo_varying_speed(int_method, u):
     
     # temporal inputs
     dt = 0.1 # Temporal step
-    N_step = 20 # Number of Temporal steps
+    N_step = 4700 # Number of Temporal steps
     
     ###############################################################
     #define the dicrete interval dx
@@ -79,16 +79,32 @@ def evo_varying_speed(int_method, u):
     ###############################################################
     # Evolution varying c, if c > dx/dt the evolution is unstable
     
-    facs = np.linspace(0.1, 3, 3) # array of factors
+    facs = np.array([0.5,])
+    fig, ax = plt.subplots(1, 1, figsize = (8, 8))
+    ax.plot(x, u_init, label = 't = 0')
     for fac in facs:
         c = speed*fac
+        u_t = np.copy(u_init) # reset the initial condition
         for i in range(N_step): # temporal evolution
             u_t = int_method(u_t, F, dt, c, dx)
-        plt.plot(x, u_t, label = f'final c * {fac:.1f}')
-    plt.plot(x, u_init, label = 'init')
-    plt.legend()
-    plt.xlabel('x')
-    plt.ylabel('u')
+        ax.plot(x, u_t, label = f't = {dt * N_step:.0f}, c * {fac:.1f}')
+    ax.grid(alpha = 0.3)
+#    ax.set_xlim(0, L-dx)
+    ax.minorticks_on()
+    ax.tick_params('x', which='major', direction='in', length=5)
+    ax.tick_params('y', which='major', direction='in', length=5)
+    ax.tick_params('y', which='minor', direction='in', length=3, left=True)
+    ax.tick_params('x', which='minor', direction='in', length=3, bottom=True)
+    plt.xticks(fontsize=13)
+    plt.yticks(fontsize=13)
+    ax.set_xlabel('x', fontsize = 15)
+    ax.set_ylabel('u', fontsize = 15)
+    suptitle ="   Soluzione dell'equazione di avvezione" 
+    title = "Instabilità delle differenze finite simmetriche"
+    plt.suptitle(suptitle, fontsize = 15, y = 0.95)
+    ax.set_title(title, fontsize = 13, y= 1. )
+    plt.legend(fontsize = 12, loc = 'lower right')
+#    plt.savefig('figures/advection/instability_simm_der.png', dpi = 200)
     plt.show()
 
 ###############################################################
@@ -190,6 +206,5 @@ def ampl2(int_method, u):
     plt.show()
 
 if __name__ == '__main__':
-    #evo_varying_speed
-    #ampl2
-    ampl2(Int.RK2, u_sin_simple)
+    evo_varying_speed(Int.RK2, u_sin_simple)
+#    ampl2(Int.RK2, u_sin_simple)
