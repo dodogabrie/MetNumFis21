@@ -9,6 +9,7 @@ from scipy import fftpack
 import matplotlib.pyplot as plt
 import NumDerivative as der
 import NumIntegrator as Int
+import NumScheme as NS
 
 # Define the right hand side term of the eq
 def F(u, c, dx):
@@ -282,6 +283,67 @@ def evo_varying_der_method(int_method, u):
     plt.savefig('figures/advection/instability_simm_bakw.png', dpi = 200)
     plt.show()
 
+
+def test_Lax_Wendroff(u):
+    def RHS(t, x):
+        return 0 * x
+
+    def F(u, c):
+        """
+        Function of equation:
+             du/dt = dF/dx => F(u) = c*u
+        """
+        return c * u
+
+    #define input variable
+    # spatial inputs
+    L = 10 # Spatial size of the grid
+    N = 100 # spatial step of grid
+    nu = 0.01 # useless parameter
+    
+    # temporal inputs
+    dt = 0.1 # Temporal step
+    N_step = 500 # Number of Temporal steps
+    t = np.linspace(0, dt * N_step, N_step+1)
+    
+    ###############################################################
+    #define the dicrete interval dx
+    dx = L/N # step size of grid
+    x = np.linspace(0, L + 2*dx, N+2, endpoint = False)
+    
+    speed = dx/dt # speed given the values
+    c = speed*0.9
+    
+    # Define starting function
+    u_init = u(x, L) # save initial condition 
+    u_t = np.copy(u_init) # create e copy to evolve it in time
+ 
+    for i in range(N_step): # temporal evolution
+        u_t = NS.Lax_W_Two_Step(u_t, x, t, dt, dx, F, RHS, c)
+
+    fig, ax = plt.subplots(1, 1, figsize = (8, 8))
+    ax.plot(x[:-2], u_init[:-2], label = f't=0')
+    ax.plot(x[:-2], u_t[:-2], label = f'Lax Wendroff, t={t[-1]:.0f}, c * 0.9')
+    ax.grid(alpha = 0.3)
+#    ax.set_xlim(0, L-dx)
+    ax.minorticks_on()
+    ax.tick_params('x', which='major', direction='in', length=5)
+    ax.tick_params('y', which='major', direction='in', length=5)
+    ax.tick_params('y', which='minor', direction='in', length=3, left=True)
+    ax.tick_params('x', which='minor', direction='in', length=3, bottom=True)
+    plt.xticks(fontsize=13)
+    plt.yticks(fontsize=13)
+    ax.set_xlabel('x', fontsize = 15)
+    ax.set_ylabel('u', fontsize = 15)
+    suptitle ="   Soluzione dell'equazione di avvezione" 
+    title = "Stabilità e condizione CLF"
+    plt.suptitle(suptitle, fontsize = 15, y = 0.95)
+    ax.set_title(title, fontsize = 13, y= 1. )
+    plt.legend(fontsize = 12, loc = 'lower right')
+    plt.savefig('figures/advection/lw_advection.png', dpi = 200)
+    plt.show()
+    return
+
 if __name__ == '__main__':
-    evo_varying_der_method(Int.RK2, u_sin_simple)
+    test_Lax_Wendroff(u_sin_simple)
 #    ampl2(Int.RK2, u_sin_simple)
