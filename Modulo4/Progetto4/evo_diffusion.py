@@ -370,7 +370,7 @@ def tau_diff_study(int_method, u, F):
     ax.set_xlabel('t', fontsize = 15)
     ax.set_ylabel(r'$\left|u_k\right|^2$', fontsize = 15)
     plt.legend( fontsize = 12)
-    plt.savefig('figures/diffusion/diff_time_varying_m.png', dpi = 200)
+#    plt.savefig('figures/diffusion/diff_time_varying_m.png', dpi = 200)
     plt.show()
  
  
@@ -380,4 +380,4 @@ if __name__ == '__main__':
     #ampl2(Int.RK2, u_sin_simple, F_diffusion)
     #nu_effect(Int.RK2, u_sin_simple, F_diffusion)
     #derivative_effect(Int.RK2, u_sin_simple, F_diffusion_der)
-    tau_diff_study(Int.RK2, u_sin_simple, F_diffusion)
+    tau_diff_study(Int.euler_step, u_sin_simple, F_diffusion)
