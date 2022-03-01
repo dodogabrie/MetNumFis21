@@ -36,6 +36,22 @@ def simm_der(u,dx):
     der[-1] = (u[0] - u[-2])/(2*dx) # right periodic boundary condition
     return der
 
+def simm_der_Ord4(u, dx):
+    der = np.empty(len(u))
+    der[2:-2] = 1/(12 * dx) * (u[:-4] - 8*u[1:-3] + 8*u[3:-1] - u[4:])
+    for i in range(-2,2):
+        der[i] = 1/(12 * dx) * (u[i-2] - 8*u[i-1] + 8*u[i+1] - u[i+2])
+    return der
+
+def simm_der_Ord6(u, dx):
+    der = np.empty(len(u))
+    der[3:-3] = 1/(60 * dx) * (-u[:-6] + 9*u[1:-5] - 45*u[2:-4] + \
+                               45*u[4:-2] - 9*u[5:-1] + u[6:])
+    for i in range(-3,3):
+        der[i] = 1/(60 * dx) * (-u[i-3] + 9*u[i-2] - 45*u[i-1] + \
+                               45*u[i+1] - 9*u[i+2] + u[i+3])
+    return der
+
 def fft_der(u,dx):
     """
     Derivative using Fast Fourier Transform.
@@ -48,8 +64,7 @@ def fft_der(u,dx):
     fft = fftpack.fft(u) # Discret fourier transform 
     k = fftpack.fftfreq( N, dy) 
     ikfft = 1j * k * fft
-    der = fftpack.ifft(ikfft)
-    return der.real
+    return fftpack.ifft(ikfft).real
     
 
 def diff_fin_comp_der_magic(u, dx):
@@ -154,6 +169,22 @@ def simm_der2(u, dx):
     der[-1] = (u[0] - 2 * u[-1] + u[-2])/(dx**2) # right periodic boundary condition
     return der
 
+def simm_der_Ord4_2(u, dx):
+    der = np.empty(len(u))
+    der[2:-2] = 1/(12 * dx**2) * (-u[:-4] + 16*u[1:-3] - 30*u[2:-2] + 16*u[3:-1] - u[4:])
+    for i in range(-2,2):
+        der[i] = 1/(12 * dx**2) * (-u[i-2] - 16*u[i-1] - 30*u[i] + 16*u[i+1] - u[i+2])
+    return der
+
+def simm_der_Ord6_2(u, dx):
+    der = np.empty(len(u))
+    der[3:-3] = 1/(180*dx**2)*(2*u[:-6] - 27*u[1:-5] + 270*u[2:-4] - 490*u[3:-3] +\
+            270*u[4:-2] - 27*u[5:-1] + 2*u[6:])
+    for i in range(-3, 3):
+        der[i] = 1/(180*dx**2)*(2*u[i-3] - 27*u[i-2] + 270*u[i-1] - 490*u[i] +\
+            270*u[i+1] - 27*u[i+2] + 2*u[i+3])
+    return der
+
 def fft_der2(u,dx):
     """
     Second derivative using Fast Fourier Transform.
@@ -166,8 +197,7 @@ def fft_der2(u,dx):
     fft = fftpack.fft(u) # Discret fourier transform 
     k = fftpack.fftfreq( N, dy) 
     k2fft = - k**2 * fft
-    der = fftpack.ifft(k2fft)
-    return der.real
+    return fftpack.ifft(k2fft).real
 
 def diff_fin_comp_der2(u, dx):
     """
