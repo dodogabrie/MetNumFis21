@@ -40,11 +40,11 @@ def evaluate_energy_density_spectrum(u_t, dx):
     k_u = k_u[mask_pos_k_u]
     return mod_fft2_u, k_u
 
-def plot_results(u, x, dx, label, axs = [None]):
+def plot_results(u, x, dx, label, axs = [None], **kwargs):
     if (axs == None).all():
         fig, axs = plot_template()
     u_k2, k = evaluate_energy_density_spectrum(u, dx)
-    axs[0].plot(x, u, label = label)
+    axs[0].plot(x, u, label = label, **kwargs)
     axs[1].scatter(k, u_k2, s = 10, label = label)
     return axs
 
@@ -80,7 +80,7 @@ def check_CFL(c, dx, dt):
 
 def check_VonNeumann(nu, dt, dx):
     f = nu * dt / (dx)**2
-    if f > 1/2: raise Exception(f'Von Neumann on diffusion not respected: nu*dt/dx^2 = {f}')
+    if f > 1/2: print(f'Von Neumann on diffusion not respected: nu*dt/dx^2 = {f}')
     else: print(f'Von Neumann on diffusion: nu*dt/dx^2 = {f:.3e}')
     return
 
@@ -116,7 +116,7 @@ def analytic_sol_gaussian_advection(x, m, c, T, p):
 def u_sin_simple(x, p):
     L = p[0]
     m = p[1]
-    return np.sin(m * 2*np.pi*x/L)
+    return np.sin(m * 2*np.pi*x/L)# + np.sin(m2*np.pi*x/L)
 
 def u_mix_sin(x, p):
     L = p[0]

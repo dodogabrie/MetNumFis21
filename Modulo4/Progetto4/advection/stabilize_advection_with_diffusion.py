@@ -21,7 +21,7 @@ def initialization(L, N, u, init_params):
     dx = L/N
     x = np.linspace(0,L,N, endpoint = False)
 
-#    check_CFL(c, dx, dt) # check CFL condition
+    check_CFL(c, dx, dt) # check CFL condition
     check_VonNeumann(nu, dt, dx) # Check Von Neumann on diffusion only
 
     # Define starting function
@@ -40,6 +40,7 @@ def evolve_advection(L, N, nu, dt, N_step, c,
             u_t = int_method(u_t, F, dt, RKorder, c, nu, dx, der1, der2) 
 
             u_k2, _ = evaluate_energy_density_spectrum(u_t, dx)
+            u_tot = np.sum(u_k2)
             list_uk2.append(max(1e-30, u_k2[init_params[1]-1]))
             last_uk2 = u_k2[init_params[1]-1]
         else: 
@@ -149,12 +150,12 @@ def ana_meno_num(L, N, nu, dt, N_step, c,
 if __name__ == '__main__':
     # Parameters of simulation
     L = 20 # Spatial size of the grid
-    N = 300 # spatial step of grid
-    dt = 0.0013 # Temporal step
-    N_step = 20000 # Number of Temporal steps
+    N = 200 # spatial step of grid
+    dt = 1e-3 # Temporal step
+    N_step = 10000 # Number of Temporal steps
 
     dx = L/N
-    c = dx/dt
+    c = 1 #0.5*dx/dt
     nu = 0.0 # diffusion parameter
 
     # Numerical Methods
@@ -163,19 +164,19 @@ if __name__ == '__main__':
 
     # initial condition
     init_function = u_sin_simple 
-    m = 6
+    m = 30
     init_params = [L, m]
 
-    test_der = 0
+    test_der = 1
     ampl = 0
     stab_fft = 0
     ana_num = 0
-    test_der_stability = 1
+    test_der_stability = 0
     if test_der_stability:
         c = 1
-        name_der = ['dfs2', 'dfc']#, 'fft']
-        list_der1 = [der.simm_der, der.diff_fin_comp_der]#, der.fft_der]
-        list_der2 = [der.simm_der2, der.diff_fin_comp_der2]#, der.fft_der2]
+        name_der = ['dfs2', 'dfc', 'fft']
+        list_der1 = [der.simm_der, der.diff_fin_comp_der, der.fft_der]
+        list_der2 = [der.simm_der2, der.diff_fin_comp_der2, der.fft_der2]
         check_derivative_effect(L, N, nu, dt, N_step, c,
                                 init_function, advection_diffusion, 
                                 list_der1, list_der2, I, 
