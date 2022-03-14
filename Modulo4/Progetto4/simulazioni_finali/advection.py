@@ -69,7 +69,7 @@ if __name__ == '__main__':
     L = 10           # Spatial size of the grid
     N = 200          # spatial step of grid
     dt = 4.6e-1        # Temporal step
-    N_step = 432     # Number of Temporal steps
+    N_step = 462     # Number of Temporal steps
 
     dx = L/N
     c = 0.1 

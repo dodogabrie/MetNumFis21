@@ -30,12 +30,15 @@ def my_real_ifft(u):
     ifft = fftpack.ifft(u) # Discret fourier transform 
     return ifft
 
-def evaluate_energy_density_spectrum(u_t, dx):
+def evaluate_energy_density_spectrum(u_t, dx, zero_energy = False):
     # final fft
     fft_u, k_u = my_real_fft(u_t, dx) # FFT of final u 
     mod_u_k = np.abs(fft_u) # |u_k|
     mod_fft2_u = (mod_u_k)**2 # |u_k|^2
-    mask_pos_k_u = k_u > 0 # mask for positive k final
+    if zero_energy:
+        mask_pos_k_u = k_u >= 0 # mask for positive k final
+    else:
+        mask_pos_k_u = k_u > 0 # mask for positive k final
     mod_fft2_u = mod_fft2_u[mask_pos_k_u]
     k_u = k_u[mask_pos_k_u]
     return mod_fft2_u, k_u
