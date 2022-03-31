@@ -184,16 +184,15 @@ def test_Lax_Wendroff(u):
 #    plt.savefig('../figures/nonlinear/Lax_Wendroff.png', dpi = 200)
     plt.show()
 
-def test_turn_over(u):
-
-    k = 1
-    L, N, nu, dt, N_step, dx, x, t, u_init, u_t = initial(u, m = k, kind = 'extra_pt')
+def test_turn_over(u, F):
+    k = 2
+    L, N, nu, dt, N_step, dx, x, t, u_init, u_t = initial(u, m = k)
 
     u_init = u(x, L, k = k) # save initial condition 
     u_t = np.copy(u_init) # create e copy to evolve it in time
 
     # initial fft
-    mod_fft2_u_init, k_u_init = evaluate_energy_density_spectrum(u_init[:-2], dx)
+    mod_fft2_u_init, k_u_init = evaluate_energy_density_spectrum(u_init, dx)
     
     # Turnover time
     mod_u_k_init = np.sqrt(mod_fft2_u_init)
@@ -202,36 +201,42 @@ def test_turn_over(u):
     t_o = 1/(u_k_in*k_in)
     print(t_o)
 
-    fig, axs = plot_template()
+    fig, axs = plot_template(2,1, figsize = (6, 9))
+    plt.rc('font', **{'size'   : 15})
+#    plt.suptitle(title, fontsize = 15)
 
     ax = axs[1]
-    N_inside = 10
-    for under_turnover, over_turnover, label_t in [[20, 1, r'$\tau_o/20$'], 
-                                                   [1, 1, r'$\tau_o$'], 
-                                                   [1, 20, r'$20\tau_o$']]:
-        dt = t_o / (N_inside * under_turnover)
-        N_step = N_inside * over_turnover * under_turnover
+    N_inside = 1
+    under_max = 40
+    dt = t_o / (N_inside * under_max)
+    # dt = t_o / ( 40 ) 
+    for factor, label_t in [[1, r'$\tau_o/40$'],
+                            [2, r'$\tau_o/20$'], 
+                            [40, r'$\tau_o$'], 
+                            [800, r'$20\tau_o$'], 
+                            [1600, r'$40\tau_o$']]:
+        N_step = N_inside * factor
         # in this way dt * N_step = t_o
         for i in range(N_step): # temporal evolution
-            u_t = NS.Lax_W_Two_Step(u_t, x, t, dt, dx, F_flux, RHS)
-        mod_fft2_u, k_u = evaluate_energy_density_spectrum(u_t[:-2], dx)
+            u_t = Int.RKN(u_t, F, dt, 4, dx)
+        mod_fft2_u, k_u = evaluate_energy_density_spectrum(u_t, dx)
         ax.scatter(k_u, mod_fft2_u, label = fr't = ' + label_t, marker = 'v', zorder = 1, s = 12)
 
     # Plot results
-    equation = r'$\partial_t u = - u \partial_x u \ \longrightarrow$ Lax-Wendroff'
-    plt.suptitle(equation, fontsize = 15)
 
+    title = fr'L = {L},  N = {N},  dt = $\tau_o$/40,  $\tau_o$ = {t_o:.2e}'
     ax = axs[0]
-    ax.plot(x, u_init, label = 't = 0', c = 'purple')
-    ax.plot(x, u_t.real, label = fr't = {over_turnover}$\tau_o$', c = 'lime')
+    ax.set_title(title, fontsize = 15)
+    ax.plot(x, u_init, label = 't = 0', c = 'black')
+    ax.plot(x, u_t.real, label = fr't = 40$\tau_o$', c = 'tab:purple')
     ax = axs[1]
-    ax.scatter(k_u_init, mod_fft2_u_init, label = 't = 0', marker='D', zorder = 2, s = 12, c = 'purple')
-    [ax.legend(fontsize = 12) for ax in axs]
+    ax.scatter(k_u_init, mod_fft2_u_init, label = 't = 0', marker='D', zorder = 2, s = 12, c = 'black')
+    [ax.legend(fontsize = 11) for ax in axs]
     plt.tight_layout()
-    #plt.savefig('../figures/nonlinear/tunnovetime.png', dpi = 200)
+    plt.savefig('../figures/final/tunnovetime_fft.png', dpi = 200)
     plt.show()
 
 if __name__ == '__main__':
     #test_Lax_Wendroff(u_sin_simple)
-    ampl2(Int.RKN, 4, u_sin_simple, F_non_linear)
-    #test_turn_over(u_sin_simple)
+    #ampl2(Int.RKN, 4, u_sin_simple, F_non_linear)
+    test_turn_over(u_sin_simple, F_non_linear)
