@@ -75,16 +75,18 @@ def plot_template(row = 1, col = 2, figsize = (12, 3)):
     ax.set_xscale('log')
     return fig, axs
 
-def check_CFL(c, dx, dt):
+def check_CFL(c, dx, dt, print_info = True):
     f = c*dt/dx
     if f > 1: raise Exception(f'CFL condition not respected: c*dx/dt = {f}')
-    else: print(f'CFL number: c*dt/dx = {f}')
+    else: 
+        if print_info: print(f'CFL number: c*dt/dx = {f}')
     return
 
-def check_VonNeumann(nu, dt, dx):
+def check_VonNeumann(nu, dt, dx, print_info = True):
     f = nu * dt / (dx)**2
     if f > 1/2: print(f'Von Neumann on diffusion not respected: nu*dt/dx^2 = {f}')
-    else: print(f'Von Neumann on diffusion: nu*dt/dx^2 = {f:.3e}')
+    else: 
+        if print_info: print(f'Von Neumann on diffusion: nu*dt/dx^2 = {f:.3e}')
     return
 
 
