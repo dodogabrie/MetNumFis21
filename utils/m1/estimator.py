@@ -15,3 +15,10 @@ def compute_c(e, param):
     kb = 1 # 1.380649 * 1e-23 # J/K --> True value
     beta = 1 # Comment here
     return kb * beta**2 * L*L * ( np.mean(e**2) - np.mean(e)**2)
+
+# Cumulante di Binder
+@njit(fastmath = True)
+def compute_B(M, param = ()):
+    return np.mean(M**4)/(np.mean(M**2)**2)
+
+
