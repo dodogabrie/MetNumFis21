@@ -1,6 +1,6 @@
 """
 Evaluate the derivative of a function in 3 different way using numpy vectorial
-operations. 
+operations.
 The efficient one ( o[(dx)^2] ) is simm_der (the last one), the other 2 methods
 are just o[dx].
 """
@@ -8,24 +8,22 @@ are just o[dx].
 import numpy as np
 #from numba import jit_module
 
-def foward_der(x):
+def foward_der(u,dx):
     """
     Derivative considering the next point
     """
-    der = np.empty(len(x))
-    dx = x[1]-x[0]
-    der[:-1] = (x[1:] - x[:-1])/dx
-    der[-1] = der[-2]
+    der = np.empty(len(u))
+    der[:-1] = (u[1:] - u[:-1])/dx
+    der[-1] = der[0]
     return der
 
-def backward_der(x):
+def backward_der(u,dx):
     """
     Derivative considering the previous point
     """
-    der = np.empty(len(x))
-    dx = x[1]-x[0]
-    der[1:] = (x[1:] - x[:-1])/dx
-    der[0] = der[1]
+    der = np.empty(len(u))
+    der[1:] = (u[1:] - u[:-1])/dx
+    der[0] = der[-1]
     return der
 
 def simm_der(f, dx, out):
