@@ -1,21 +1,20 @@
-import time
 import numpy as np
+import os
 import math
 cimport numpy as np # Make numpy work with cython
 cimport cython
 from libc.math cimport exp, log
 from libc.stdio cimport printf
 from libc.time cimport time,time_t
+import json
 
 def simulator(int seed, int nlat, int iflag, 
               int measures, int i_decorrel, int i_term, double d_metro,
-              double eta, int save_lattice = 1):
+              double eta, int save_data = 1, int save_lattice = 0):
     """
     Main function for the harmonic oscillator.
     Parameters
     ----------
-    lattice : double
-        The lattice of the system?
     seed: int
         The seed for the random number generator.
     nlat : integer
@@ -49,44 +48,109 @@ def simulator(int seed, int nlat, int iflag,
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] obs2_array = np.empty(measures)
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] single_obs = np.empty(2)
     # random array
-    cdef int n_rand_metro = 2
+    cdef int n_rand_metro = 2 # Number of random numbers for the single metropolis
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] rr = np.empty(n_rand_metro*i_decorrel*nlat)
-    cdef np.ndarray[np.double_t, ndim=1, mode='c'] r_term = np.empty(n_rand_metro*i_term*nlat)
+    cdef int count_term_max = int(1e5)
+    cdef np.ndarray[np.double_t, ndim=1, mode='c'] r_term = np.empty(n_rand_metro*count_term_max*nlat)
     # lattice array
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] field = np.ones(nlat)
 
     cdef int i, idec # index for loops
 
+    # Index for counting the remaining time
+    cdef int count = 0, perc_count = 0, count_max = int(measures/10)
+    cdef time_t t0 = time(NULL), sum_t = 0, frac_elapsed
+
+    # 0) Initialize the lattice
     geometry(nlat, npp, nmm) # Set the boundary conditions
     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
 
-    r_term = rng.uniform(size = n_rand_metro*i_term*nlat) # Extract the random points for the MC
+    # 1) Termalization step
+    #r_term = rng.uniform(size = n_rand_metro*i_term*nlat) # Extract the random points for the MC
+    cdef int count_term = 0
+    r_term = rng.uniform(size = n_rand_metro*count_term_max*nlat) 
+    print("Termalization step")
     for i in range(i_term):
-        update_metropolis(field, nlat, d_metro, npp, nmm, eta, r_term, i*n_rand_metro*nlat) # MC
-    cdef int count = 0
-    cdef int perc_count = 0
-    cdef int count_max = int(measures/10)
-    cdef time_t t0 = time(NULL)
-    cdef time_t t1, sum_t
+        update_metropolis(field, nlat, d_metro, npp, nmm, eta, r_term, count_term*n_rand_metro*nlat) # MC
+        count_term+=1
+        if count_term == count_term_max:
+            count_term = 0
+            r_term = rng.uniform(size = n_rand_metro*count_term_max*nlat) 
+    print("Termalization step finished")
+    # 2) Measures step
     for i in range(measures):
-        count += 1
-        if count >= count_max:
-            perc_count += 1
-            t1 = time(NULL)
-            frac_elapsed = t1 - t0
-            sum_t += frac_elapsed
-            printf("%d / 10 --> %ld s left\n", perc_count, (10 - perc_count)*sum_t/perc_count)
-            t0 = t1
-            count = 0
-        rr = rng.uniform(size = n_rand_metro*i_decorrel*nlat) # Extract the random points for the MC
+        # a) Print counter and time remaining
+        count, sum_t, perc_count, t0 = print_counter(count, perc_count, count_max, t0, 
+                                                     frac_elapsed, sum_t)
+        # b) Extract the random points for the MC
+        rr = rng.uniform(size = n_rand_metro*i_decorrel*nlat)
+
+        # c) Decorrelate the lattice
         for idec in range(i_decorrel):
             update_metropolis(field, nlat, d_metro, npp, nmm, eta, rr, idec*n_rand_metro*nlat)
+
+        # d) Measure the observables
         get_measures(nlat, field, npp, single_obs)
         obs1_array[i] = single_obs[0]
         obs2_array[i] = single_obs[1]
-    np.savetxt(f'../dati/nlat{nlat}/data_eta{eta}.dat', np.column_stack((obs1_array, obs2_array))) # Save Energy and Magnetization
 
-#=================== FUNCTION TO DEFINE THE GEOMETRY =========================
+    # 3) Save the data
+    store_results( seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
+                   eta, save_data, save_lattice, obs1_array, obs2_array, field)
+#==============================================================================
+
+#=============== FUNCTION TO STORE THE RESULTS IN FILES =======================
+def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
+                  eta, save_data, save_lattice, obs1_array, obs2_array, field):
+    """
+    Store the results in data files.
+    """
+    # Dictionary with parameters of simulation
+    data_dict = {'seed': seed, 'eta':eta, 'nlat': nlat, 
+                 'iflag': iflag, 'measures': measures,
+                 'i_decorrel': i_decorrel, 'i_term': i_term, 
+                 'd_metro': d_metro}
+    if save_data: # If the user want to save the observables
+        data_dir = f'../dati/obs_nlat{nlat}/' # Directory where the data will be saved
+        if not os.path.exists(os.path.dirname(data_dir)): # If the directory does not exist
+            os.makedirs(os.path.dirname(data_dir)) # Create the directory
+        # Save the data in a .dat file
+        np.savetxt(data_dir + f'data_eta{eta}.dat' , np.column_stack((obs1_array, obs2_array)))
+        with open(data_dir + f'data_eta{eta}.json', 'w') as f: # Save the parameters in a .json file
+            json.dump(data_dict, f) # a .json file contains a dictionary
+    if save_lattice: # If the user want to save the lattice
+        lattice_dir = f'../dati/lattice_nlat{nlat}/' # Directory where the lattice will be saved
+        if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
+            os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
+        np.savetxt(lattice_dir + f'lattice_eta{eta}.dat', field) # Save the lattice
+        with open(lattice_dir + f'data_eta{eta}.json', 'w') as f: # Save the parameters in a .json file
+            json.dump(data_dict, f) # the .json file contains the dictionary
+    return
+#==============================================================================
+
+#=============== FUNCTION TO EVALUATE THE TIME REMAINING ======================
+@cython.cdivision(True)
+cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t 
+                                              count_max, time_t t0,
+                                              time_t frac_elapsed, time_t sum_t):
+    """
+    Print the percentage of the simulation completed
+    Parameters
+    """
+    cdef time_t t1
+    count+=1
+    if count >= count_max:
+        perc_count += 1
+        t1 = time(NULL)
+        frac_elapsed = t1 - t0
+        sum_t += frac_elapsed
+        printf("%d / 10 --> %ld s left\n", 
+                perc_count, (10 - perc_count)*sum_t/perc_count)
+        t0 = t1
+        count = 0
+    return count, sum_t, perc_count, t0
+
+#=================== FUNCTION TO DEFINE THE GEOMETRY ==========================
 @cython.boundscheck(False)  # Deactivate bounds checking 
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
@@ -100,9 +164,9 @@ cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):
         nmm[i] = i - 1
     npp[nlat-1] = 0
     nmm[0] = nlat-1
-#=============================================================================
+#==============================================================================
 
-#=================== FUNCTION TO INITIALIZE THE LATTICE ======================
+#=================== FUNCTION TO INITIALIZE THE LATTICE =======================
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef void inizialize_lattice(int iflag, int nlat, np.double_t[:] field):
