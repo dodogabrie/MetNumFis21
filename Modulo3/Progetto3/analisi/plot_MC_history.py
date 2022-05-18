@@ -11,38 +11,47 @@ def extract_from_json(file):
     return datastore
 
 
-def show_MC_history(file):
-    data = rf.fastload(file, int(1e7))
+def get_U(file):
+    data = rf.fastload(file, int(1e6))
     y2 = data[:,0]
     dy2 = data[:,1]
     datastore = extract_from_json(file)
     eta = datastore['eta']
     nlat = datastore['nlat']
-    U = 1/2 * np.mean(y2) - 1/(2*eta)*np.mean(dy2)
+    U = 1/(2*eta) + 1/2 * np.mean(y2) - 1/(2*eta**2)*np.mean(dy2)
     return U, eta, nlat
 
+def show_history(file):
+    data = rf.fastload(file, int(1e7))
+    y2 = data[:,0]
+    dy2 = data[:,1]
+    return y2, dy2
+
+
 if __name__ == '__main__':
-    file = b'../dati/obs_nlat10/data_eta0.001.dat'
-    U_1, eta, nlat1 = show_MC_history(file)
-
-    file = b'../dati/obs_nlat50/data_eta0.001.dat'
-    U_2, eta, nlat2 = show_MC_history(file)
-    
-    file = b'../dati/obs_nlat100/data_eta0.001.dat'
-    U_3, _, nlat3 = show_MC_history(file)
-
-    file = b'../dati/obs_nlat500/data_eta0.001.dat'
-    U_4, eta, nlat4 = show_MC_history(file)
- 
-    file = b'../dati/obs_nlat1000/data_eta0.001.dat'
-    U_5, _, nlat5 = show_MC_history(file)
-
-    U_list = np.array([U_1, U_2, U_3, U_4, U_5])
-    nlat_list = np.array([nlat1, nlat2, nlat3, nlat4, nlat5])
+    data_dir = '../dati/'
+    eta = 1e-2
+    inv_Neta = np.array([0.05, 0.333333, 0.5, 0.666667, 0.8, 1., 1.11111, 1.33333, 2., 2.5, 3.33333, 5, 10])
+    nlat_list = (1/(inv_Neta*eta)).astype(int)
+    U_list = []
+    for nlat in nlat_list:
+        file = data_dir + f'obs_nlat{nlat}/data_eta{eta}.dat'
+        U, eta, nlat = get_U(file.encode('UTF-8'))
+        U_list.append(U)
+    U_list = np.array(U_list)
+    nlat_list = np.array(nlat_list)
     xx = 1/(nlat_list*eta)
 
     import matplotlib.pyplot as plt
     plt.scatter(xx, U_list)
     plt.show()
+#
+#    nlat = 10
+#    eta = 0.3
+#    file = data_dir + f'obs_nlat{nlat}/data_eta{eta}.dat'
+#    y2, dy2 = show_history(file.encode('UTF-8'))
+#    import matplotlib.pyplot as plt
+#    plt.plot(y2)
+#    plt.show()
 
 

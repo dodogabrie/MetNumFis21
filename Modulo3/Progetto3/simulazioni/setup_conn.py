@@ -2,9 +2,11 @@ from distutils.core import setup, Extension
 from Cython.Build import cythonize
 import numpy
 
-module_name = 'oscillatore'
+module_name = 'oscillatore_f2connessa'
 
-e1 = Extension('oscillatore', ['oscillatore.pyx'], include_dirs=[numpy.get_include(), '.'],)
+e1 = Extension('oscillatore_f2connessa', 
+               ['oscillatore_f2connessa.pyx'], include_dirs=[numpy.get_include(), '.'],
+               extra_compile_args=["-O3"])
 
 ext_modules = [e1]
 

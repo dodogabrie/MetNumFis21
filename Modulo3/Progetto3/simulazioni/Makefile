@@ -6,15 +6,19 @@ help:
 	@echo "Available tasks:"
 	@echo "compile    -> Build the Cython extension module."
 	@echo "annotate   -> Create annotated HTML from the .pyx sources"
-	@echo "all        -> Call compile, clean-soft"
 	@echo "clean      -> Remove *.so *.c *.o *.html build core"
 	@echo "clean-soft -> Remove *.so *.c *.o build"
 	@echo "test       -> Run the test.py"
 
-all: compile #soft-clean
+osc: compile osc #soft-clean
+conn: compile conn #soft-clean
 
-compile:
-	python3 setup.py build_ext --inplace
+compile osc:
+	python3 setup_osc.py build_ext --inplace
+
+compile osc:
+	python3 setup_conn.py build_ext --inplace
+
 annotate:
 	cython -3 -a *.pyx
 	@echo "Annotated HTML of the code"

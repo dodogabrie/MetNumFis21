@@ -83,7 +83,7 @@ def bootstrap_corr(arr, estimator, n_fake_samples = 200, param = ()):
     for b in range(len(kk)):
         M = 2**kk[b]
         rest = N % M # Number of data not considered
-        arr_new = np.empty( N - rest ) # Array divisible by M
+        arr_new = np.empty((N - rest, arr.shape[-1])) # Array divisible by M
         fake_estimator = np.empty( n_fake_samples ) # Initialized array for fake estimators
         n_block = int(N/M) # Number of blocks
         for j in range(n_fake_samples): # loop over number of fake samples
