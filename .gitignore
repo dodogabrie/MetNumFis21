@@ -9,7 +9,7 @@ Modulo1/Code1/Metropolis_Gauss/mGauss_cython/data/
 Modulo1/Code1/Metropolis_Gauss/mGauss_fortran/data.dat
 Modulo3/Dida3/
 Modulo4/Dida4/
-Modulo3/Progetto3/dati/nlat*
+Modulo3/Progetto3/dati/*/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
