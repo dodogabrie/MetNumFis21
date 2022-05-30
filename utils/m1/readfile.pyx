@@ -1,7 +1,8 @@
 """ This Module read a 2 COLUMNS file of data in a fast way """
 from libc.stdio cimport *
-from libc.stdlib cimport atof
-from libc.string cimport strtok, strncmp, strlen
+from cython.parallel import prange
+from libc.stdlib cimport atof, free, malloc
+from libc.string cimport strtok, strncmp, strlen, strcpy
 import numpy as np
 cimport cython, numpy as np # Make numpy work with cython
 
@@ -19,7 +20,7 @@ cdef int StartsWith(const char *a, const char *b):
 
 
 # Main function ###############################################
-def fastload(filename):
+def fastload(filename, comments = '#', delimiter = ' ', usecols = None):
     """
     Function for fast extraction of data from txt file.
     NOTE: do not import matplotlib before importing this module, in that 
@@ -30,8 +31,108 @@ def fastload(filename):
     filename : 'b'string
         String containing the file .txt and his path preceeded by the letter b.
         For example b'mydata.txt'
-    Ndata : int
-        Maximum number of data contained in the file.
+
+    Return: 2d numpy array
+        Array of x/y containing the data in the txt columns.
+    """
+    cdef int i
+    #cdef int len_comment = len(comments), len_delimiter = len(delimiter), len_fname = len(filename)
+
+    cdef char * cdelimiter = <char*>malloc(10 * sizeof(char))
+    cdef char * ccomments  = <char*>malloc(10 * sizeof(char))
+    cdef char * fname      = <char*>malloc(100 * sizeof(char))
+    strcpy(cdelimiter, delimiter.encode('utf-8'))
+    strcpy(ccomments, comments.encode('utf-8'))
+    strcpy(fname, filename.encode('utf-8'))
+
+    Ndata, Ncol = get_dimension(fname, cdelimiter, ccomments)
+
+    # usecols handling
+    cdef np.ndarray cols = np.arange(Ncol).astype(int)
+    cdef int max_col 
+    cdef int num_col = Ncol
+    cdef int check_cols = 1
+    if usecols is not None:
+        cols = np.array(usecols).astype(int)
+        max_col = np.max(usecols)
+        num_col = len(usecols) # eventually overwrite the number of columns
+        if Ncol <= max_col:
+            check_cols = 0
+
+    cdef np.ndarray data = np.empty((Ndata, num_col)).astype(np.double)
+
+    if check_cols:
+        take_data(data, fname, Ndata, Ncol, cdelimiter, ccomments, cols) 
+    else:
+        printf("ERROR: index of columns out of range, you asked %d but the file contains only %d columns\n", max_col, Ncol)
+    return np.squeeze(data)
+###############################################################
+
+
+cdef (int, int) get_dimension(char * fname, char * delimiter, char * comments):
+    cfile = fopen(fname, "rb")
+    if cfile == NULL:
+        raise FileNotFoundError(2, "No such file or directory: '%s'" % fname)
+    cdef int Ndata=0, Ncol=0
+    cdef char * line = NULL
+    cdef size_t l = 0
+    cdef ssize_t read
+    while True:
+        read = getline(&line, &l, cfile)
+        if read == -1: break
+        if Ndata == 0:
+            line = strtok(line, delimiter)
+            if StartsWith(line, comments): continue
+            else:
+                while line != NULL:
+                    line = strtok(NULL, delimiter)
+                    Ncol += 1
+        Ndata += 1
+    free(line)
+    fclose(cfile)
+    return Ndata, Ncol
+
+# Core function (do the hard word) ############################
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef void take_data(DTYPE_t[:,:] data, char * fname, int Ndata, int Ncol, 
+        char * delimiter, char * comments, np.int_t[:] cols):
+    cfile = fopen(fname, "rb")
+    cdef int i, j = 0, j_max = 0
+    cdef int col_counter = 0 # column index
+    cdef int c = cols[col_counter]
+    cdef char * line = NULL
+    cdef char * token 
+    cdef size_t l = 0
+    cdef ssize_t read = 0
+    for i in range(Ndata):
+        read = getline(&line, &l, cfile)
+        if read == -1: break
+        token = strtok(line, delimiter)
+        if StartsWith(line, comments): continue
+        for j in range(Ncol):
+            if j == c:
+                data[i][col_counter] = atof(token)
+                col_counter += 1
+                c = cols[col_counter]
+            token = strtok(NULL, delimiter)
+        col_counter = 0
+        c = cols[col_counter]
+    free(line)
+    fclose(cfile)
+###############################################################
+
+def get_data_shape(filename, comments = '#', delimiter = ' '):
+    """
+    Function for fast extraction of data from txt file.
+    NOTE: do not import matplotlib before importing this module, in that 
+    case the module will not work...
+
+    Parameters
+    ----------
+    filename : 'b'string
+        String containing the file .txt and his path preceeded by the letter b.
+        For example b'mydata.txt'
 
     Return: 2d numpy array
         Array of x/y containing the data in the txt columns.
@@ -42,73 +143,14 @@ def fastload(filename):
             return data.encode('utf-8')
         except AttributeError: # if already utf-8
             return data
-    filename_byte_string = turn_utf8(filename)
-    cdef char* fname = filename_byte_string
-    cdef FILE* cfile
-    cfile = fopen(fname, "rb")
-    if cfile == NULL:
-        raise FileNotFoundError(2, "No such file or directory: '%s'" % filename)
 
-    if Ndata == 0 and Ncol == 0:
-        Ndata, Ncol = get_dimension(cfile)
-        cfile = fopen(fname, "rb")
+    cdef bytes cdelimiter = turn_utf8(delimiter)
+    cdef bytes ccomments = turn_utf8(comments)
+    cdef bytes fname = turn_utf8(filename)
 
-    cdef np.ndarray data = np.empty((Ndata, Ncol)).astype(np.double)
-    cdef int i, j
-    i, j = take_data(data, cfile, Ndata, Ncol) 
-    if i != Ndata: print(f"WARNING: the file contain {i} data but you asked for {Ndata}")
-    if j != Ncol: print(f"WARNING: the file contain {j} columns but you asked for {Ncol}")
-    return data[:i]
-###############################################################
-
-
-cdef (int, int) get_dimension(FILE* cfile):
-    cdef int Ndata=0, Ncol=0
-    cdef char * line = NULL
-    cdef size_t l = 0
-    cdef ssize_t read
-    while True:
-        read = getline(&line, &l, cfile)
-        if read == -1: break
-#        line1 = strtok(line, " ")
-        if Ndata == 0:
-            line = strtok(line, " ")
-            if StartsWith(line, "#"): continue
-            else:
-                while line != NULL:
-                    line = strtok(NULL, " ")
-                    Ncol += 1
-        Ndata += 1
-    fclose(cfile)
+    Ndata, Ncol = get_dimension(fname, cdelimiter, ccomments)
     return Ndata, Ncol
-
-# Core function (do the hard word) ############################
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef (int, int) take_data(DTYPE_t[:,:] data, FILE* cfile, int Ndata, int Ncol):
-    cdef int i = 0, j = 0, j_max = 0
-    cdef char * line = NULL
-    cdef size_t l = 0
-    cdef ssize_t read
-    while True:
-        read = getline(&line, &l, cfile)
-        if read == -1: break
-        line = strtok(line, " ")
-        if StartsWith(line, "#"): continue
-        while line != NULL:
-            if i == 0: j_max += 1
-            if i < Ndata:
-                if j < Ncol:
-                    data[i][j] = atof(line)
-                    j += 1
-            else:
-                break
-            line = strtok(NULL, " ")
-        i += 1
-        j = 0
-    fclose(cfile)
-    return i, j_max
-###############################################################
+#
 
 # Main function for slow load data ############################
 def slowload(filename, int Ndata):
