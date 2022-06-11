@@ -26,8 +26,22 @@ def plot_all():
         x = np.linspace(0, eta*(nlat-1), nlat)
         if x[1]-x[0] != eta:
             raise ValueError('x non è uniforme')
-        plot_lattice(data_dir + filename, x, label = f'{nlat}', ax = ax)
+        ax = plot_lattice(data_dir + filename, x, label = f'N = {nlat}', ax = ax)
+
+    ax.set_title('Forma dei cammini al variare di N')
+    ax.set_xlabel(r'$\tau$')
+    ax.set_ylabel('y')
+
+    ax.minorticks_on()
+    ax.tick_params('x', which='major', direction='in', length=3)
+    ax.tick_params('y', which='major', direction='in', length=3)
+    ax.tick_params('y', which='minor', direction='in', length=1.5, left=True)
+    ax.tick_params('x', which='minor', direction='in', length=1.5, bottom=True)
+ 
+    ax.grid(alpha=0.3)
     plt.legend()
+    plt.savefig('../figure/lattice/lattice_vary_nlat.png', dpi = 150)
+    plt.show()
     plt.show()
 
 def check_termalization_nlat():

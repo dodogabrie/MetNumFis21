@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../../../utils/')
+import matplotlib.pyplot as plt
 import numpy as np
 import json
 import m1.readfile as rf
@@ -27,24 +28,34 @@ def show_history(file):
     dy2 = data[:,1]
     return y2, dy2
 
+def plot_data(file):
+    data = rf.fastload(file)
+    y2 = data[:,0]
+    dy2 = data[:,1]
+    plt.plot(y2)
+    plt.show()
+    return 
+
 
 if __name__ == '__main__':
-    data_dir = '../dati/'
-    eta = 1e-2
-    inv_Neta = np.array([0.05, 0.333333, 0.5, 0.666667, 0.8, 1., 1.11111, 1.33333, 2., 2.5, 3.33333, 5, 10])
-    nlat_list = (1/(inv_Neta*eta)).astype(int)
-    U_list = []
-    for nlat in nlat_list:
-        file = data_dir + f'obs_nlat{nlat}/data_eta{eta}.dat'
-        U, eta, nlat = get_U(file.encode('UTF-8'))
-        U_list.append(U)
-    U_list = np.array(U_list)
-    nlat_list = np.array(nlat_list)
-    xx = 1/(nlat_list*eta)
-
-    import matplotlib.pyplot as plt
-    plt.scatter(xx, U_list)
-    plt.show()
+    file = '../dati/potential_term/data_eta0.1_nlat20.dat'
+    plot_data(file)
+#
+#    data_dir = '../dati/'
+#    eta = 1e-2
+#    inv_Neta = np.array([0.05, 0.333333, 0.5, 0.666667, 0.8, 1., 1.11111, 1.33333, 2., 2.5, 3.33333, 5, 10])
+#    nlat_list = (1/(inv_Neta*eta)).astype(int)
+#    U_list = []
+#    for nlat in nlat_list:
+#        file = data_dir + f'obs_nlat{nlat}/data_eta{eta}.dat'
+#        U, eta, nlat = get_U(file.encode('UTF-8'))
+#        U_list.append(U)
+#    U_list = np.array(U_list)
+#    nlat_list = np.array(nlat_list)
+#    xx = 1/(nlat_list*eta)
+#
+#    plt.scatter(xx, U_list)
+#    plt.show()
 #
 #    nlat = 10
 #    eta = 0.3

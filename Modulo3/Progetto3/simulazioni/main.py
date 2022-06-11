@@ -6,8 +6,8 @@ from oscillatore_f2connessa import simulator_f2
 
 def metropolis_harmonic_osc(nlat, eta, measures, d_metro = None, 
                             i_decorrel = 10, i_term = None, seed = -1, 
-                            i_flag = 1, save_data = 1, save_lattice = 1, data_dir = "", file_name = None, input_list_k = []):
-    if d_metro is None: d_metro = 2*np.sqrt(eta)
+                            i_flag = 0, save_data = 1, save_lattice = 1, data_dir = "", file_name = None, input_list_k = []):
+    if d_metro is None: d_metro = 2 * np.sqrt(eta)
     if i_term  is None: i_term = measures
 
     if len(input_list_k) == 0:
@@ -32,8 +32,16 @@ def simulation_varying_nlat(n_jobs, nlat_list, eta, measures, *args, **kwargs):
 
 def simulation_varying_nlat_and_eta(n_jobs, nlat_list, eta_list, measures, *args, **kwargs):
     # parallel version:
-    Parallel(n_jobs=n_jobs)(delayed(metropolis_harmonic_osc)(nlat, eta, measures, *args, **kwargs) 
-            for nlat, eta in zip(nlat_list, eta_list))
+    i_decorrel_try = kwargs.get('i_decorrel')
+
+    if isinstance(i_decorrel_try, np.ndarray):
+        kwargs.pop('i_decorrel')
+        print(kwargs)
+        Parallel(n_jobs=n_jobs)(delayed(metropolis_harmonic_osc)(nlat, eta, measures, *args, i_decorrel = i_decorrel, **kwargs) 
+                for nlat, eta, i_decorrel in zip(nlat_list, eta_list, i_decorrel_try))
+    else:
+        Parallel(n_jobs=n_jobs)(delayed(metropolis_harmonic_osc)(nlat, eta, measures, *args, **kwargs) 
+                for nlat, eta in zip(nlat_list, eta_list))
     # It's the same as:
     # for nlat, eta in zip(nlat_list, eta_list):
     #     metropolis_harmonic_osc(nlat, eta, measures, *args, **kwargs)
@@ -72,12 +80,18 @@ def MC_story_varying_N():
     simulation_varying_nlat(n_jobs, list_N, eta, measures, i_decorrel = 100, data_dir = data_dir)
 
 # Teniamo T fisso e facciamo variare N, eta
-def potential_term(N_eta):
-    n_jobs = 5
-    list_eta = np.array([0.6, 0.3, 0.2, 0.15, 0.12, 0.10, 0.05, 0.0375, 0.03])
-    list_N = (N_eta/list_eta).astype(int)
+def potential_term():
+    n_jobs = 8
+    N_per_eta = 3
+    list_N = np.array([8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 23, 25, 30, 50, 70])
+    list_eta = N_per_eta/list_N
+    i_term = int(1e6)
     measures = int(1e6)
-    simulation_varying_nlat_and_eta(n_jobs, list_N, list_eta, measures, i_term = int(1e6), i_decorrel = 500)
+    i_decorrel_list = 100*(1/np.sqrt(list_eta)).astype(int)
+    data_dir = "potential_term"
+    print(i_decorrel_list)
+    simulation_varying_nlat_and_eta(n_jobs, list_N, list_eta, measures, save_lattice = 0, i_flag = 0,
+            i_term = i_term, i_decorrel = i_decorrel_list, data_dir = data_dir)
 
 def stato_fondamentale(): # Forma dello stato fondamentale 
     data_dir = "stato_fondamentale"
@@ -144,9 +158,9 @@ def contiuum_E1_E0(): # limite al continuo per E1 e E0
 #    simulation_varying_nlat(n_jobs, nlat_list, eta, measures, i_term = int(1e6), i_decorrel = 10)
 
 if __name__ == '__main__':
-    plot_cammini()
+#    plot_cammini()
 #    MC_story_varying_N()
-#    potential_term(3)
+    potential_term()
 #    gap_energy()
 #    contiuum_E1_E0()
 

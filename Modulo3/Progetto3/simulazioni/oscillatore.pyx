@@ -131,6 +131,7 @@ def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
         name_file = usr_name_file
 
     if save_data: # If the user want to save the observables
+        print('Saving data in file: ', name_file)
         data_dir = '../dati/'+ usr_data_dir + '/'         # Directory where the data will be saved
         if not os.path.exists(os.path.dirname(data_dir)): # If the directory does not exist
             os.makedirs(os.path.dirname(data_dir)) # Create the directory
@@ -139,11 +140,13 @@ def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
         with open(data_dir + name_file + '.json', 'w') as f: # Save the parameters in a .json file
             json.dump(data_dict, f) # a .json file contains a dictionary
     if save_lattice: # If the user want to save the lattice
+        lattice_name_file = name_file + '_lattice'
+        print('Saving lattice in file: ', lattice_name_file)
         lattice_dir = f'../dati/' + usr_data_dir + '/'       # Directory where the lattice will be saved
         if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
             os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
-        np.savetxt(lattice_dir + name_file + '.dat', field) # Save the lattice
-        with open(lattice_dir + name_file + '.json', 'w') as f: # Save the parameters in a .json file
+        np.savetxt(lattice_dir + lattice_name_file + '.dat', field) # Save the lattice
+        with open(lattice_dir + lattice_name_file + '.json', 'w') as f: # Save the parameters in a .json file
             json.dump(data_dict, f) # the .json file contains the dictionary
     return
 #==============================================================================
