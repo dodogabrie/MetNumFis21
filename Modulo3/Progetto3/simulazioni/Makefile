@@ -16,6 +16,9 @@ conn: compile conn #soft-clean
 compile osc:
 	python3 setup_osc.py build_ext --inplace
 
+compile fond:
+	python3 setup_fond.py build_ext --inplace
+
 compile conn:
 	python3 setup_conn.py build_ext --inplace
 

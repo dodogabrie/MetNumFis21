@@ -71,6 +71,7 @@ def get_fit_data():
     ndof = len(y) - len(init)
     errors = np.sqrt(np.diag(covm))
     a, da = pars[0], errors[0]
+    b, db = pars[1], errors[1]
     ax.plot(xx, f(xx, *pars), label = 'Fit')
     ax.legend()
     ax.set_title(r'Stima di $\left< y^2 \right>_c$ per $T = \hbar \omega /3$')
@@ -78,6 +79,7 @@ def get_fit_data():
     plt.show()
     print('theoretical:', U)
     print('from fit:', a, '+-', da)
+    print('b from fit:', b, '+-', db)
     print('chi2:', chi, 'ndof:', ndof, '... chi red:', chi/ndof)
 
 

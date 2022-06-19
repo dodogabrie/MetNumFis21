@@ -82,7 +82,7 @@ def simulator(int nlat, int iflag,
     cdef int i, idec # index for loops
 
     # Index for counting the remaining time
-    cdef int count = 0, perc_count = 0, count_max = int(measures/10)
+    cdef int count = 0, perc_count = 0, count_max = int(i_term/10)
     cdef time_t t0 = time(NULL), sum_t = 0, frac_elapsed = 0
 
     # 0) Initialize the lattice
@@ -92,8 +92,17 @@ def simulator(int nlat, int iflag,
     # 1) Termalization step
     print("Termalization step")
     for i in range(i_term):
+        count, sum_t, perc_count, t0 = print_counter(count, perc_count, count_max, t0, 
+                                                     frac_elapsed, sum_t)
         update_metropolis(field, nlat, d_metro, npp, nmm, eta, c1, c2) # MC
     print("Termalization step finished")
+
+    count = 0
+    perc_count = 0
+    count_max = int(measures/10)
+    t0 = time(NULL)
+    sum_t = 0
+    frac_elapsed = 0
 
     # 2) Measures step
     for i in range(measures):

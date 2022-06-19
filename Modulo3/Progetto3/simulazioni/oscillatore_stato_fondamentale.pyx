@@ -30,10 +30,9 @@ cdef:
 #___________________________________________________________________________________________
  
 
-def simulator_f2(input_list_k, int nlat, int iflag, 
-                 int measures, int i_decorrel, int i_term, double d_metro,
-                 double eta, int save_data = 1, int save_lattice = 0, int seed = -1, 
-                 str data_dir = "", file_name = None):
+def simulator(int nlat, int iflag, 
+              int measures, int i_decorrel, int i_term, double d_metro,
+              double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
     """
     Main function for the harmonic oscillator.
     Parameters
@@ -69,22 +68,14 @@ def simulator_f2(input_list_k, int nlat, int iflag,
     cdef double c1 = 1/eta
     cdef double c2 = c1 + eta/2
     cdef double inv_nlat = 1./nlat
-    cdef int i, idec # index for loops
 
     # geometry array
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)
     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
-    # results array
-    cdef int num_k = len(input_list_k)
-    cdef np.ndarray[np.int_t, ndim=1, mode='c'] k_list = np.empty(num_k).astype(int)
-    for i in range(num_k): 
-        k_list[i] = input_list_k[i]
-    print("k_list = ", k_list)
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs1_array = np.empty((measures, num_k))
-    cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs2_array = np.empty((measures, num_k))
     # field array
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] field = np.ones(nlat)
 
+    cdef int i, idec # index for loops
 
     # Index for counting the remaining time
     cdef int count = 0, perc_count = 0, count_max = int(i_term/10)
@@ -93,6 +84,20 @@ def simulator_f2(input_list_k, int nlat, int iflag,
     # 0) Initialize the lattice
     geometry(nlat, npp, nmm) # Set the boundary conditions
     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
+
+    lattice_dir = f'../dati/' + data_dir + '/'       # Directory where the lattice will be saved
+    lattice_name_file = file_name + '_lattice'
+
+    if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
+        print('folder ', lattice_dir, ' does not exist. Creating...')
+        os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
+
+    data_dict = {'seed': seed, 'eta':eta, 'nlat': nlat, 
+                 'iflag': iflag, 'measures': measures,
+                 'i_decorrel': i_decorrel, 'i_term': i_term, 
+                 'd_metro': d_metro}
+    with open(lattice_dir + lattice_name_file + f'.json', 'w') as f: # Save the parameters in a .json file
+        json.dump(data_dict, f) # the .json file contains the dictionary
 
     # 1) Termalization step
     print("Termalization step")
@@ -120,53 +125,9 @@ def simulator_f2(input_list_k, int nlat, int iflag,
             update_metropolis(field, nlat, d_metro, npp, nmm, eta, c1, c2) # MC
 
         # d) Measure the observable
-        # !!!!
-        for k in range(num_k):
-            get_measures(k, i, nlat, inv_nlat, field, npp, k_list, obs1_array, obs2_array)
-        # !!!!
-
-    # 3) Save the data
-    store_results( seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
-                   eta, save_data, save_lattice, k_list, obs1_array, obs2_array, field, data_dir, file_name)
+        # 3) Save the data
+        np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
     print(f"Done! nlat {nlat}, eta {eta}")
-#==============================================================================
-
-#=============== FUNCTION TO STORE THE RESULTS IN FILES =======================
-def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
-                  eta, save_data, save_lattice, k_list, obs1_array, obs2_array, field, 
-                  usr_data_dir, usr_name_file = None):
-    """
-    Store the results in data files.
-    """
-    if save_data: print('Saving data...')
-    if save_lattice: print('Saving lattice...')
-    # Dictionary with parameters of simulation
-    data_dict = {'seed': seed, 'eta':eta, 'nlat': nlat, 
-                 'iflag': iflag, 'measures': measures,
-                 'i_decorrel': i_decorrel, 'i_term': i_term, 
-                 'd_metro': d_metro}
-    if usr_name_file == None:
-        name_file = f'data_eta{eta}_nlat{nlat}'
-    else:
-        name_file = usr_name_file
-
-    if save_data: # If the user want to save the observables
-        data_dir = '../dati/'+ usr_data_dir + '/'         # Directory where the data will be saved
-        if not os.path.exists(os.path.dirname(data_dir)): # If the directory does not exist
-            os.makedirs(os.path.dirname(data_dir)) # Create the directory
-        # Save the data in a .dat file
-        np.savetxt(data_dir + name_file + '_Gap_energy_obs1.dat' , np.vstack((k_list,obs1_array)) )
-        np.savetxt(data_dir + name_file + '_Gap_energy_obs2.dat' , np.vstack((k_list,obs2_array)) )
-        with open(data_dir + name_file + '_Gap_energy.json', 'w') as f: # Save the parameters in a .json file
-            json.dump(data_dict, f) # a .json file contains a dictionary
-    if save_lattice: # If the user want to save the lattice
-        lattice_dir = f'../dati/' + usr_data_dir + '/'       # Directory where the lattice will be saved
-        if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
-            os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
-        np.savetxt(lattice_dir + name_file + 'lattice_Gap_energy.dat', field) # Save the lattice
-        with open(lattice_dir + name_file + 'lattice_Gap_energy.json', 'w') as f: # Save the parameters in a .json file
-            json.dump(data_dict, f) # the .json file contains the dictionary
-    return
 #==============================================================================
 
 #=============== FUNCTION TO EVALUATE THE TIME REMAINING ======================
@@ -259,44 +220,4 @@ cdef inline void update_metropolis(np.double_t[:] field, # the field
         p_rat = p_rat - c1 * phi * force + c2 * phi**2
         rand_num = log(dist(gen))
         if rand_num < p_rat: field[i] = phi_prova
-#=============================================================================
-
-#=================== FUNCTION FOR THE MEASURE ================================
-@cython.boundscheck(False)  # Deactivate bounds checking
-@cython.wraparound(False)   # Deactivate negative indexing.
-cdef inline void get_measures(int k, int i, int nlat, double inv_nlat, np.double_t[:] field, 
-        np.int_t[:] npp, np.int_t[:] k_list, np.double_t[:,:] obs1_array, 
-        np.double_t[:,:] obs2_array):
-    # obs1: <y_(j+k) * y_j>_c
-    # obs2: <y_(j+k)**2 * y_j**2>_c
-    cdef double obs1_sconnessa = 0
-    cdef double obs2_sconnessa = 0
-    cdef double obs1_connessa = 0
-    cdef double obs2_connessa = 0
-    cdef int j, kk = k_list[k], jpk
-    cdef double f, fk
-    for j in range(nlat):
-        f = field[j]
-        jpk = j + kk
-        if jpk >= nlat:
-            jpk = jpk - nlat
-        fk = field[jpk]
-        obs1_sconnessa += fk * f                # aggiungo al totale y_(j+k) * y_j
-        obs2_sconnessa += (fk*fk) * (f*f)       # aggiungo al totale y_(j+k)^2 * y_j^2
-        obs1_connessa += fk 
-        obs2_connessa += fk * fk
-
-    # <O>**2
-    obs1_connessa = obs1_connessa*inv_nlat      # divido per N
-    obs1_connessa = obs1_connessa * obs1_connessa  # elevo al quadrado
-    # ... lo stesso per l'altra
-    obs2_connessa = obs2_connessa*inv_nlat
-    obs2_connessa = obs2_connessa * obs2_connessa
-
-    # divido per N anche le sconnesse (per mediare)
-    obs1_sconnessa = obs1_sconnessa*inv_nlat
-    obs2_sconnessa = obs2_sconnessa*inv_nlat
-
-    obs1_array[i, k] = obs1_sconnessa #- obs1_connessa
-    obs2_array[i, k] = obs2_sconnessa #- obs2_connessa
 #=============================================================================

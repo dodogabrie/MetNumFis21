@@ -7,13 +7,10 @@ from numba import njit
 import m1.readfile as rf
 from m1.error import err_mean_corr, bootstrap_corr
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join
 import pandas as pd
-
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-
 
 
 def extract_from_json(json_file):
@@ -31,7 +28,7 @@ def get_data(file):
     data_obs2 = data_obs2[1:, :]
     return k_list, data_obs1, data_obs2
 
-def fit_data(x, y, dy, init = [0, 0.5, 1], eta = 0, ax = None, c = 'k', **kwargs):
+def fit_data(x, y, dy, init = [0, 0.5, 1], eta = 0, ax = None):
     def f(x, bias, A, Delta_E):
         return bias + A * np.exp(-Delta_E * x)
     # perché bias?
@@ -46,9 +43,9 @@ def fit_data(x, y, dy, init = [0, 0.5, 1], eta = 0, ax = None, c = 'k', **kwargs
     A, dA = pars[1], errors[1]
     Delta_E, dDelta_E = pars[2], errors[2]
     if ax is not None:
-       ax.errorbar(x, y, yerr = dy, fmt = '.', label = f'eta = {eta}', c = c)
+       ax.errorbar(x, y, yerr = dy, fmt = '.', label = f'eta = {eta}')
        xx = np.linspace(np.min(x), np.max(x), 1000)
-       ax.plot(xx, f(xx, *pars), c = c, **kwargs)
+       ax.plot(xx, f(xx, *pars))
     return A, dA, Delta_E, dDelta_E, ax
 
 
@@ -79,11 +76,10 @@ def elaborate_all(folder_parent = 'beta_omega_20', kind = ''):
         data_dict = extract_from_json(data_dir + json_file)
         eta = data_dict["eta"]
         nlat = data_dict["nlat"]
-        if nlat <=15: continue # Ricomincia da capo con il prossimo file
+#        if nlat > 100: continue # Ricomincia da capo con il prossimo file
         k_list, obs1, obs2 = get_data(data_dir + file_name)
         print(file_name, eta)
-        x = k_list
-#        x = eta * k_list
+        x = eta * k_list
         y1 = np.mean(obs1, axis=0) # array con una y per ogni k nella k_list
         y2 = np.mean(obs2, axis=0) # array con una y per ogni k nella k_list
         dy1 = np.empty(y1.shape)
@@ -95,17 +91,13 @@ def elaborate_all(folder_parent = 'beta_omega_20', kind = ''):
             _, err, _ = err_mean_corr(y)
             dy2[i] = err
         _, _, Delta_E1, dDelta_E1, _ = fit_data(x, y1, dy1,)# ax = ax)
-        Delta_E1 /= eta
-        dDelta_E1 /= eta
         new_file = file_name[:-5] + '1_elaborato.dat'
         np.savetxt(data_dir + 'elaborated/' + new_file, np.c_[x, y1, dy1])
 
         _, _, Delta_E2, dDelta_E2, _ = fit_data(x, y2, dy2,)# ax = ax)
-        Delta_E2 /= eta
-        dDelta_E2 /= eta
         new_file = file_name[:-5] + '2_elaborato.dat'
         np.savetxt(data_dir + 'elaborated/' + new_file, np.c_[x, y1, dy1])
-
+        #fit_data(x, y2, dy2)
         list_DE1.append(Delta_E1)
         list_dDE1.append(dDelta_E1)
         list_DE2.append(Delta_E2)
@@ -133,28 +125,7 @@ def plot_exponential(folder_parent = 'beta_omega_20', gap = 1, kind = ''):
                  if (isfile(join(data_dir, f)) and f'obs{gap}' in f and 'lattice' not in f)] # extract list of data file
     jsonfiles = [f for f in listdir(json_dir) 
                  if (isfile(join(json_dir, f)) and f.endswith('.json') and 'lattice' not in f)] # extract list of data file
-    fig = plt.figure(figsize = (5, 6))
-    gs = gridspec.GridSpec(4, 1)
-    ax = fig.add_subplot(gs[:3])
-    ax1 = fig.add_subplot(gs[-1])
-    ax.minorticks_on()
-    ax.tick_params('x', which='major', direction='in', length=3)
-    ax.tick_params('y', which='major', direction='in', length=3)
-    ax.tick_params('y', which='minor', direction='in', length=1.5, left=True)
-    ax.tick_params('x', which='minor', direction='in', length=1.5, bottom=True)
-    ax.set_ylabel('C(k)', fontsize=13)
-    ax.grid(alpha=0.3)
-    ax.set_axisbelow(True)
-    ax1.minorticks_on()
-    ax1.tick_params('x', which='major', direction='in', length=3)
-    ax1.tick_params('y', which='major', direction='in', length=3)
-    ax1.tick_params('y', which='minor', direction='in', length=1.5, left=True)
-    ax1.tick_params('x', which='minor', direction='in', length=1.5, bottom=True)
-    ax1.set_xlabel('k', fontsize = 13)
-    ax1.set_ylabel('C(k)', fontsize = 13)
-    ax1.grid(alpha=0.3)
-    ax1.set_axisbelow(True)
-
+    fig, ax = plt.subplots()
     list_eta = []
     for file in onlyfiles:
         identificative = file.split('_Gap_energy_')[0]
@@ -164,27 +135,17 @@ def plot_exponential(folder_parent = 'beta_omega_20', gap = 1, kind = ''):
         eta = data_dict["eta"]
         list_eta.append(eta)
     list_eta = np.array(list_eta)
-    N = 20/list_eta
-    m = N >= 15
-    list_eta = list_eta[m]
-    onlyfiles = np.array(onlyfiles)[m]
     order_eta = np.argsort(list_eta)
-    onlyfiles = onlyfiles[order_eta][::2]
-    list_eta = list_eta[order_eta][::2]
-    print(len(list_eta))
-    cmap = plt.cm.get_cmap('Spectral')
-    color_num = np.linspace(0, 1, len(list_eta))
-    for file, eta, n in zip(onlyfiles, list_eta, color_num):
+    onlyfiles = np.array(onlyfiles)[order_eta][::2]
+    for file, eta in zip(onlyfiles, list_eta[::2]):
+        print(file)
         data = np.loadtxt(data_dir + file)
         x = data[:, 0]
         y = data[:, 1]
         dy = data[:, 2]
-        fit_data(x, y, dy, ax = ax, eta = np.round(eta, 3), c = cmap(n), lw = 0.8)
-        fit_data(x, y, dy, ax = ax1, eta = np.round(eta, 3), c = cmap(n), lw = 0.7)
-    ax.legend()
-    ax1.set_yscale('log')
-    ax.set_title('Andamento di $C(k)$ al variare di $k$', fontsize = 13)
-    plt.savefig(f'../figure/fit_esponenziali_Delta_E{gap}.png', dpi = 200)
+        fit_data(x, y, dy, ax = ax, eta = eta)
+#    ax.set_yscale('log')
+    plt.legend()
     plt.show()
     
 def plot_results(folder_parent = 'beta_omega_20', gap = 1, kind = ''):
@@ -207,32 +168,13 @@ def plot_results(folder_parent = 'beta_omega_20', gap = 1, kind = ''):
     DE_cont, dDE_cont = pars[1], errors[1]
     print('Delta E1 continuom:', DE_cont, '+-', dDE_cont)
     print('chi_red = ', chi/ndof)
-    fig, ax = plt.subplots(1,1)
-    ax.errorbar(x, y, yerr = dy, fmt = '.', label = 'Dati')
-    ax.plot(xx, fit_func(xx, *pars), label = 'Fit')
-    ax.minorticks_on()
-    ax.tick_params('x', which='major', direction='in', length=3)
-    ax.tick_params('y', which='major', direction='in', length=3)
-    ax.tick_params('y', which='minor', direction='in', length=1.5, left=True)
-    ax.tick_params('x', which='minor', direction='in', length=1.5, bottom=True)
-    y_label = ''
-    if gap == 1: y_label = fr'$\Delta E_1$'
-    if gap == 2: y_label = fr'$\Delta E_2$'
-    ax.set_ylabel(y_label, fontsize = 13)
-    ax.set_xlabel(fr'$\eta^2$', fontsize = 13)
-    title_gap = ''
-    if gap == 1: title_gap = r'$\Delta E_1$'
-    if gap == 2: title_gap = r'$\Delta E_2$'
-    ax.set_title('Limite al continuo per ' + title_gap, fontsize = 13)
-    ax.grid(alpha=0.3)
-    ax.set_axisbelow(True)
-    plt.legend()
-    plt.savefig(f'../figure/limite_continuo_{gap}.png', dpi = 200)
+    plt.errorbar(x, y, yerr = dy, fmt = '.')
+    plt.plot(xx, fit_func(xx, *pars))
     plt.show()
     return
 
 if __name__ == '__main__':
-    folder_parent = 'beta_omega_20'
+    folder_parent = 'beta_omega_40'
     sconn = True
     gap = 1
     if sconn == True:
@@ -240,6 +182,6 @@ if __name__ == '__main__':
     else:
         kind = ''
 #    elaborate_all(folder_parent, kind = kind)
-    plot_results(folder_parent, gap = gap, kind = kind)
+#    plot_results(folder_parent, gap = gap, kind = kind)
     plot_exponential(folder_parent, gap = gap, kind = kind)
 

@@ -10,12 +10,18 @@ from m1.error import err_mean_corr, bootstrap_corr
 
 if __name__ == '__main__':
     # read data
-    data_dir = '../dati/stato_fondamentale/'
+    nlat = 10
+    eta = 0.1
+    data_dir = f'../dati/stato_fondamentale_singola/nlat{nlat}_eta{eta}/'
     files = [f for f in listdir(data_dir) if (isfile(join(data_dir, f)) and f.endswith('.dat'))]
     eta = 1e-2
     lattices = np.array([])
     for file in files:
-        print(file)
+        num = ''
+        for m in file:
+            if m.isdigit():
+                num += m
+        print(num)
         lattice = np.loadtxt(data_dir + file)
         lattices = np.append(lattices, lattice)
 
@@ -31,7 +37,19 @@ if __name__ == '__main__':
     ax.set_ylabel('p(y)')
     ax.grid(alpha=0.3)
     ax.set_axisbelow(True)
+#    ax.set_title(r"$\left|\psi_0\right|^2$ in funzione di $y$")
 
-    ax.hist(lattices, bins = 100, density = True)
+    ax.set_title("Ampiezza della funzione d'onda dello stato fondamentale")
+    ax.set_ylabel(r'$\left|\psi_0(y)\right|^2$')
+    ax.set_xlabel(r'$y$')
+
+    ax.hist(lattices, bins = 80, density = True, label = 'dati', edgecolor = "white", linewidth = 0.1)
+
+    xx = np.linspace(-5, 5, 1000)
+    def f(x): 
+        return np.exp(-x**2) * np.sqrt(1/(np.pi))
+    ax.plot(xx, f(xx), label = 'teorica')
+    plt.legend()
+#    plt.savefig('../figure/stato_fondamentale_singola.png', dpi = 199)
     plt.show()
 
