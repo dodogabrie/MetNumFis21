@@ -32,7 +32,8 @@ cdef:
 
 def simulator(int nlat, int iflag, 
               int measures, int i_decorrel, int i_term, double d_metro,
-              double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
+              double eta, int seed = -1, str data_dir = "", file_name = 'lattice', 
+              int single_file = 0):
     """
     Main function for the harmonic oscillator.
     Parameters
@@ -114,7 +115,6 @@ def simulator(int nlat, int iflag,
     sum_t = 0
     frac_elapsed = 0
 
-
     # 2) Measures step
     for i in range(measures):
         # a) Print counter and time remaining
@@ -126,7 +126,15 @@ def simulator(int nlat, int iflag,
 
         # d) Measure the observable
         # 3) Save the data
-        np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
+        if single_file:
+            if i == 0:
+                np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+            else:
+                with open(lattice_dir + lattice_name_file + f'.dat', 'a') as f:
+                    np.savetxt(f, field) # Save the lattice
+        else:
+            np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
+
     print(f"Done! nlat {nlat}, eta {eta}")
 #==============================================================================
 
@@ -146,7 +154,7 @@ cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t
         t1 = time(NULL)
         frac_elapsed = t1 - t0
         sum_t += frac_elapsed
-        printf("%d / 10 --> %ld s left\n", 
+        printf("%d / 10 --> %ld s left\n\r", 
                 perc_count, (10 - perc_count)*sum_t/perc_count)
         t0 = t1
         count = 0

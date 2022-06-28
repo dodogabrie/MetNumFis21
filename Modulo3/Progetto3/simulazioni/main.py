@@ -7,7 +7,7 @@ from oscillatore_stato_fondamentale import simulator as simulator_fond
 
 def metropolis_harmonic_osc(nlat, eta, measures, d_metro = None, 
                             i_decorrel = 10, i_term = None, seed = -1, 
-                            i_flag = 0, save_data = 1, save_lattice = 1, data_dir = "", file_name = None, input_list_k = []):
+                            i_flag = 0, save_data = 1, save_lattice = 1, data_dir = "", file_name = None, input_list_k = [], verbose = 10):
     if d_metro is None: d_metro = 2 * np.sqrt(eta)
     if i_term  is None: i_term = measures
 
@@ -15,12 +15,12 @@ def metropolis_harmonic_osc(nlat, eta, measures, d_metro = None,
         print('lancio simulatore per y2, dy2')
         simulator(nlat, i_flag, 
                   measures, i_decorrel, i_term, d_metro,
-                  eta, save_data = save_data, save_lattice = save_lattice, seed = seed, data_dir = data_dir, file_name = file_name)
+                  eta, save_data = save_data, save_lattice = save_lattice, seed = seed, data_dir = data_dir, file_name = file_name, verbose = verbose)
     else:
         print('lancio simulatore per funzione di correlazione connessa')
         simulator_f2(input_list_k, nlat, i_flag,
                     measures, i_decorrel, i_term, d_metro,
-                    eta, save_data = save_data, save_lattice = save_lattice, seed = seed, data_dir = data_dir, file_name = file_name)
+                    eta, save_data = save_data, save_lattice = save_lattice, seed = seed, data_dir = data_dir, file_name = file_name, verbose = verbose)
     return
 
 def simulation_varying_nlat(n_jobs, nlat_list, eta, measures, *args, **kwargs):
@@ -120,18 +120,28 @@ def stato_fondamentale(): # Forma dello stato fondamentale
                                   save_lattice = 1, data_dir = data_dir)
 
 def stato_fondamentale_singola(): # Forma dello stato fondamentale 
-    measures = 5000
+    measures = 1000
+    num_simulations = 50
     i_decorrel = 1000
     i_flag = 1
     i_term = int(1e6)
     eta = 0.1
-    nlat = 10
+    nlat = 12
     d_metro = 2 * np.sqrt(eta)
-    filename = 'lattice_singola'
     folderdir = f'stato_fondamentale_singola/nlat{nlat}_eta{eta}/'
-    simulator_fond(nlat, i_flag, 
-                   measures, i_decorrel, i_term, d_metro,
-                   eta, data_dir = folderdir, file_name = filename)
+    njobs = 5
+    list_filename = [f'lattice_singola{i}' for i in range(num_simulations)]
+    def single_sim_fond(nlat, i_flag, 
+                       measures, i_decorrel, i_term, d_metro,
+                       eta, folderdir, filename, single_file = 0):
+        simulator_fond(nlat, i_flag, 
+                       measures, i_decorrel, i_term, d_metro,
+                       eta, data_dir = folderdir, file_name = filename, single_file = single_file)
+        print('Simulation '+ filename + ' done')
+    Parallel(n_jobs=njobs)(delayed(single_sim_fond)(nlat, i_flag, 
+                                                    measures, i_decorrel, i_term, d_metro,
+                                                    eta, folderdir, filename, single_file = 1) 
+                                                    for filename in list_filename)
 
 
 def gap_energy(): # Misura di un singolo gap di energia ( singolo fit esponenziale)
@@ -150,24 +160,19 @@ def gap_energy(): # Misura di un singolo gap di energia ( singolo fit esponenzia
                             data_dir = data_dir, file_name=f'{eta}_{nlat}', input_list_k = input_list_k)
 
 def contiuum_E1_E0(): # limite al continuo per E1 e E0
-    sconnessa = True 
-    if sconnessa:
-        kind = '_solo_sconnessa'
-    else: 
-        kind = ''
-    tau_ext = 20 # temporal extension (i.e. beta omega)
-    data_dir = "lim_continuum_E1_E0" + kind + f"/beta_omega_{tau_ext}"
-    #N_list = np.array([100, 70, 60, 55, 50, 40, 37, 35, 33, 30, 27, 25, 23, 20, 19, 16, 15, 14, 13, 12, 11, 10])
-    N_list = np.array([28, 24, 21, 18, 17, 16])
+    tau_ext = 60 # temporal extension (i.e. beta omega)
+    data_dir = "lim_continuum_E1_E0" + f"/beta_omega_{tau_ext}" + '_test'
+    #N_list = np.array([200, 100, 70, 60, 55, 50, 40, 37, 35, 33, 30, 29, 28, 27, 26, 25, 24, 23, ])
+    N_list = np.array([50, 30, ])#25, 20, ])
     eta_list = tau_ext / N_list
     print('eta values: ', eta_list)
     print('N values: ', N_list)
     print('tau values: ', N_list * eta_list)
-    i_term = int(1e6)
-    measures = int(5e5)
+    i_term = int(1e5)
+    measures = int(1e4)
 #    i_decorrel_list = 100*(1/np.sqrt(eta_list)).astype(int) + 50
-    i_decorrel_list = 150*np.ones(len(eta_list))
-    print(i_decorrel_list)
+    i_decorrel_list = 20*np.ones(len(eta_list))
+    verbose = 10
     wt_max = 6  # k eta
     def single_simulation(eta, nlat, i_decorrel):
         print('Simulation values: eta:', eta, 'nlat:', nlat)
@@ -176,9 +181,9 @@ def contiuum_E1_E0(): # limite al continuo per E1 e E0
         K_min = 0
         input_list_k = np.arange(K_min, K_max)
         metropolis_harmonic_osc(nlat, eta, measures, i_term=i_term, i_decorrel = i_decorrel, i_flag=1,
-                                data_dir = data_dir, file_name=f'{eta}_{nlat}', input_list_k = input_list_k)
+                                data_dir = data_dir, file_name=f'{eta}_{nlat}', input_list_k = input_list_k, verbose = verbose)
     print('Start simulation')
-    n_jobs = 6
+    n_jobs = 4
     Parallel(n_jobs=n_jobs)(delayed(single_simulation)(eta, nlat, i_dec) for eta, nlat, i_dec in zip(eta_list, N_list, i_decorrel_list))
 
 

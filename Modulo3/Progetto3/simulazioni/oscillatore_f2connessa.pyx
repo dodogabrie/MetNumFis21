@@ -33,7 +33,7 @@ cdef:
 def simulator_f2(input_list_k, int nlat, int iflag, 
                  int measures, int i_decorrel, int i_term, double d_metro,
                  double eta, int save_data = 1, int save_lattice = 0, int seed = -1, 
-                 str data_dir = "", file_name = None):
+                 str data_dir = "", file_name = None, int verbose = 10):
     """
     Main function for the harmonic oscillator.
     Parameters
@@ -82,12 +82,15 @@ def simulator_f2(input_list_k, int nlat, int iflag,
     print("k_list = ", k_list)
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs1_array = np.empty((measures, num_k))
     cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs2_array = np.empty((measures, num_k))
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs1_array_full = np.empty((measures, num_k))
+    cdef np.ndarray[np.double_t, ndim=2, mode='c'] obs2_array_full = np.empty((measures, num_k))
+
     # field array
     cdef np.ndarray[np.double_t, ndim=1, mode='c'] field = np.ones(nlat)
 
 
     # Index for counting the remaining time
-    cdef int count = 0, perc_count = 0, count_max = int(i_term/10)
+    cdef int count = 0, perc_count = 0, count_max = int(i_term/verbose)
     cdef time_t t0 = time(NULL), sum_t = 0, frac_elapsed = 0
 
     # 0) Initialize the lattice
@@ -98,13 +101,13 @@ def simulator_f2(input_list_k, int nlat, int iflag,
     print("Termalization step")
     for i in range(i_term):
         count, sum_t, perc_count, t0 = print_counter(count, perc_count, count_max, t0, 
-                                                     frac_elapsed, sum_t)
+                                                     frac_elapsed, sum_t, verbose)
         update_metropolis(field, nlat, d_metro, npp, nmm, eta, c1, c2) # MC
     print("Termalization step finished")
 
     count = 0
     perc_count = 0
-    count_max = int(measures/10)
+    count_max = int(measures/verbose)
     t0 = time(NULL)
     sum_t = 0
     frac_elapsed = 0
@@ -114,7 +117,7 @@ def simulator_f2(input_list_k, int nlat, int iflag,
     for i in range(measures):
         # a) Print counter and time remaining
         count, sum_t, perc_count, t0 = print_counter(count, perc_count, count_max, t0, 
-                                                     frac_elapsed, sum_t)
+                                                     frac_elapsed, sum_t, verbose)
         # c) Decorrelate the lattice
         for idec in range(i_decorrel):
             update_metropolis(field, nlat, d_metro, npp, nmm, eta, c1, c2) # MC
@@ -122,18 +125,20 @@ def simulator_f2(input_list_k, int nlat, int iflag,
         # d) Measure the observable
         # !!!!
         for k in range(num_k):
-            get_measures(k, i, nlat, inv_nlat, field, npp, k_list, obs1_array, obs2_array)
+            get_measures(k, i, nlat, inv_nlat, field, npp, k_list, obs1_array, obs2_array, obs1_array_full, obs2_array_full)
         # !!!!
 
     # 3) Save the data
     store_results( seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
-                   eta, save_data, save_lattice, k_list, obs1_array, obs2_array, field, data_dir, file_name)
+                   eta, save_data, save_lattice, k_list, obs1_array, obs2_array, 
+                   obs1_array_full, obs2_array_full, field, data_dir, file_name)
     print(f"Done! nlat {nlat}, eta {eta}")
 #==============================================================================
 
 #=============== FUNCTION TO STORE THE RESULTS IN FILES =======================
 def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
-                  eta, save_data, save_lattice, k_list, obs1_array, obs2_array, field, 
+                  eta, save_data, save_lattice, k_list, obs1_array, obs2_array,
+                  obs1_array_full, obs2_array_full, field, 
                   usr_data_dir, usr_name_file = None):
     """
     Store the results in data files.
@@ -157,6 +162,9 @@ def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
         # Save the data in a .dat file
         np.savetxt(data_dir + name_file + '_Gap_energy_obs1.dat' , np.vstack((k_list,obs1_array)) )
         np.savetxt(data_dir + name_file + '_Gap_energy_obs2.dat' , np.vstack((k_list,obs2_array)) )
+        np.savetxt(data_dir + name_file + '_Gap_energy_obs1_full.dat' , np.vstack((k_list,obs1_array_full)) )
+        np.savetxt(data_dir + name_file + '_Gap_energy_obs2_full.dat' , np.vstack((k_list,obs2_array_full)) )
+
         with open(data_dir + name_file + '_Gap_energy.json', 'w') as f: # Save the parameters in a .json file
             json.dump(data_dict, f) # a .json file contains a dictionary
     if save_lattice: # If the user want to save the lattice
@@ -173,7 +181,7 @@ def store_results(seed, nlat, iflag, measures, i_decorrel, i_term, d_metro,
 @cython.cdivision(True)
 cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t 
                                               count_max, time_t t0,
-                                              time_t frac_elapsed, time_t sum_t):
+                                              time_t frac_elapsed, time_t sum_t, int verbose):
     """
     Print the percentage of the simulation completed
     Parameters
@@ -185,8 +193,8 @@ cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t
         t1 = time(NULL)
         frac_elapsed = t1 - t0
         sum_t += frac_elapsed
-        printf("%d / 10 --> %ld s left\n", 
-                perc_count, (10 - perc_count)*sum_t/perc_count)
+        printf("%d / %d --> %ld s left\n", 
+                perc_count, verbose, (verbose - perc_count)*sum_t/perc_count)
         t0 = t1
         count = 0
     return count, sum_t, perc_count, t0
@@ -266,7 +274,7 @@ cdef inline void update_metropolis(np.double_t[:] field, # the field
 @cython.wraparound(False)   # Deactivate negative indexing.
 cdef inline void get_measures(int k, int i, int nlat, double inv_nlat, np.double_t[:] field, 
         np.int_t[:] npp, np.int_t[:] k_list, np.double_t[:,:] obs1_array, 
-        np.double_t[:,:] obs2_array):
+        np.double_t[:,:] obs2_array, np.double_t[:,:] obs1_array_full, np.double_t[:,:] obs2_array_full):
     # obs1: <y_(j+k) * y_j>_c
     # obs2: <y_(j+k)**2 * y_j**2>_c
     cdef double obs1_sconnessa = 0
@@ -283,8 +291,8 @@ cdef inline void get_measures(int k, int i, int nlat, double inv_nlat, np.double
         fk = field[jpk]
         obs1_sconnessa += fk * f                # aggiungo al totale y_(j+k) * y_j
         obs2_sconnessa += (fk*fk) * (f*f)       # aggiungo al totale y_(j+k)^2 * y_j^2
-        obs1_connessa += fk 
-        obs2_connessa += fk * fk
+        obs1_connessa += f 
+        obs2_connessa += f * f
 
     # <O>**2
     obs1_connessa = obs1_connessa*inv_nlat      # divido per N
@@ -297,6 +305,8 @@ cdef inline void get_measures(int k, int i, int nlat, double inv_nlat, np.double
     obs1_sconnessa = obs1_sconnessa*inv_nlat
     obs2_sconnessa = obs2_sconnessa*inv_nlat
 
-    obs1_array[i, k] = obs1_sconnessa #- obs1_connessa
-    obs2_array[i, k] = obs2_sconnessa #- obs2_connessa
+    obs1_array[i, k] = obs1_sconnessa 
+    obs1_array_full[i, k] = obs1_sconnessa - obs1_connessa
+    obs2_array[i, k] = obs2_sconnessa 
+    obs2_array_full[i, k] = obs2_sconnessa - obs2_connessa
 #=============================================================================

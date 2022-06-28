@@ -1343,7 +1343,7 @@ typedef npy_cdouble __pyx_t_5numpy_complex_t;
 struct __pyx_ctuple_int__and_time_t__and_int__and_time_t;
 typedef struct __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_ctuple_int__and_time_t__and_int__and_time_t;
 
-/* "oscillatore_stato_fondamentale.pyx":136
+/* "oscillatore_stato_fondamentale.pyx":143
  * #=============== FUNCTION TO EVALUATE THE TIME REMAINING ======================
  * @cython.cdivision(True)
  * cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t             # <<<<<<<<<<<<<<
@@ -2431,6 +2431,7 @@ static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
 static const char __pyx_k_[] = "";
 static const char __pyx_k_O[] = "O";
+static const char __pyx_k_a[] = "a";
 static const char __pyx_k_c[] = "c";
 static const char __pyx_k_f[] = "f";
 static const char __pyx_k_i[] = "i";
@@ -2538,6 +2539,7 @@ static const char __pyx_k_ImportError[] = "ImportError";
 static const char __pyx_k_MemoryError[] = "MemoryError";
 static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_lattice_dir[] = "lattice_dir";
+static const char __pyx_k_single_file[] = "single_file";
 static const char __pyx_k_frac_elapsed[] = "frac_elapsed";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
@@ -2611,6 +2613,7 @@ static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
 static PyObject *__pyx_kp_s__2;
+static PyObject *__pyx_n_s_a;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_astype;
 static PyObject *__pyx_n_s_base;
@@ -2719,6 +2722,7 @@ static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_simulator;
+static PyObject *__pyx_n_s_single_file;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
 static PyObject *__pyx_n_s_step;
@@ -2737,7 +2741,7 @@ static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_w;
 static PyObject *__pyx_n_s_zeros;
-static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_nlat, int __pyx_v_iflag, int __pyx_v_measures, int __pyx_v_i_decorrel, int __pyx_v_i_term, double __pyx_v_d_metro, double __pyx_v_eta, int __pyx_v_seed, PyObject *__pyx_v_data_dir, PyObject *__pyx_v_file_name); /* proto */
+static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_nlat, int __pyx_v_iflag, int __pyx_v_measures, int __pyx_v_i_decorrel, int __pyx_v_i_term, double __pyx_v_d_metro, double __pyx_v_eta, int __pyx_v_seed, PyObject *__pyx_v_data_dir, PyObject *__pyx_v_file_name, int __pyx_v_single_file); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -2825,7 +2829,7 @@ static PyObject *__pyx_codeobj__32;
  * 
  * def simulator(int nlat, int iflag,             # <<<<<<<<<<<<<<
  *               int measures, int i_decorrel, int i_term, double d_metro,
- *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
+ *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice',
  */
 
 /* Python wrapper */
@@ -2843,6 +2847,7 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
   int __pyx_v_seed;
   PyObject *__pyx_v_data_dir = 0;
   PyObject *__pyx_v_file_name = 0;
+  int __pyx_v_single_file;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2850,14 +2855,16 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("simulator (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_nlat,&__pyx_n_s_iflag,&__pyx_n_s_measures,&__pyx_n_s_i_decorrel,&__pyx_n_s_i_term,&__pyx_n_s_d_metro,&__pyx_n_s_eta,&__pyx_n_s_seed,&__pyx_n_s_data_dir,&__pyx_n_s_file_name,0};
-    PyObject* values[10] = {0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_nlat,&__pyx_n_s_iflag,&__pyx_n_s_measures,&__pyx_n_s_i_decorrel,&__pyx_n_s_i_term,&__pyx_n_s_d_metro,&__pyx_n_s_eta,&__pyx_n_s_seed,&__pyx_n_s_data_dir,&__pyx_n_s_file_name,&__pyx_n_s_single_file,0};
+    PyObject* values[11] = {0,0,0,0,0,0,0,0,0,0,0};
     values[8] = ((PyObject*)__pyx_kp_s_);
     values[9] = ((PyObject *)__pyx_n_s_lattice);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 11: values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
+        CYTHON_FALLTHROUGH;
         case 10: values[9] = PyTuple_GET_ITEM(__pyx_args, 9);
         CYTHON_FALLTHROUGH;
         case  9: values[8] = PyTuple_GET_ITEM(__pyx_args, 8);
@@ -2890,37 +2897,37 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_iflag)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 1); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 1); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_measures)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 2); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 2); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_i_decorrel)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 3); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 3); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_i_term)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 4); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 4); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_d_metro)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 5); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 5); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_eta)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, 6); __PYX_ERR(0, 33, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, 6); __PYX_ERR(0, 33, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
@@ -2940,12 +2947,20 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
           PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_file_name);
           if (value) { values[9] = value; kw_args--; }
         }
+        CYTHON_FALLTHROUGH;
+        case 10:
+        if (kw_args > 0) {
+          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_single_file);
+          if (value) { values[10] = value; kw_args--; }
+        }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simulator") < 0)) __PYX_ERR(0, 33, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case 11: values[10] = PyTuple_GET_ITEM(__pyx_args, 10);
+        CYTHON_FALLTHROUGH;
         case 10: values[9] = PyTuple_GET_ITEM(__pyx_args, 9);
         CYTHON_FALLTHROUGH;
         case  9: values[8] = PyTuple_GET_ITEM(__pyx_args, 8);
@@ -2977,17 +2992,22 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
     }
     __pyx_v_data_dir = ((PyObject*)values[8]);
     __pyx_v_file_name = values[9];
+    if (values[10]) {
+      __pyx_v_single_file = __Pyx_PyInt_As_int(values[10]); if (unlikely((__pyx_v_single_file == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 36, __pyx_L3_error)
+    } else {
+      __pyx_v_single_file = ((int)0);
+    }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 33, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("simulator", 0, 7, 11, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 33, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("oscillatore_stato_fondamentale.simulator", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_data_dir), (&PyString_Type), 1, "data_dir", 1))) __PYX_ERR(0, 35, __pyx_L1_error)
-  __pyx_r = __pyx_pf_30oscillatore_stato_fondamentale_simulator(__pyx_self, __pyx_v_nlat, __pyx_v_iflag, __pyx_v_measures, __pyx_v_i_decorrel, __pyx_v_i_term, __pyx_v_d_metro, __pyx_v_eta, __pyx_v_seed, __pyx_v_data_dir, __pyx_v_file_name);
+  __pyx_r = __pyx_pf_30oscillatore_stato_fondamentale_simulator(__pyx_self, __pyx_v_nlat, __pyx_v_iflag, __pyx_v_measures, __pyx_v_i_decorrel, __pyx_v_i_term, __pyx_v_d_metro, __pyx_v_eta, __pyx_v_seed, __pyx_v_data_dir, __pyx_v_file_name, __pyx_v_single_file);
 
   /* function exit code */
   goto __pyx_L0;
@@ -2998,7 +3018,7 @@ static PyObject *__pyx_pw_30oscillatore_stato_fondamentale_1simulator(PyObject *
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_nlat, int __pyx_v_iflag, int __pyx_v_measures, int __pyx_v_i_decorrel, int __pyx_v_i_term, double __pyx_v_d_metro, double __pyx_v_eta, int __pyx_v_seed, PyObject *__pyx_v_data_dir, PyObject *__pyx_v_file_name) {
+static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_nlat, int __pyx_v_iflag, int __pyx_v_measures, int __pyx_v_i_decorrel, int __pyx_v_i_term, double __pyx_v_d_metro, double __pyx_v_eta, int __pyx_v_seed, PyObject *__pyx_v_data_dir, PyObject *__pyx_v_file_name, int __pyx_v_single_file) {
   double __pyx_v_c1;
   double __pyx_v_c2;
   CYTHON_UNUSED double __pyx_v_inv_nlat;
@@ -3071,7 +3091,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_pybuffernd_field.data = NULL;
   __pyx_pybuffernd_field.rcbuffer = &__pyx_pybuffer_field;
 
-  /* "oscillatore_stato_fondamentale.pyx":64
+  /* "oscillatore_stato_fondamentale.pyx":65
  *     """
  *     global gen, dist # Use the global "variables" from the random number extraction
  *     if seed == -1: seed = int(time(NULL)) # If seed is not given, use the current time             # <<<<<<<<<<<<<<
@@ -3083,7 +3103,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
     __pyx_v_seed = ((int)time(NULL));
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":65
+  /* "oscillatore_stato_fondamentale.pyx":66
  *     global gen, dist # Use the global "variables" from the random number extraction
  *     if seed == -1: seed = int(time(NULL)) # If seed is not given, use the current time
  *     gen = mt19937(seed) # Initialize the random number generator             # <<<<<<<<<<<<<<
@@ -3092,7 +3112,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
  */
   __pyx_v_30oscillatore_stato_fondamentale_gen = std::mt19937(__pyx_v_seed);
 
-  /* "oscillatore_stato_fondamentale.pyx":68
+  /* "oscillatore_stato_fondamentale.pyx":69
  * 
  *     # constant for metropolis
  *     cdef double c1 = 1/eta             # <<<<<<<<<<<<<<
@@ -3101,11 +3121,11 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
  */
   if (unlikely(__pyx_v_eta == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 68, __pyx_L1_error)
+    __PYX_ERR(0, 69, __pyx_L1_error)
   }
   __pyx_v_c1 = (1.0 / __pyx_v_eta);
 
-  /* "oscillatore_stato_fondamentale.pyx":69
+  /* "oscillatore_stato_fondamentale.pyx":70
  *     # constant for metropolis
  *     cdef double c1 = 1/eta
  *     cdef double c2 = c1 + eta/2             # <<<<<<<<<<<<<<
@@ -3114,7 +3134,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
  */
   __pyx_v_c2 = (__pyx_v_c1 + (__pyx_v_eta / 2.0));
 
-  /* "oscillatore_stato_fondamentale.pyx":70
+  /* "oscillatore_stato_fondamentale.pyx":71
  *     cdef double c1 = 1/eta
  *     cdef double c2 = c1 + eta/2
  *     cdef double inv_nlat = 1./nlat             # <<<<<<<<<<<<<<
@@ -3123,23 +3143,23 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
  */
   if (unlikely(__pyx_v_nlat == 0)) {
     PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-    __PYX_ERR(0, 70, __pyx_L1_error)
+    __PYX_ERR(0, 71, __pyx_L1_error)
   }
   __pyx_v_inv_nlat = (1. / __pyx_v_nlat);
 
-  /* "oscillatore_stato_fondamentale.pyx":73
+  /* "oscillatore_stato_fondamentale.pyx":74
  * 
  *     # geometry array
  *     cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
  *     # field array
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_6 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -3154,10 +3174,10 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 73, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -3172,16 +3192,16 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   }
   __pyx_t_2 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_3, ((PyObject *)(&PyInt_Type))) : __Pyx_PyObject_CallOneArg(__pyx_t_5, ((PyObject *)(&PyInt_Type)));
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 73, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 74, __pyx_L1_error)
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_2);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_npp.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_npp = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_npp.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 73, __pyx_L1_error)
+      __PYX_ERR(0, 74, __pyx_L1_error)
     } else {__pyx_pybuffernd_npp.diminfo[0].strides = __pyx_pybuffernd_npp.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_npp.diminfo[0].shape = __pyx_pybuffernd_npp.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -3189,19 +3209,19 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_v_npp = ((PyArrayObject *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":74
+  /* "oscillatore_stato_fondamentale.pyx":75
  *     # geometry array
  *     cdef np.ndarray[np.int_t, ndim=1, mode='c'] npp = np.zeros(nlat).astype(int)
  *     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)             # <<<<<<<<<<<<<<
  *     # field array
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] field = np.ones(nlat)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_6 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -3216,10 +3236,10 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_6, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -3234,16 +3254,16 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   }
   __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, ((PyObject *)(&PyInt_Type))) : __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)(&PyInt_Type)));
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 74, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 75, __pyx_L1_error)
   __pyx_t_8 = ((PyArrayObject *)__pyx_t_2);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_nmm.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_nmm = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_nmm.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 74, __pyx_L1_error)
+      __PYX_ERR(0, 75, __pyx_L1_error)
     } else {__pyx_pybuffernd_nmm.diminfo[0].strides = __pyx_pybuffernd_nmm.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_nmm.diminfo[0].shape = __pyx_pybuffernd_nmm.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -3251,19 +3271,19 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_v_nmm = ((PyArrayObject *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":76
+  /* "oscillatore_stato_fondamentale.pyx":77
  *     cdef np.ndarray[np.int_t, ndim=1, mode='c'] nmm = np.zeros(nlat).astype(int)
  *     # field array
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] field = np.ones(nlat)             # <<<<<<<<<<<<<<
  * 
  *     cdef int i, idec # index for loops
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_nlat); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -3278,16 +3298,16 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_t_2 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 76, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 77, __pyx_L1_error)
   __pyx_t_9 = ((PyArrayObject *)__pyx_t_2);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_field.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_field = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_field.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 76, __pyx_L1_error)
+      __PYX_ERR(0, 77, __pyx_L1_error)
     } else {__pyx_pybuffernd_field.diminfo[0].strides = __pyx_pybuffernd_field.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_field.diminfo[0].shape = __pyx_pybuffernd_field.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -3295,7 +3315,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_v_field = ((PyArrayObject *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":81
+  /* "oscillatore_stato_fondamentale.pyx":82
  * 
  *     # Index for counting the remaining time
  *     cdef int count = 0, perc_count = 0, count_max = int(i_term/10)             # <<<<<<<<<<<<<<
@@ -3306,7 +3326,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_v_perc_count = 0;
   __pyx_v_count_max = ((int)__Pyx_div_long(__pyx_v_i_term, 10));
 
-  /* "oscillatore_stato_fondamentale.pyx":82
+  /* "oscillatore_stato_fondamentale.pyx":83
  *     # Index for counting the remaining time
  *     cdef int count = 0, perc_count = 0, count_max = int(i_term/10)
  *     cdef time_t t0 = time(NULL), sum_t = 0, frac_elapsed = 0             # <<<<<<<<<<<<<<
@@ -3317,15 +3337,15 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_v_sum_t = 0;
   __pyx_v_frac_elapsed = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":85
+  /* "oscillatore_stato_fondamentale.pyx":86
  * 
  *     # 0) Initialize the lattice
  *     geometry(nlat, npp, nmm) # Set the boundary conditions             # <<<<<<<<<<<<<<
  *     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
  * 
  */
-  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_npp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 85, __pyx_L1_error)
-  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_nmm), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_npp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_nmm), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 86, __pyx_L1_error)
   __pyx_f_30oscillatore_stato_fondamentale_geometry(__pyx_v_nlat, __pyx_t_10, __pyx_t_11);
   __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
   __pyx_t_10.memview = NULL;
@@ -3334,58 +3354,49 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "oscillatore_stato_fondamentale.pyx":86
+  /* "oscillatore_stato_fondamentale.pyx":87
  *     # 0) Initialize the lattice
  *     geometry(nlat, npp, nmm) # Set the boundary conditions
  *     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice             # <<<<<<<<<<<<<<
  * 
  *     lattice_dir = f'../dati/' + data_dir + '/'       # Directory where the lattice will be saved
  */
-  __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(((PyObject *)__pyx_v_field), PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(((PyObject *)__pyx_v_field), PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 87, __pyx_L1_error)
   __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(__pyx_v_iflag, __pyx_v_nlat, __pyx_t_12);
   __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
   __pyx_t_12.memview = NULL;
   __pyx_t_12.data = NULL;
 
-  /* "oscillatore_stato_fondamentale.pyx":88
+  /* "oscillatore_stato_fondamentale.pyx":89
  *     inizialize_lattice(iflag, nlat, field) # Inizialize the lattice
  * 
  *     lattice_dir = f'../dati/' + data_dir + '/'       # Directory where the lattice will be saved             # <<<<<<<<<<<<<<
  *     lattice_name_file = file_name + '_lattice'
  * 
  */
-  __pyx_t_2 = __Pyx_PyUnicode_ConcatSafe(__pyx_kp_u_dati, __pyx_v_data_dir); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyUnicode_ConcatSafe(__pyx_kp_u_dati, __pyx_v_data_dir); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_PyUnicode_Concat(__pyx_t_2, __pyx_kp_s__2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 88, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyUnicode_Concat(__pyx_t_2, __pyx_kp_s__2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_lattice_dir = ((PyObject*)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":89
+  /* "oscillatore_stato_fondamentale.pyx":90
  * 
  *     lattice_dir = f'../dati/' + data_dir + '/'       # Directory where the lattice will be saved
  *     lattice_name_file = file_name + '_lattice'             # <<<<<<<<<<<<<<
  * 
- *     print(lattice_dir)
+ *     if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
  */
-  __pyx_t_5 = PyNumber_Add(__pyx_v_file_name, __pyx_n_s_lattice_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Add(__pyx_v_file_name, __pyx_n_s_lattice_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_v_lattice_name_file = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":91
+  /* "oscillatore_stato_fondamentale.pyx":92
  *     lattice_name_file = file_name + '_lattice'
  * 
- *     print(lattice_dir)             # <<<<<<<<<<<<<<
- *     if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
- *         print('folder ', lattice_dir, ' does not exist. Creating...')
- */
-  if (__Pyx_PrintOne(0, __pyx_v_lattice_dir) < 0) __PYX_ERR(0, 91, __pyx_L1_error)
-
-  /* "oscillatore_stato_fondamentale.pyx":92
- * 
- *     print(lattice_dir)
  *     if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist             # <<<<<<<<<<<<<<
  *         print('folder ', lattice_dir, ' does not exist. Creating...')
  *         os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
@@ -3443,7 +3454,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   if (__pyx_t_13) {
 
     /* "oscillatore_stato_fondamentale.pyx":93
- *     print(lattice_dir)
+ * 
  *     if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist
  *         print('folder ', lattice_dir, ' does not exist. Creating...')             # <<<<<<<<<<<<<<
  *         os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
@@ -3517,8 +3528,8 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
     /* "oscillatore_stato_fondamentale.pyx":92
+ *     lattice_name_file = file_name + '_lattice'
  * 
- *     print(lattice_dir)
  *     if not os.path.exists(os.path.dirname(lattice_dir)): # If the directory does not exist             # <<<<<<<<<<<<<<
  *         print('folder ', lattice_dir, ' does not exist. Creating...')
  *         os.makedirs(os.path.dirname(lattice_dir)) # Create the directory
@@ -3914,11 +3925,11 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
  *     sum_t = 0
  *     frac_elapsed = 0             # <<<<<<<<<<<<<<
  * 
- * 
+ *     # 2) Measures step
  */
   __pyx_v_frac_elapsed = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":120
+  /* "oscillatore_stato_fondamentale.pyx":119
  * 
  *     # 2) Measures step
  *     for i in range(measures):             # <<<<<<<<<<<<<<
@@ -3930,7 +3941,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   for (__pyx_t_21 = 0; __pyx_t_21 < __pyx_t_20; __pyx_t_21+=1) {
     __pyx_v_i = __pyx_t_21;
 
-    /* "oscillatore_stato_fondamentale.pyx":122
+    /* "oscillatore_stato_fondamentale.pyx":121
  *     for i in range(measures):
  *         # a) Print counter and time remaining
  *         count, sum_t, perc_count, t0 = print_counter(count, perc_count, count_max, t0,             # <<<<<<<<<<<<<<
@@ -3947,7 +3958,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
     __pyx_v_perc_count = __pyx_t_23;
     __pyx_v_t0 = __pyx_t_24;
 
-    /* "oscillatore_stato_fondamentale.pyx":125
+    /* "oscillatore_stato_fondamentale.pyx":124
  *                                                      frac_elapsed, sum_t)
  *         # c) Decorrelate the lattice
  *         for idec in range(i_decorrel):             # <<<<<<<<<<<<<<
@@ -3959,16 +3970,16 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
     for (__pyx_t_27 = 0; __pyx_t_27 < __pyx_t_25; __pyx_t_27+=1) {
       __pyx_v_idec = __pyx_t_27;
 
-      /* "oscillatore_stato_fondamentale.pyx":126
+      /* "oscillatore_stato_fondamentale.pyx":125
  *         # c) Decorrelate the lattice
  *         for idec in range(i_decorrel):
  *             update_metropolis(field, nlat, d_metro, npp, nmm, eta, c1, c2) # MC             # <<<<<<<<<<<<<<
  * 
  *         # d) Measure the observable
  */
-      __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(((PyObject *)__pyx_v_field), PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 126, __pyx_L1_error)
-      __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_npp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 126, __pyx_L1_error)
-      __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_nmm), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 126, __pyx_L1_error)
+      __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(((PyObject *)__pyx_v_field), PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 125, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_npp), PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 125, __pyx_L1_error)
+      __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int_t(((PyObject *)__pyx_v_nmm), PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 125, __pyx_L1_error)
       __pyx_f_30oscillatore_stato_fondamentale_update_metropolis(__pyx_t_12, __pyx_v_nlat, __pyx_v_d_metro, __pyx_t_10, __pyx_t_11, __pyx_v_eta, __pyx_v_c1, __pyx_v_c2);
       __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
       __pyx_t_12.memview = NULL;
@@ -3981,126 +3992,440 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
       __pyx_t_11.data = NULL;
     }
 
-    /* "oscillatore_stato_fondamentale.pyx":130
+    /* "oscillatore_stato_fondamentale.pyx":129
  *         # d) Measure the observable
  *         # 3) Save the data
- *         np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice             # <<<<<<<<<<<<<<
- *     print(f"Done! nlat {nlat}, eta {eta}")
- * #==============================================================================
+ *         if single_file:             # <<<<<<<<<<<<<<
+ *             if i == 0:
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_savetxt); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = PyNumber_Add(__pyx_v_lattice_dir, __pyx_v_lattice_name_file); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyUnicode_From_int(__pyx_v_i, 0, ' ', 'd'); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyUnicode_Concat(__pyx_t_4, __pyx_kp_u_dat); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = PyNumber_Add(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = NULL;
-    __pyx_t_23 = 0;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_6)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_6);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_2, function);
-        __pyx_t_23 = 1;
+    __pyx_t_1 = (__pyx_v_single_file != 0);
+    if (__pyx_t_1) {
+
+      /* "oscillatore_stato_fondamentale.pyx":130
+ *         # 3) Save the data
+ *         if single_file:
+ *             if i == 0:             # <<<<<<<<<<<<<<
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+ *             else:
+ */
+      __pyx_t_1 = ((__pyx_v_i == 0) != 0);
+      if (__pyx_t_1) {
+
+        /* "oscillatore_stato_fondamentale.pyx":131
+ *         if single_file:
+ *             if i == 0:
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)             # <<<<<<<<<<<<<<
+ *             else:
+ *                 with open(lattice_dir + lattice_name_file + f'.dat', 'a') as f:
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_savetxt); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_t_5 = PyNumber_Add(__pyx_v_lattice_dir, __pyx_v_lattice_name_file); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_4 = PyNumber_Add(__pyx_t_5, __pyx_kp_u_dat); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 131, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_t_5 = NULL;
+        __pyx_t_23 = 0;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+          __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+          if (likely(__pyx_t_5)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+            __Pyx_INCREF(__pyx_t_5);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_2, function);
+            __pyx_t_23 = 1;
+          }
+        }
+        #if CYTHON_FAST_PYCALL
+        if (PyFunction_Check(__pyx_t_2)) {
+          PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_4, ((PyObject *)__pyx_v_field)};
+          __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        } else
+        #endif
+        #if CYTHON_FAST_PYCCALL
+        if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+          PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_4, ((PyObject *)__pyx_v_field)};
+          __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        } else
+        #endif
+        {
+          __pyx_t_6 = PyTuple_New(2+__pyx_t_23); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 131, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_6);
+          if (__pyx_t_5) {
+            __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5); __pyx_t_5 = NULL;
+          }
+          __Pyx_GIVEREF(__pyx_t_4);
+          PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_23, __pyx_t_4);
+          __Pyx_INCREF(((PyObject *)__pyx_v_field));
+          __Pyx_GIVEREF(((PyObject *)__pyx_v_field));
+          PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_23, ((PyObject *)__pyx_v_field));
+          __pyx_t_4 = 0;
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_6, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+        /* "oscillatore_stato_fondamentale.pyx":130
+ *         # 3) Save the data
+ *         if single_file:
+ *             if i == 0:             # <<<<<<<<<<<<<<
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+ *             else:
+ */
+        goto __pyx_L26;
       }
+
+      /* "oscillatore_stato_fondamentale.pyx":133
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+ *             else:
+ *                 with open(lattice_dir + lattice_name_file + f'.dat', 'a') as f:             # <<<<<<<<<<<<<<
+ *                     np.savetxt(f, field) # Save the lattice
+ *         else:
+ */
+      /*else*/ {
+        /*with:*/ {
+          __pyx_t_3 = PyNumber_Add(__pyx_v_lattice_dir, __pyx_v_lattice_name_file); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __pyx_t_2 = PyNumber_Add(__pyx_t_3, __pyx_kp_u_dat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_GIVEREF(__pyx_t_2);
+          PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
+          __Pyx_INCREF(__pyx_n_s_a);
+          __Pyx_GIVEREF(__pyx_n_s_a);
+          PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_n_s_a);
+          __pyx_t_2 = 0;
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          __pyx_t_14 = __Pyx_PyObject_LookupSpecial(__pyx_t_2, __pyx_n_s_exit); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 133, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_14);
+          __pyx_t_6 = __Pyx_PyObject_LookupSpecial(__pyx_t_2, __pyx_n_s_enter); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L27_error)
+          __Pyx_GOTREF(__pyx_t_6);
+          __pyx_t_4 = NULL;
+          if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
+            __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
+            if (likely(__pyx_t_4)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+              __Pyx_INCREF(__pyx_t_4);
+              __Pyx_INCREF(function);
+              __Pyx_DECREF_SET(__pyx_t_6, function);
+            }
+          }
+          __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L27_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __pyx_t_6 = __pyx_t_3;
+          __pyx_t_3 = 0;
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+          /*try:*/ {
+            {
+              __Pyx_PyThreadState_declare
+              __Pyx_PyThreadState_assign
+              __Pyx_ExceptionSave(&__pyx_t_17, &__pyx_t_16, &__pyx_t_15);
+              __Pyx_XGOTREF(__pyx_t_17);
+              __Pyx_XGOTREF(__pyx_t_16);
+              __Pyx_XGOTREF(__pyx_t_15);
+              /*try:*/ {
+                __Pyx_XDECREF_SET(__pyx_v_f, __pyx_t_6);
+                __pyx_t_6 = 0;
+
+                /* "oscillatore_stato_fondamentale.pyx":134
+ *             else:
+ *                 with open(lattice_dir + lattice_name_file + f'.dat', 'a') as f:
+ *                     np.savetxt(f, field) # Save the lattice             # <<<<<<<<<<<<<<
+ *         else:
+ *             np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
+ */
+                __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L33_error)
+                __Pyx_GOTREF(__pyx_t_2);
+                __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_savetxt); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 134, __pyx_L33_error)
+                __Pyx_GOTREF(__pyx_t_3);
+                __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                __pyx_t_2 = NULL;
+                __pyx_t_23 = 0;
+                if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+                  __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+                  if (likely(__pyx_t_2)) {
+                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+                    __Pyx_INCREF(__pyx_t_2);
+                    __Pyx_INCREF(function);
+                    __Pyx_DECREF_SET(__pyx_t_3, function);
+                    __pyx_t_23 = 1;
+                  }
+                }
+                #if CYTHON_FAST_PYCALL
+                if (PyFunction_Check(__pyx_t_3)) {
+                  PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_f, ((PyObject *)__pyx_v_field)};
+                  __pyx_t_6 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L33_error)
+                  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+                  __Pyx_GOTREF(__pyx_t_6);
+                } else
+                #endif
+                #if CYTHON_FAST_PYCCALL
+                if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+                  PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_f, ((PyObject *)__pyx_v_field)};
+                  __pyx_t_6 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L33_error)
+                  __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+                  __Pyx_GOTREF(__pyx_t_6);
+                } else
+                #endif
+                {
+                  __pyx_t_4 = PyTuple_New(2+__pyx_t_23); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 134, __pyx_L33_error)
+                  __Pyx_GOTREF(__pyx_t_4);
+                  if (__pyx_t_2) {
+                    __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
+                  }
+                  __Pyx_INCREF(__pyx_v_f);
+                  __Pyx_GIVEREF(__pyx_v_f);
+                  PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_23, __pyx_v_f);
+                  __Pyx_INCREF(((PyObject *)__pyx_v_field));
+                  __Pyx_GIVEREF(((PyObject *)__pyx_v_field));
+                  PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_23, ((PyObject *)__pyx_v_field));
+                  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L33_error)
+                  __Pyx_GOTREF(__pyx_t_6);
+                  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+                }
+                __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+                __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+                /* "oscillatore_stato_fondamentale.pyx":133
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+ *             else:
+ *                 with open(lattice_dir + lattice_name_file + f'.dat', 'a') as f:             # <<<<<<<<<<<<<<
+ *                     np.savetxt(f, field) # Save the lattice
+ *         else:
+ */
+              }
+              __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
+              __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
+              __Pyx_XDECREF(__pyx_t_15); __pyx_t_15 = 0;
+              goto __pyx_L40_try_end;
+              __pyx_L33_error:;
+              __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
+              __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
+              __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
+              __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+              __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+              __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+              __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+              /*except:*/ {
+                __Pyx_AddTraceback("oscillatore_stato_fondamentale.simulator", __pyx_clineno, __pyx_lineno, __pyx_filename);
+                if (__Pyx_GetException(&__pyx_t_6, &__pyx_t_3, &__pyx_t_4) < 0) __PYX_ERR(0, 133, __pyx_L35_except_error)
+                __Pyx_GOTREF(__pyx_t_6);
+                __Pyx_GOTREF(__pyx_t_3);
+                __Pyx_GOTREF(__pyx_t_4);
+                __pyx_t_2 = PyTuple_Pack(3, __pyx_t_6, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L35_except_error)
+                __Pyx_GOTREF(__pyx_t_2);
+                __pyx_t_19 = __Pyx_PyObject_Call(__pyx_t_14, __pyx_t_2, NULL);
+                __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+                __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 133, __pyx_L35_except_error)
+                __Pyx_GOTREF(__pyx_t_19);
+                __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_19);
+                __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+                if (__pyx_t_1 < 0) __PYX_ERR(0, 133, __pyx_L35_except_error)
+                __pyx_t_13 = ((!(__pyx_t_1 != 0)) != 0);
+                if (__pyx_t_13) {
+                  __Pyx_GIVEREF(__pyx_t_6);
+                  __Pyx_GIVEREF(__pyx_t_3);
+                  __Pyx_XGIVEREF(__pyx_t_4);
+                  __Pyx_ErrRestoreWithState(__pyx_t_6, __pyx_t_3, __pyx_t_4);
+                  __pyx_t_6 = 0; __pyx_t_3 = 0; __pyx_t_4 = 0; 
+                  __PYX_ERR(0, 133, __pyx_L35_except_error)
+                }
+                __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+                __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+                __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+                goto __pyx_L34_exception_handled;
+              }
+              __pyx_L35_except_error:;
+              __Pyx_XGIVEREF(__pyx_t_17);
+              __Pyx_XGIVEREF(__pyx_t_16);
+              __Pyx_XGIVEREF(__pyx_t_15);
+              __Pyx_ExceptionReset(__pyx_t_17, __pyx_t_16, __pyx_t_15);
+              goto __pyx_L1_error;
+              __pyx_L34_exception_handled:;
+              __Pyx_XGIVEREF(__pyx_t_17);
+              __Pyx_XGIVEREF(__pyx_t_16);
+              __Pyx_XGIVEREF(__pyx_t_15);
+              __Pyx_ExceptionReset(__pyx_t_17, __pyx_t_16, __pyx_t_15);
+              __pyx_L40_try_end:;
+            }
+          }
+          /*finally:*/ {
+            /*normal exit:*/{
+              if (__pyx_t_14) {
+                __pyx_t_15 = __Pyx_PyObject_Call(__pyx_t_14, __pyx_tuple__3, NULL);
+                __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+                if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 133, __pyx_L1_error)
+                __Pyx_GOTREF(__pyx_t_15);
+                __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+              }
+              goto __pyx_L32;
+            }
+            __pyx_L32:;
+          }
+          goto __pyx_L44;
+          __pyx_L27_error:;
+          __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+          goto __pyx_L1_error;
+          __pyx_L44:;
+        }
+      }
+      __pyx_L26:;
+
+      /* "oscillatore_stato_fondamentale.pyx":129
+ *         # d) Measure the observable
+ *         # 3) Save the data
+ *         if single_file:             # <<<<<<<<<<<<<<
+ *             if i == 0:
+ *                 np.savetxt(lattice_dir + lattice_name_file + f'.dat', field)
+ */
+      goto __pyx_L25;
     }
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_4, ((PyObject *)__pyx_v_field)};
-      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+    /* "oscillatore_stato_fondamentale.pyx":136
+ *                     np.savetxt(f, field) # Save the lattice
+ *         else:
+ *             np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice             # <<<<<<<<<<<<<<
+ * 
+ *     print(f"Done! nlat {nlat}, eta {eta}")
+ */
+    /*else*/ {
+      __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 136, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    } else
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_4, ((PyObject *)__pyx_v_field)};
-      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_savetxt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 136, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_3 = PyNumber_Add(__pyx_v_lattice_dir, __pyx_v_lattice_name_file); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 136, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    } else
-    #endif
-    {
-      __pyx_t_5 = PyTuple_New(2+__pyx_t_23); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 130, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_i, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_5 = __Pyx_PyUnicode_Concat(__pyx_t_2, __pyx_kp_u_dat); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 136, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      if (__pyx_t_6) {
-        __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6); __pyx_t_6 = NULL;
-      }
-      __Pyx_GIVEREF(__pyx_t_4);
-      PyTuple_SET_ITEM(__pyx_t_5, 0+__pyx_t_23, __pyx_t_4);
-      __Pyx_INCREF(((PyObject *)__pyx_v_field));
-      __Pyx_GIVEREF(((PyObject *)__pyx_v_field));
-      PyTuple_SET_ITEM(__pyx_t_5, 1+__pyx_t_23, ((PyObject *)__pyx_v_field));
-      __pyx_t_4 = 0;
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyNumber_Add(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_5 = NULL;
+      __pyx_t_23 = 0;
+      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
+        __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_5)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+          __Pyx_INCREF(__pyx_t_5);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_6, function);
+          __pyx_t_23 = 1;
+        }
+      }
+      #if CYTHON_FAST_PYCALL
+      if (PyFunction_Check(__pyx_t_6)) {
+        PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_2, ((PyObject *)__pyx_v_field)};
+        __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      } else
+      #endif
+      #if CYTHON_FAST_PYCCALL
+      if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
+        PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_2, ((PyObject *)__pyx_v_field)};
+        __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-__pyx_t_23, 2+__pyx_t_23); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      } else
+      #endif
+      {
+        __pyx_t_3 = PyTuple_New(2+__pyx_t_23); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 136, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        if (__pyx_t_5) {
+          __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_5); __pyx_t_5 = NULL;
+        }
+        __Pyx_GIVEREF(__pyx_t_2);
+        PyTuple_SET_ITEM(__pyx_t_3, 0+__pyx_t_23, __pyx_t_2);
+        __Pyx_INCREF(((PyObject *)__pyx_v_field));
+        __Pyx_GIVEREF(((PyObject *)__pyx_v_field));
+        PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_23, ((PyObject *)__pyx_v_field));
+        __pyx_t_2 = 0;
+        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_L25:;
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":131
- *         # 3) Save the data
- *         np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
+  /* "oscillatore_stato_fondamentale.pyx":138
+ *             np.savetxt(lattice_dir + lattice_name_file + f'{i}.dat', field) # Save the lattice
+ * 
  *     print(f"Done! nlat {nlat}, eta {eta}")             # <<<<<<<<<<<<<<
  * #==============================================================================
  * 
  */
-  __pyx_t_3 = PyTuple_New(4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_28 = 0;
   __pyx_t_29 = 127;
   __Pyx_INCREF(__pyx_kp_u_Done_nlat);
   __pyx_t_28 += 11;
   __Pyx_GIVEREF(__pyx_kp_u_Done_nlat);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_kp_u_Done_nlat);
-  __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_nlat, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_28 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
-  __pyx_t_2 = 0;
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_kp_u_Done_nlat);
+  __pyx_t_6 = __Pyx_PyUnicode_From_int(__pyx_v_nlat, 0, ' ', 'd'); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_28 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_6);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_6);
+  __pyx_t_6 = 0;
   __Pyx_INCREF(__pyx_kp_u_eta_2);
   __pyx_t_28 += 6;
   __Pyx_GIVEREF(__pyx_kp_u_eta_2);
-  PyTuple_SET_ITEM(__pyx_t_3, 2, __pyx_kp_u_eta_2);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_eta); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_29 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_29) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_29;
-  __pyx_t_28 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_5);
-  __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_3, 3, __pyx_t_5);
-  __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyUnicode_Join(__pyx_t_3, 4, __pyx_t_28, __pyx_t_29); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_kp_u_eta_2);
+  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_eta); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_t_3 = __Pyx_PyObject_FormatSimple(__pyx_t_6, __pyx_empty_unicode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_29 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_29) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_29;
+  __pyx_t_28 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_4, 3, __pyx_t_3);
+  __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_4, 4, __pyx_t_28, __pyx_t_29); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  if (__Pyx_PrintOne(0, __pyx_t_3) < 0) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__Pyx_PrintOne(0, __pyx_t_5) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "oscillatore_stato_fondamentale.pyx":33
  * 
  * 
  * def simulator(int nlat, int iflag,             # <<<<<<<<<<<<<<
  *               int measures, int i_decorrel, int i_term, double d_metro,
- *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
+ *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice',
  */
 
   /* function exit code */
@@ -4143,7 +4468,7 @@ static PyObject *__pyx_pf_30oscillatore_stato_fondamentale_simulator(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "oscillatore_stato_fondamentale.pyx":136
+/* "oscillatore_stato_fondamentale.pyx":143
  * #=============== FUNCTION TO EVALUATE THE TIME REMAINING ======================
  * @cython.cdivision(True)
  * cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t             # <<<<<<<<<<<<<<
@@ -4159,7 +4484,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
   __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_t_2;
   __Pyx_RefNannySetupContext("print_counter", 0);
 
-  /* "oscillatore_stato_fondamentale.pyx":144
+  /* "oscillatore_stato_fondamentale.pyx":151
  *     """
  *     cdef time_t t1
  *     count+=1             # <<<<<<<<<<<<<<
@@ -4168,7 +4493,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
   __pyx_v_count = (__pyx_v_count + 1);
 
-  /* "oscillatore_stato_fondamentale.pyx":145
+  /* "oscillatore_stato_fondamentale.pyx":152
  *     cdef time_t t1
  *     count+=1
  *     if count >= count_max:             # <<<<<<<<<<<<<<
@@ -4178,7 +4503,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
   __pyx_t_1 = ((__pyx_v_count >= __pyx_v_count_max) != 0);
   if (__pyx_t_1) {
 
-    /* "oscillatore_stato_fondamentale.pyx":146
+    /* "oscillatore_stato_fondamentale.pyx":153
  *     count+=1
  *     if count >= count_max:
  *         perc_count += 1             # <<<<<<<<<<<<<<
@@ -4187,7 +4512,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
     __pyx_v_perc_count = (__pyx_v_perc_count + 1);
 
-    /* "oscillatore_stato_fondamentale.pyx":147
+    /* "oscillatore_stato_fondamentale.pyx":154
  *     if count >= count_max:
  *         perc_count += 1
  *         t1 = time(NULL)             # <<<<<<<<<<<<<<
@@ -4196,35 +4521,35 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
     __pyx_v_t1 = time(NULL);
 
-    /* "oscillatore_stato_fondamentale.pyx":148
+    /* "oscillatore_stato_fondamentale.pyx":155
  *         perc_count += 1
  *         t1 = time(NULL)
  *         frac_elapsed = t1 - t0             # <<<<<<<<<<<<<<
  *         sum_t += frac_elapsed
- *         printf("%d / 10 --> %ld s left\n",
+ *         printf("%d / 10 --> %ld s left\n\r",
  */
     __pyx_v_frac_elapsed = (__pyx_v_t1 - __pyx_v_t0);
 
-    /* "oscillatore_stato_fondamentale.pyx":149
+    /* "oscillatore_stato_fondamentale.pyx":156
  *         t1 = time(NULL)
  *         frac_elapsed = t1 - t0
  *         sum_t += frac_elapsed             # <<<<<<<<<<<<<<
- *         printf("%d / 10 --> %ld s left\n",
+ *         printf("%d / 10 --> %ld s left\n\r",
  *                 perc_count, (10 - perc_count)*sum_t/perc_count)
  */
     __pyx_v_sum_t = (__pyx_v_sum_t + __pyx_v_frac_elapsed);
 
-    /* "oscillatore_stato_fondamentale.pyx":150
+    /* "oscillatore_stato_fondamentale.pyx":157
  *         frac_elapsed = t1 - t0
  *         sum_t += frac_elapsed
- *         printf("%d / 10 --> %ld s left\n",             # <<<<<<<<<<<<<<
+ *         printf("%d / 10 --> %ld s left\n\r",             # <<<<<<<<<<<<<<
  *                 perc_count, (10 - perc_count)*sum_t/perc_count)
  *         t0 = t1
  */
-    (void)(printf(((char const *)"%d / 10 --> %ld s left\n"), __pyx_v_perc_count, (((10 - __pyx_v_perc_count) * __pyx_v_sum_t) / __pyx_v_perc_count)));
+    (void)(printf(((char const *)"%d / 10 --> %ld s left\n\r"), __pyx_v_perc_count, (((10 - __pyx_v_perc_count) * __pyx_v_sum_t) / __pyx_v_perc_count)));
 
-    /* "oscillatore_stato_fondamentale.pyx":152
- *         printf("%d / 10 --> %ld s left\n",
+    /* "oscillatore_stato_fondamentale.pyx":159
+ *         printf("%d / 10 --> %ld s left\n\r",
  *                 perc_count, (10 - perc_count)*sum_t/perc_count)
  *         t0 = t1             # <<<<<<<<<<<<<<
  *         count = 0
@@ -4232,7 +4557,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
     __pyx_v_t0 = __pyx_v_t1;
 
-    /* "oscillatore_stato_fondamentale.pyx":153
+    /* "oscillatore_stato_fondamentale.pyx":160
  *                 perc_count, (10 - perc_count)*sum_t/perc_count)
  *         t0 = t1
  *         count = 0             # <<<<<<<<<<<<<<
@@ -4241,7 +4566,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
     __pyx_v_count = 0;
 
-    /* "oscillatore_stato_fondamentale.pyx":145
+    /* "oscillatore_stato_fondamentale.pyx":152
  *     cdef time_t t1
  *     count+=1
  *     if count >= count_max:             # <<<<<<<<<<<<<<
@@ -4250,7 +4575,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
  */
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":154
+  /* "oscillatore_stato_fondamentale.pyx":161
  *         t0 = t1
  *         count = 0
  *     return count, sum_t, perc_count, t0             # <<<<<<<<<<<<<<
@@ -4264,7 +4589,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
   __pyx_r = __pyx_t_2;
   goto __pyx_L0;
 
-  /* "oscillatore_stato_fondamentale.pyx":136
+  /* "oscillatore_stato_fondamentale.pyx":143
  * #=============== FUNCTION TO EVALUATE THE TIME REMAINING ======================
  * @cython.cdivision(True)
  * cdef (int, time_t, int, time_t) print_counter(int count, int perc_count, time_t             # <<<<<<<<<<<<<<
@@ -4278,7 +4603,7 @@ static __pyx_ctuple_int__and_time_t__and_int__and_time_t __pyx_f_30oscillatore_s
   return __pyx_r;
 }
 
-/* "oscillatore_stato_fondamentale.pyx":159
+/* "oscillatore_stato_fondamentale.pyx":166
  * @cython.boundscheck(False)  # Deactivate bounds checking
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):             # <<<<<<<<<<<<<<
@@ -4295,7 +4620,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
   Py_ssize_t __pyx_t_4;
   __Pyx_RefNannySetupContext("geometry", 0);
 
-  /* "oscillatore_stato_fondamentale.pyx":165
+  /* "oscillatore_stato_fondamentale.pyx":172
  *     """
  *     cdef int i
  *     for i in range(nlat):             # <<<<<<<<<<<<<<
@@ -4307,7 +4632,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "oscillatore_stato_fondamentale.pyx":166
+    /* "oscillatore_stato_fondamentale.pyx":173
  *     cdef int i
  *     for i in range(nlat):
  *         npp[i] = i + 1             # <<<<<<<<<<<<<<
@@ -4317,7 +4642,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
     __pyx_t_4 = __pyx_v_i;
     *((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_npp.data + __pyx_t_4 * __pyx_v_npp.strides[0]) )) = (__pyx_v_i + 1);
 
-    /* "oscillatore_stato_fondamentale.pyx":167
+    /* "oscillatore_stato_fondamentale.pyx":174
  *     for i in range(nlat):
  *         npp[i] = i + 1
  *         nmm[i] = i - 1             # <<<<<<<<<<<<<<
@@ -4328,7 +4653,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
     *((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_nmm.data + __pyx_t_4 * __pyx_v_nmm.strides[0]) )) = (__pyx_v_i - 1);
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":168
+  /* "oscillatore_stato_fondamentale.pyx":175
  *         npp[i] = i + 1
  *         nmm[i] = i - 1
  *     npp[nlat-1] = 0             # <<<<<<<<<<<<<<
@@ -4338,7 +4663,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
   __pyx_t_4 = (__pyx_v_nlat - 1);
   *((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_npp.data + __pyx_t_4 * __pyx_v_npp.strides[0]) )) = 0;
 
-  /* "oscillatore_stato_fondamentale.pyx":169
+  /* "oscillatore_stato_fondamentale.pyx":176
  *         nmm[i] = i - 1
  *     npp[nlat-1] = 0
  *     nmm[0] = nlat-1             # <<<<<<<<<<<<<<
@@ -4348,7 +4673,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
   __pyx_t_4 = 0;
   *((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_nmm.data + __pyx_t_4 * __pyx_v_nmm.strides[0]) )) = (__pyx_v_nlat - 1);
 
-  /* "oscillatore_stato_fondamentale.pyx":159
+  /* "oscillatore_stato_fondamentale.pyx":166
  * @cython.boundscheck(False)  # Deactivate bounds checking
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * cdef void geometry(int nlat, np.int_t[:] npp, np.int_t[:] nmm):             # <<<<<<<<<<<<<<
@@ -4360,7 +4685,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_geometry(int __pyx_v_nlat, 
   __Pyx_RefNannyFinishContext();
 }
 
-/* "oscillatore_stato_fondamentale.pyx":175
+/* "oscillatore_stato_fondamentale.pyx":182
  * @cython.boundscheck(False)  # Deactivate bounds checking
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * cdef void inizialize_lattice(int iflag, int nlat, np.double_t[:] field, ):             # <<<<<<<<<<<<<<
@@ -4388,7 +4713,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
   __Pyx_RefNannySetupContext("inizialize_lattice", 0);
   __PYX_INC_MEMVIEW(&__pyx_v_field, 1);
 
-  /* "oscillatore_stato_fondamentale.pyx":183
+  /* "oscillatore_stato_fondamentale.pyx":190
  *     cdef int i
  * 
  *     if iflag == 0: # Cold start --> all site 0             # <<<<<<<<<<<<<<
@@ -4398,7 +4723,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
   __pyx_t_1 = ((__pyx_v_iflag == 0) != 0);
   if (__pyx_t_1) {
 
-    /* "oscillatore_stato_fondamentale.pyx":184
+    /* "oscillatore_stato_fondamentale.pyx":191
  * 
  *     if iflag == 0: # Cold start --> all site 0
  *         for i in range(nlat):             # <<<<<<<<<<<<<<
@@ -4410,7 +4735,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_i = __pyx_t_4;
 
-      /* "oscillatore_stato_fondamentale.pyx":185
+      /* "oscillatore_stato_fondamentale.pyx":192
  *     if iflag == 0: # Cold start --> all site 0
  *         for i in range(nlat):
  *             field[i] = 0.             # <<<<<<<<<<<<<<
@@ -4421,7 +4746,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
       *((__pyx_t_5numpy_double_t *) ( /* dim=0 */ (__pyx_v_field.data + __pyx_t_5 * __pyx_v_field.strides[0]) )) = 0.;
     }
 
-    /* "oscillatore_stato_fondamentale.pyx":183
+    /* "oscillatore_stato_fondamentale.pyx":190
  *     cdef int i
  * 
  *     if iflag == 0: # Cold start --> all site 0             # <<<<<<<<<<<<<<
@@ -4431,7 +4756,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
     goto __pyx_L3;
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":187
+  /* "oscillatore_stato_fondamentale.pyx":194
  *             field[i] = 0.
  *     else:
  *         if iflag == 1: # Warm start --> Random y             # <<<<<<<<<<<<<<
@@ -4442,7 +4767,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
     __pyx_t_1 = ((__pyx_v_iflag == 1) != 0);
     if (__pyx_t_1) {
 
-      /* "oscillatore_stato_fondamentale.pyx":188
+      /* "oscillatore_stato_fondamentale.pyx":195
  *     else:
  *         if iflag == 1: # Warm start --> Random y
  *             for i in range(nlat):             # <<<<<<<<<<<<<<
@@ -4454,31 +4779,31 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
       for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
         __pyx_v_i = __pyx_t_4;
 
-        /* "oscillatore_stato_fondamentale.pyx":189
+        /* "oscillatore_stato_fondamentale.pyx":196
  *         if iflag == 1: # Warm start --> Random y
  *             for i in range(nlat):
  *                 y = 1 - 2*dist(gen) # Random number in (-1, 1)             # <<<<<<<<<<<<<<
  *                 field[i] = y
  *         else:
  */
-        __pyx_t_6 = PyFloat_FromDouble((1.0 - (2.0 * __pyx_v_30oscillatore_stato_fondamentale_dist(__pyx_v_30oscillatore_stato_fondamentale_gen)))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 189, __pyx_L1_error)
+        __pyx_t_6 = PyFloat_FromDouble((1.0 - (2.0 * __pyx_v_30oscillatore_stato_fondamentale_dist(__pyx_v_30oscillatore_stato_fondamentale_gen)))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_XDECREF_SET(__pyx_v_y, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "oscillatore_stato_fondamentale.pyx":190
+        /* "oscillatore_stato_fondamentale.pyx":197
  *             for i in range(nlat):
  *                 y = 1 - 2*dist(gen) # Random number in (-1, 1)
  *                 field[i] = y             # <<<<<<<<<<<<<<
  *         else:
  *             field = np.loadtxt('lattice')
  */
-        __pyx_t_7 = __pyx_PyFloat_AsDouble(__pyx_v_y); if (unlikely((__pyx_t_7 == ((npy_double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 190, __pyx_L1_error)
+        __pyx_t_7 = __pyx_PyFloat_AsDouble(__pyx_v_y); if (unlikely((__pyx_t_7 == ((npy_double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 197, __pyx_L1_error)
         __pyx_t_5 = __pyx_v_i;
         *((__pyx_t_5numpy_double_t *) ( /* dim=0 */ (__pyx_v_field.data + __pyx_t_5 * __pyx_v_field.strides[0]) )) = __pyx_t_7;
       }
 
-      /* "oscillatore_stato_fondamentale.pyx":187
+      /* "oscillatore_stato_fondamentale.pyx":194
  *             field[i] = 0.
  *     else:
  *         if iflag == 1: # Warm start --> Random y             # <<<<<<<<<<<<<<
@@ -4488,7 +4813,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
       goto __pyx_L6;
     }
 
-    /* "oscillatore_stato_fondamentale.pyx":192
+    /* "oscillatore_stato_fondamentale.pyx":199
  *                 field[i] = y
  *         else:
  *             field = np.loadtxt('lattice')             # <<<<<<<<<<<<<<
@@ -4496,9 +4821,9 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
  * 
  */
     /*else*/ {
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 192, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_np); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 199, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 192, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_loadtxt); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 199, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __pyx_t_8 = NULL;
@@ -4513,10 +4838,10 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
       }
       __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_8, __pyx_n_s_lattice) : __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_n_s_lattice);
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 192, __pyx_L1_error)
+      if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 199, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(__pyx_t_6, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 192, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_double_t(__pyx_t_6, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 199, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __PYX_XDEC_MEMVIEW(&__pyx_v_field, 1);
       __pyx_v_field = __pyx_t_10;
@@ -4527,7 +4852,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
   }
   __pyx_L3:;
 
-  /* "oscillatore_stato_fondamentale.pyx":175
+  /* "oscillatore_stato_fondamentale.pyx":182
  * @cython.boundscheck(False)  # Deactivate bounds checking
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * cdef void inizialize_lattice(int iflag, int nlat, np.double_t[:] field, ):             # <<<<<<<<<<<<<<
@@ -4549,7 +4874,7 @@ static void __pyx_f_30oscillatore_stato_fondamentale_inizialize_lattice(int __py
   __Pyx_RefNannyFinishContext();
 }
 
-/* "oscillatore_stato_fondamentale.pyx":199
+/* "oscillatore_stato_fondamentale.pyx":206
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Enable cdivision.
  * cdef inline void update_metropolis(np.double_t[:] field, # the field             # <<<<<<<<<<<<<<
@@ -4575,7 +4900,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
   int __pyx_t_6;
   __Pyx_RefNannySetupContext("update_metropolis", 0);
 
-  /* "oscillatore_stato_fondamentale.pyx":211
+  /* "oscillatore_stato_fondamentale.pyx":218
  *     cdef double force, p_rat, phi, phi_prova
  *     cdef double rand_num
  *     for i in range(nlat):             # <<<<<<<<<<<<<<
@@ -4587,7 +4912,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "oscillatore_stato_fondamentale.pyx":212
+    /* "oscillatore_stato_fondamentale.pyx":219
  *     cdef double rand_num
  *     for i in range(nlat):
  *         ip = npp[i]             # <<<<<<<<<<<<<<
@@ -4597,7 +4922,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
     __pyx_t_4 = __pyx_v_i;
     __pyx_v_ip = (*((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_npp.data + __pyx_t_4 * __pyx_v_npp.strides[0]) )));
 
-    /* "oscillatore_stato_fondamentale.pyx":213
+    /* "oscillatore_stato_fondamentale.pyx":220
  *     for i in range(nlat):
  *         ip = npp[i]
  *         im = nmm[i]             # <<<<<<<<<<<<<<
@@ -4607,7 +4932,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
     __pyx_t_4 = __pyx_v_i;
     __pyx_v_im = (*((__pyx_t_5numpy_int_t *) ( /* dim=0 */ (__pyx_v_nmm.data + __pyx_t_4 * __pyx_v_nmm.strides[0]) )));
 
-    /* "oscillatore_stato_fondamentale.pyx":215
+    /* "oscillatore_stato_fondamentale.pyx":222
  *         im = nmm[i]
  * 
  *         force = field[ip] + field[im]             # <<<<<<<<<<<<<<
@@ -4618,7 +4943,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
     __pyx_t_5 = __pyx_v_im;
     __pyx_v_force = ((*((__pyx_t_5numpy_double_t *) ( /* dim=0 */ (__pyx_v_field.data + __pyx_t_4 * __pyx_v_field.strides[0]) ))) + (*((__pyx_t_5numpy_double_t *) ( /* dim=0 */ (__pyx_v_field.data + __pyx_t_5 * __pyx_v_field.strides[0]) ))));
 
-    /* "oscillatore_stato_fondamentale.pyx":216
+    /* "oscillatore_stato_fondamentale.pyx":223
  * 
  *         force = field[ip] + field[im]
  *         phi = field[i]             # <<<<<<<<<<<<<<
@@ -4628,7 +4953,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
     __pyx_t_5 = __pyx_v_i;
     __pyx_v_phi = (*((__pyx_t_5numpy_double_t *) ( /* dim=0 */ (__pyx_v_field.data + __pyx_t_5 * __pyx_v_field.strides[0]) )));
 
-    /* "oscillatore_stato_fondamentale.pyx":217
+    /* "oscillatore_stato_fondamentale.pyx":224
  *         force = field[ip] + field[im]
  *         phi = field[i]
  *         rand_num = dist(gen)             # <<<<<<<<<<<<<<
@@ -4637,7 +4962,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
  */
     __pyx_v_rand_num = __pyx_v_30oscillatore_stato_fondamentale_dist(__pyx_v_30oscillatore_stato_fondamentale_gen);
 
-    /* "oscillatore_stato_fondamentale.pyx":218
+    /* "oscillatore_stato_fondamentale.pyx":225
  *         phi = field[i]
  *         rand_num = dist(gen)
  *         phi_prova = phi + 2 * d_metro * (0.5 - rand_num)             # <<<<<<<<<<<<<<
@@ -4646,7 +4971,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
  */
     __pyx_v_phi_prova = (__pyx_v_phi + ((2.0 * __pyx_v_d_metro) * (0.5 - __pyx_v_rand_num)));
 
-    /* "oscillatore_stato_fondamentale.pyx":220
+    /* "oscillatore_stato_fondamentale.pyx":227
  *         phi_prova = phi + 2 * d_metro * (0.5 - rand_num)
  * 
  *         p_rat = c1 * phi_prova * force - c2 * phi_prova**2             # <<<<<<<<<<<<<<
@@ -4655,7 +4980,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
  */
     __pyx_v_p_rat = (((__pyx_v_c1 * __pyx_v_phi_prova) * __pyx_v_force) - (__pyx_v_c2 * pow(__pyx_v_phi_prova, 2.0)));
 
-    /* "oscillatore_stato_fondamentale.pyx":221
+    /* "oscillatore_stato_fondamentale.pyx":228
  * 
  *         p_rat = c1 * phi_prova * force - c2 * phi_prova**2
  *         p_rat = p_rat - c1 * phi * force + c2 * phi**2             # <<<<<<<<<<<<<<
@@ -4664,7 +4989,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
  */
     __pyx_v_p_rat = ((__pyx_v_p_rat - ((__pyx_v_c1 * __pyx_v_phi) * __pyx_v_force)) + (__pyx_v_c2 * pow(__pyx_v_phi, 2.0)));
 
-    /* "oscillatore_stato_fondamentale.pyx":222
+    /* "oscillatore_stato_fondamentale.pyx":229
  *         p_rat = c1 * phi_prova * force - c2 * phi_prova**2
  *         p_rat = p_rat - c1 * phi * force + c2 * phi**2
  *         rand_num = log(dist(gen))             # <<<<<<<<<<<<<<
@@ -4673,7 +4998,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
  */
     __pyx_v_rand_num = log(__pyx_v_30oscillatore_stato_fondamentale_dist(__pyx_v_30oscillatore_stato_fondamentale_gen));
 
-    /* "oscillatore_stato_fondamentale.pyx":223
+    /* "oscillatore_stato_fondamentale.pyx":230
  *         p_rat = p_rat - c1 * phi * force + c2 * phi**2
  *         rand_num = log(dist(gen))
  *         if rand_num < p_rat: field[i] = phi_prova             # <<<<<<<<<<<<<<
@@ -4686,7 +5011,7 @@ static CYTHON_INLINE void __pyx_f_30oscillatore_stato_fondamentale_update_metrop
     }
   }
 
-  /* "oscillatore_stato_fondamentale.pyx":199
+  /* "oscillatore_stato_fondamentale.pyx":206
  * @cython.wraparound(False)   # Deactivate negative indexing.
  * @cython.cdivision(True)     # Enable cdivision.
  * cdef inline void update_metropolis(np.double_t[:] field, # the field             # <<<<<<<<<<<<<<
@@ -19535,6 +19860,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
   {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
+  {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_astype, __pyx_k_astype, sizeof(__pyx_k_astype), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
@@ -19643,6 +19969,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
   {&__pyx_n_s_simulator, __pyx_k_simulator, sizeof(__pyx_k_simulator), 0, 0, 1, 1},
+  {&__pyx_n_s_single_file, __pyx_k_single_file, sizeof(__pyx_k_single_file), 0, 0, 1, 1},
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
   {&__pyx_n_s_step, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
@@ -19913,12 +20240,12 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * def simulator(int nlat, int iflag,             # <<<<<<<<<<<<<<
  *               int measures, int i_decorrel, int i_term, double d_metro,
- *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
+ *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice',
  */
-  __pyx_tuple__24 = PyTuple_Pack(28, __pyx_n_s_nlat, __pyx_n_s_iflag, __pyx_n_s_measures, __pyx_n_s_i_decorrel, __pyx_n_s_i_term, __pyx_n_s_d_metro, __pyx_n_s_eta, __pyx_n_s_seed, __pyx_n_s_data_dir, __pyx_n_s_file_name, __pyx_n_s_c1, __pyx_n_s_c2, __pyx_n_s_inv_nlat, __pyx_n_s_npp, __pyx_n_s_nmm, __pyx_n_s_field, __pyx_n_s_i, __pyx_n_s_idec, __pyx_n_s_count, __pyx_n_s_perc_count, __pyx_n_s_count_max, __pyx_n_s_t0, __pyx_n_s_sum_t, __pyx_n_s_frac_elapsed, __pyx_n_s_lattice_dir, __pyx_n_s_lattice_name_file, __pyx_n_s_data_dict, __pyx_n_s_f); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_tuple__24 = PyTuple_Pack(29, __pyx_n_s_nlat, __pyx_n_s_iflag, __pyx_n_s_measures, __pyx_n_s_i_decorrel, __pyx_n_s_i_term, __pyx_n_s_d_metro, __pyx_n_s_eta, __pyx_n_s_seed, __pyx_n_s_data_dir, __pyx_n_s_file_name, __pyx_n_s_single_file, __pyx_n_s_c1, __pyx_n_s_c2, __pyx_n_s_inv_nlat, __pyx_n_s_npp, __pyx_n_s_nmm, __pyx_n_s_field, __pyx_n_s_i, __pyx_n_s_idec, __pyx_n_s_count, __pyx_n_s_perc_count, __pyx_n_s_count_max, __pyx_n_s_t0, __pyx_n_s_sum_t, __pyx_n_s_frac_elapsed, __pyx_n_s_lattice_dir, __pyx_n_s_lattice_name_file, __pyx_n_s_data_dict, __pyx_n_s_f); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__24);
   __Pyx_GIVEREF(__pyx_tuple__24);
-  __pyx_codeobj__25 = (PyObject*)__Pyx_PyCode_New(10, 0, 28, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_oscillatore_stato_fondamentale_p, __pyx_n_s_simulator, 33, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__25)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_codeobj__25 = (PyObject*)__Pyx_PyCode_New(11, 0, 29, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_oscillatore_stato_fondamentale_p, __pyx_n_s_simulator, 33, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__25)) __PYX_ERR(0, 33, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -20443,7 +20770,7 @@ if (!__Pyx_RefNanny) {
  * 
  * def simulator(int nlat, int iflag,             # <<<<<<<<<<<<<<
  *               int measures, int i_decorrel, int i_term, double d_metro,
- *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice'):
+ *               double eta, int seed = -1, str data_dir = "", file_name = 'lattice',
  */
   __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_30oscillatore_stato_fondamentale_1simulator, NULL, __pyx_n_s_oscillatore_stato_fondamentale); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
