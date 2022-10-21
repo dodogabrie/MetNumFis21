@@ -1,5 +1,5 @@
-""" 
-This module solve a Linear System of equation that can be written in the form 
+"""
+This module solve a Linear System of equation that can be written in the form
 of Ax = b with A tridiagonal.
 """
 
@@ -11,7 +11,7 @@ ctypedef np.double_t DTYPE_t
 def solve(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b):
     """
     Solve linear system Ax = b with A tridiagonal.
-    
+
     Parameters
     ----------
     diag : 1d numpy array
@@ -35,13 +35,13 @@ def solve(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b):
         inv = find_solution(diag, dup, b, x, N)
     return x, bool(inv)
 
- 
+
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 @cython.cdivision(True)     # Make division fast like C
 cdef int gauss_reduction(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_t[:] b, int N):
     cdef int i, inv = 1
-    cdef DTYPE_t factor
+    cdef double factor
     for i in range(1, N):
         if diag[i-1] == 0:
             inv = 0
@@ -57,12 +57,12 @@ cdef int gauss_reduction(DTYPE_t[:] diag, DTYPE_t[:] dlo, DTYPE_t[:] dup, DTYPE_
 @cython.cdivision(True)     # Make division fast like C
 cdef int find_solution(DTYPE_t[:] diag, DTYPE_t[:] dup, DTYPE_t[:] b, DTYPE_t[:] x, int N):
     cdef int i, inv = 1
-    if diag[N-1] == 0: 
+    if diag[N-1] == 0:
         inv = 0
     else:
         x[N-1] = b[N-1]/diag[N-1]
         for i in range(N-2, -1, -1):
-            if diag[i] == 0: 
+            if diag[i] == 0:
                 inv = 0
                 break
             b[i] = b[i] - dup[i] * x[i+1]
